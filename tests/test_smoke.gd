@@ -40,3 +40,10 @@ func test_save_roundtrip() -> void:
 	assert_int(Save.get_value("smoke", 0)).is_equal(42)
 	Save.wipe()
 	assert_object(Save.get_value("smoke")).is_null()
+
+
+func test_profile_from_args_accepts_both_forms() -> void:
+	assert_str(Save.profile_from_args(PackedStringArray(["--profile=p2"]), "p1")).is_equal("p2")
+	assert_str(Save.profile_from_args(PackedStringArray(["--", "--profile=kid"]), "p1")).is_equal("kid")
+	assert_str(Save.profile_from_args(PackedStringArray(["--profile=../x"]), "p1")).is_equal("p1")
+	assert_str(Save.profile_from_args(PackedStringArray([]), "p1")).is_equal("p1")
