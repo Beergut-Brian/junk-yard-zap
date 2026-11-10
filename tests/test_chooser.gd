@@ -15,6 +15,7 @@ var _real := {}
 
 
 func before() -> void:
+	Save.profile = "gdunit"   # main.tscn saves the yard: never touch the family's profile
 	_real = { "settings": Save.settings_path, "picks": Roster.picks_path, "data": Roster.data_path }
 	Save.settings_path = "user://test_settings_chooser.json"
 	Roster.picks_path = FILE
@@ -207,7 +208,7 @@ func test_pick_persists_across_a_relaunch() -> void:
 	var lobby := _boot()
 	_join_unready(lobby, P1)
 	lobby.choose(P1, 1)
-	assert_str(JSON.parse_string(FileAccess.get_file_as_string(FILE)).p1.P1).is_equal("pip")
+	assert_str(JSON.parse_string(FileAccess.get_file_as_string(FILE))[Save.profile].P1).is_equal("pip")
 	_main.free()
 	Players.reset()
 	Roster.reload()                                     # the game (or another one) starts again

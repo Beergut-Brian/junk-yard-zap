@@ -9,6 +9,7 @@ const P2 := Players.P2
 
 var _main: Node
 var _real_settings := ""
+var _real_picks := ""
 
 
 func before() -> void:
@@ -16,12 +17,19 @@ func before() -> void:
 	_real_settings = Save.settings_path
 	Save.settings_path = "user://test_settings_jyz_menus.json"
 	Save.wipe_settings()
+	_real_picks = Roster.picks_path   # the defaults (Jeff P1, Chuck P2), never the family's picks
+	Roster.picks_path = "user://test_jyz_menus_players.json"
+	Roster.args_override = PackedStringArray(["--no-picks"])
+	Roster.reload()
 
 
 func after() -> void:
 	Save.wipe_settings()
 	Save.settings_path = _real_settings
 	Save.reload_settings()
+	Roster.picks_path = _real_picks
+	Roster.args_override = PackedStringArray()
+	Roster.reload()
 
 
 func before_test() -> void:
