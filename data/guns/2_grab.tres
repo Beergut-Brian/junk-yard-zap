@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GunData" format=3]
+
+[ext_resource type="Script" path="res://scripts/guns/gun_data.gd" id="1_i7fdd"]
+
+[resource]
+script = ExtResource("1_i7fdd")
+id = &"grab"
+kind = 1
+params = {
+"reach": 1.0,
+"throw_speed": 14.0
+}
+beam_color = Color(1, 0.6, 0.15, 1)
+cue = &"zap_grab"

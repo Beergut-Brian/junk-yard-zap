@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_2u7s2"]
+
+[resource]
+script = ExtResource("1_2u7s2")
+id = &"tire"
+shape = 2
+size = Vector3(1, 1, 0.45)
+mass = 0.6
+color = Color(0.2, 0.2, 0.22, 1)
+bounce = 0.45
+face_at = Vector3(0, 0, 0.5)
+face_size = 0.3
+parts = Array[Dictionary]([{
+"at": Vector3(0, 0, 0),
+"color": Color(0.6, 0.6, 0.62, 1),
+"shape": "cylinder",
+"size": Vector3(0.45, 0.45, 0.47)
+}])

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_nnosw"]
+
+[resource]
+script = ExtResource("1_nnosw")
+id = &"piano"
+size = Vector3(1.8, 1.3, 0.7)
+mass = 10.0
+color = Color(0.2, 0.15, 0.15, 1)
+face_at = Vector3(0, 0.25, 0.5)
+face_size = 0.4
+parts = Array[Dictionary]([{
+"at": Vector3(0, -0.05, 0.45),
+"color": Color(0.96, 0.96, 0.93, 1),
+"shape": "box",
+"size": Vector3(1.6, 0.12, 0.3)
+}])
