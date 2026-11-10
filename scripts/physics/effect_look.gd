@@ -64,7 +64,8 @@ func _build(kind: StringName, c: Color) -> Node3D:
 			var band := c.lightened(0.05)
 			for i in 3:
 				var y := (i - 1) * size.y * 0.3
-				var mi := _mesh(ArtKit.rbox(Vector3(size.x * 1.05, maxf(size.y * 0.1, 0.06), size.z * 1.05), minf(size.y * 0.05, 0.05), 2), ArtKit.mat(band, ArtKit.EMIT))
+				var th := clampf(size.y * 0.07, 0.05, 0.22)
+				var mi := _mesh(ArtKit.rbox(Vector3(size.x * 1.04, th, size.z * 1.04), th * 0.5, 3), ArtKit.mat(band, ArtKit.EMIT, 0.3))
 				mi.position.y = y
 				root.add_child(mi)
 		&"balloon":
