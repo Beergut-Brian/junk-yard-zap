@@ -1,6 +1,8 @@
 ## The stack of goal cards on the front fence. Top card = current goal. Checked a few times a second;
 ## done cards go to the done pile (his trophy shelf), skipped cards go to the back. Nothing nags,
-## nothing times out. Cards are data/goals/*.tres, ordered by band then file name.
+## nothing times out. Cards are data/goals/*.tres, ordered by band, then rank, then id.
+## Keeps a GoalMemory for cards that care where an object was last touched, or that happen in steps:
+## every zap on an object and every check it spends held by gravity grab count as a gun touch.
 class_name GoalDeck
 extends Node
 
@@ -8,7 +10,7 @@ signal goal_completed(goal_id: StringName)
 signal goal_skipped(goal_id: StringName)
 signal card_changed(goal: GoalData)
 
-const CHECK_EVERY := 0.25
+const CHECK_EVERY := 0.1   # fast enough to see a flying car mid-arc
 const DIR := "res://data/goals/"
 
 var cards := {}                       # id -> GoalData
@@ -16,12 +18,19 @@ var order: Array[StringName] = []     # the stack, top first
 var done: Array[StringName] = []
 ## Off while the yard resets or loads, so nothing completes mid-teleport.
 var checking := true
+var memory := GoalMemory.new()
 var _t := 0.0
 
 
 func _ready() -> void:
 	if cards.is_empty():
 		load_dir(DIR)
+		_dev_top()
+	var level := get_parent() as YardLevel
+	if level:
+		level.zapped.connect(_on_zapped)
+		level.yard_reset.connect(memory.clear)
+	card_changed.connect(func(_g: GoalData) -> void: memory.reset_progress())
 
 
 func load_dir(dir: String) -> void:
@@ -36,7 +45,11 @@ func load_dir(dir: String) -> void:
 
 func set_cards(list: Array[GoalData]) -> void:
 	list.sort_custom(func(a: GoalData, b: GoalData) -> bool:
-		return a.band < b.band or (a.band == b.band and String(a.id) < String(b.id)))
+		if a.band != b.band:
+			return a.band < b.band
+		if a.rank != b.rank:
+			return a.rank < b.rank
+		return String(a.id) < String(b.id))
 	cards.clear()
 	order.clear()
 	done.clear()
@@ -55,9 +68,28 @@ func _process(delta: float) -> void:
 	if _t < CHECK_EVERY or not checking:
 		return
 	_t = 0.0
+	check_now()
+
+
+## One check of the top card (the deck does this every CHECK_EVERY; tests call it directly).
+func check_now() -> bool:
 	var g := current()
-	if g and Goals.check(g):
+	if g == null:
+		return false
+	var objects := get_tree().get_nodes_in_group(PhysicsObject.GROUP)
+	for o in objects:
+		if (o as PhysicsObject).stack.has(&"grab"):
+			memory.touch(o)
+	memory.tick += 1
+	if Goals.check(g, objects, memory):
 		complete()
+		return true
+	return false
+
+
+func _on_zapped(_player: int, _gun: StringName, target: Node3D) -> void:
+	if target is PhysicsObject:
+		memory.touch(target)
 
 
 func complete() -> void:
@@ -104,3 +136,16 @@ func from_save(d: Dictionary) -> void:
 	order = new_order
 	done = new_done
 	card_changed.emit(current())
+
+
+## Screenshots and playtests: `-- --goal-top=b3_raft,b1_tiny_car` puts those cards on top, in order.
+func _dev_top() -> void:
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--goal-top="):
+			var ids := a.trim_prefix("--goal-top=").split(",", false)
+			ids.reverse()
+			for id in ids:
+				if order.has(StringName(id)):
+					order.erase(StringName(id))
+					order.push_front(StringName(id))
+			card_changed.emit(current())
