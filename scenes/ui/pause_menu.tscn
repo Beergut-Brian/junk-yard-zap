@@ -1,7 +1,17 @@
 [gd_scene format=3 uid="uid://openjar_pause_menu"]
 
 [ext_resource type="Script" path="res://scenes/ui/pause_menu.gd" id="1_pause"]
-[ext_resource type="Script" path="res://scenes/ui/icon_button.gd" id="2_btn"]
+[ext_resource type="Script" path="res://scenes/ui/kit/menu_item.gd" id="2_item"]
+[ext_resource type="Script" path="res://scenes/ui/kit/hint_line.gd" id="3_hint"]
+[ext_resource type="Shader" path="res://scenes/ui/kit/blur_dim.gdshader" id="4_blur"]
+[ext_resource type="Theme" path="res://assets/ui/theme.tres" id="5_theme"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_panel.tscn" id="6_settings"]
+[ext_resource type="PackedScene" path="res://scenes/ui/confirm_dialog.tscn" id="7_confirm"]
+
+[sub_resource type="ShaderMaterial" id="blur_mat"]
+shader = ExtResource("4_blur")
+shader_parameter/lod = 3.0
+shader_parameter/tint = Color(0.07, 0.055, 0.05, 0.62)
 
 [node name="PauseMenu" type="Control"]
 layout_mode = 3
@@ -10,45 +20,85 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("5_theme")
 script = ExtResource("1_pause")
 
 [node name="Dim" type="ColorRect" parent="."]
+material = SubResource("blur_mat")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 color = Color(0.05, 0.05, 0.08, 0.75)
 
-[node name="Buttons" type="Control" parent="."]
-anchors_preset = 0
-
-[node name="Resume" type="Control" parent="Buttons"]
+[node name="Card" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 400.0
-offset_top = 400.0
-offset_right = 700.0
-offset_bottom = 700.0
-script = ExtResource("2_btn")
-tint = Color(0.35, 0.75, 1, 1)
+offset_left = 650.0
+offset_top = 150.0
+offset_right = 1270.0
+offset_bottom = 930.0
 
-[node name="Restart" type="Control" parent="Buttons"]
+[node name="Heading" type="Label" parent="Card"]
 layout_mode = 0
-offset_left = 810.0
-offset_top = 400.0
-offset_right = 1110.0
-offset_bottom = 700.0
-script = ExtResource("2_btn")
-icon = 1
-tint = Color(1, 0.85, 0.3, 1)
+offset_left = 40.0
+offset_top = 44.0
+offset_right = 580.0
+offset_bottom = 128.0
+theme_type_variation = &"HeadingLabel"
+text = "Paused"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Door" type="Control" parent="Buttons"]
+[node name="PausedBy" type="Control" parent="Card"]
 layout_mode = 0
-offset_left = 1220.0
-offset_top = 400.0
-offset_right = 1520.0
-offset_bottom = 700.0
-script = ExtResource("2_btn")
-icon = 2
-tint = Color(1, 0.62, 0.25, 1)
+offset_left = 40.0
+offset_top = 132.0
+offset_right = 580.0
+offset_bottom = 176.0
+
+[node name="Buttons" type="VBoxContainer" parent="Card"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 222.0
+offset_right = 550.0
+offset_bottom = 650.0
+theme_override_constants/separation = 20
+
+[node name="Resume" type="Control" parent="Card/Buttons"]
+layout_mode = 2
+script = ExtResource("2_item")
+text = "Resume"
+
+[node name="Restart" type="Control" parent="Card/Buttons"]
+layout_mode = 2
+script = ExtResource("2_item")
+text = "Restart"
+
+[node name="Settings" type="Control" parent="Card/Buttons"]
+layout_mode = 2
+script = ExtResource("2_item")
+text = "Settings"
+
+[node name="Door" type="Control" parent="Card/Buttons"]
+layout_mode = 2
+script = ExtResource("2_item")
+text = "Back to Open Jar"
+
+[node name="Hint" type="Control" parent="Card"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 700.0
+offset_right = 580.0
+offset_bottom = 740.0
+script = ExtResource("3_hint")
+text = "[a] Select    [b] Resume"
+
+[node name="Settings" parent="." instance=ExtResource("6_settings")]
+layout_mode = 1
+
+[node name="Confirm" parent="." instance=ExtResource("7_confirm")]
+layout_mode = 1
