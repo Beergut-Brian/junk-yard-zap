@@ -12,7 +12,8 @@ const ACTION_EVERY := 0.2         # seconds of physics time between random zaps
 const THROW_CHANCE := 0.12
 const SPEED_MARGIN := 1.0         # contacts can add a little after our clamp; this is "over the cap"
 const SPIKE_MS := 16.0
-const SINK_Y := -0.05             # a centre below the ground surface = tunnelled into the floor
+const SINK_DEPTH := 0.1          # lowest point this far below the ground surface = in the floor
+const STUCK_FRAMES := 15         # in the floor longer than this (0.25 s) = stuck; shorter = an impact dip
 
 var count := 0
 var seed_used := SEED
@@ -27,6 +28,8 @@ var nan_count := 0
 var over_cap := 0
 var max_speed := 0.0
 var max_z := 0.0
+var max_sink := -INF
+var dips := 0
 var sunk := 0
 var escapes := 0
 var spikes := 0
@@ -34,7 +37,7 @@ var max_phys_ms := 0.0
 var phys_ms: PackedFloat32Array = []
 var glue_rest := {}               # Glue -> b's position in a's local frame at creation
 var max_glue_drift := 0.0
-var _sinking := {}
+var _sinking := {}               # PhysicsObject -> consecutive frames in the floor
 var _last_usec := 0
 var _drifting := {}
 
@@ -123,12 +126,16 @@ func _check() -> void:
 			over_cap += 1
 			_note("speed: %s %.1f m/s at t=%.2f" % [o.name, s, t])
 		max_z = maxf(max_z, absf(p.z))
-		if p.y < SINK_Y:
-			sunk += 1
-			if not _sinking.has(o):
-				_sinking[o] = true
-				_note("sunk: %s y=%.2f at t=%.2f %s" % [o.name, p.y, t, describe(o)])
-		else:
+		var depth := o.half_extent_along(Vector3.UP) - p.y   # the ground's top is y = 0
+		max_sink = maxf(max_sink, depth)
+		if depth > SINK_DEPTH:
+			_sinking[o] = _sinking.get(o, 0) + 1
+			if _sinking[o] == STUCK_FRAMES:
+				sunk += 1
+				_note("stuck: %s %.2f m into the floor for %d frames at t=%.2f %s" % [o.name, depth, STUCK_FRAMES, t, describe(o)])
+		elif _sinking.has(o):
+			if _sinking[o] < STUCK_FRAMES:
+				dips += 1
 			_sinking.erase(o)
 		nan_count += o.nan_events
 		o.nan_events = 0
@@ -168,7 +175,8 @@ func _finish() -> void:
 		"actions: %s" % JSON.stringify(actions),
 		"NaN events: %d" % nan_count,
 		"escapes (recalled to gate): %d" % escapes,
-		"sunk into floor: %d" % sunk,
+		"stuck in the floor (> %.2f m for > %d frames): %d" % [SINK_DEPTH, STUCK_FRAMES, sunk],
+		"impact dips (> %.2f m, resolved within %d frames): %d   deepest point seen %.3f m below ground" % [SINK_DEPTH, STUCK_FRAMES, dips, max_sink],
 		"speed over cap (%.0f m/s + %.0f): %d   max speed seen %.1f m/s" % [Yard.MAX_SPEED, SPEED_MARGIN, over_cap, max_speed],
 		"max |z| off the play plane: %.3f m" % max_z,
 		"max glue drift (B from where A's frame says it should be): %.3f m" % max_glue_drift,

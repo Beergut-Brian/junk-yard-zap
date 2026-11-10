@@ -268,17 +268,19 @@ func _make_shape(s: float, inset: float) -> Shape3D:
 	return box
 
 
-## Mass follows volume. Glued islands keep every member within GLUE_MASS_RATIO of the heaviest:
-## Jolt joints go soft when a 300 kg car hangs off a 1 kg chicken, so the chicken gets heavier.
+## Mass follows volume: volume_mass() is the object's logical mass (goal cards, impact sounds, Fx).
+## Jolt gets a compressed body mass (Yard.body_mass) because it sinks light bodies under heavy ones
+## past ~25:1, and grow/shrink alone spans 500:1. Glued islands also keep every member within
+## GLUE_MASS_RATIO of the heaviest: joints go soft when a heavy half hangs off a light one.
 func volume_mass() -> float:
 	return clampf(data.mass * pow(current_scale, 3), Yard.MASS_MIN, Yard.MASS_MAX)
 
 
 func refresh_mass() -> void:
-	var m := volume_mass()
+	var m := Yard.body_mass(volume_mass())
 	if stack:
 		for o in stack.glued_group():
-			m = maxf(m, o.volume_mass() / Yard.GLUE_MASS_RATIO)
+			m = maxf(m, Yard.body_mass(o.volume_mass()) / Yard.GLUE_MASS_RATIO)
 	mass = m
 
 

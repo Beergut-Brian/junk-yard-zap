@@ -135,10 +135,13 @@ class Freeze extends Effect:
 
 
 ## Pulls every other dynamic object in range for DURATION seconds, then switches itself off.
+## The pull on an object is capped at MASS_LEVERAGE times the magnet's own mass, so a tiny magnet
+## can't slam a giant car onto itself and crush itself through the floor.
 class Magnet extends Effect:
 	const DURATION := 5.0
 	const RADIUS := 7.0
 	const ACCEL := 25.0        # m/s^2 at the centre, falling off to 0 at RADIUS
+	const MASS_LEVERAGE := 3.0
 	var time_left := DURATION
 
 	func _init() -> void:
@@ -161,7 +164,7 @@ class Magnet extends Effect:
 			if dist < 0.05 or dist > reach:
 				continue
 			var acc := ACCEL * (1.0 - dist / reach)
-			other.apply_central_force(d / dist * acc * other.mass)
+			other.apply_central_force(d / dist * acc * minf(other.mass, t.mass * MASS_LEVERAGE))
 
 	func label() -> String:
 		return "MG%d" % ceili(time_left)

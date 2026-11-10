@@ -19,6 +19,9 @@ const MAX_SPIN := 20.0         # rad/s
 const SCALE_CHANGE_MAX_SPEED := 4.0   # m/s while a body is changing size
 const MASS_MIN := 0.05
 const MASS_MAX := 400.0
+## Body mass handed to Jolt: (volume mass / 1 kg) ^ MASS_EXPONENT kg. Keeps the order (bigger is
+## heavier) but squeezes the range so stacks of very different sizes don't sink into each other.
+static var mass_exponent := 0.5
 const GLUE_MASS_RATIO := 10.0   # glued bodies stay within 10:1 of the heaviest in the island
 ## Anything outside this box is recalled to the gate.
 const BOUNDS := AABB(Vector3(-34, -6, -8), Vector3(68, 30, 16))
@@ -52,6 +55,10 @@ static func up_at(pos: Vector3) -> Vector3:
 ## Z acceleration that pulls a body back to the play plane.
 static func plane_accel(z: float, vz: float) -> float:
 	return -PLANE_K * z - PLANE_DAMP * vz
+
+
+static func body_mass(volume_mass: float) -> float:
+	return pow(volume_mass, mass_exponent)
 
 
 static func in_bounds(pos: Vector3) -> bool:

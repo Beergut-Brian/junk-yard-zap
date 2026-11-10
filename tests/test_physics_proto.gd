@@ -63,7 +63,8 @@ func test_grow_shrink_limits_and_mass_by_volume() -> void:
 	await step(75)   # 4 steps x 0.25 s
 	var s := pow(1.3, 4)
 	assert_float(o.current_scale).is_equal_approx(s, 0.0001)
-	assert_float(o.mass).is_equal_approx(s * s * s, 0.001)
+	assert_float(o.volume_mass()).is_equal_approx(s * s * s, 0.001)
+	assert_float(o.mass).is_equal_approx(Yard.body_mass(s * s * s), 0.001)
 	var shape := o.get_node("Shape").shape as BoxShape3D
 	assert_vector(shape.size).is_equal_approx(Vector3.ONE * s, Vector3.ONE * 0.0001)
 	for i in 8:
@@ -72,7 +73,8 @@ func test_grow_shrink_limits_and_mass_by_volume() -> void:
 	await step(140)
 	var t := pow(1.3, -4)
 	assert_float(o.current_scale).is_equal_approx(t, 0.0001)
-	assert_float(o.mass).is_equal_approx(maxf(t * t * t, Yard.MASS_MIN), 0.001)
+	assert_float(o.volume_mass()).is_equal_approx(maxf(t * t * t, Yard.MASS_MIN), 0.001)
+	assert_float(o.mass).is_less(1.0)
 	assert_float(o.global_position.y).is_greater(0.0)   # not sunk into the floor
 
 
@@ -110,6 +112,33 @@ func test_magnet_switches_itself_off() -> void:
 	m.time_left = 0.1
 	await step(12)
 	assert_bool(o.stack.has(&"magnet")).is_false()
+
+
+func test_giant_landing_on_a_crate_does_not_sink_it() -> void:
+	var crate := box(Vector3(0, 0.5, 0))
+	var car := box(Vector3(0, 5.0, 0), Vector3(2.4, 1.1, 1.3), 12.0)
+	for i in 4:
+		Effects.zap(&"grow", car)
+	var lowest := INF
+	for f in 150:
+		await get_tree().physics_frame
+		lowest = minf(lowest, crate.global_position.y)
+	assert_float(lowest).is_greater(0.4)   # half-height 0.5: under 10 cm into the floor
+
+
+func test_tiny_magnet_under_a_giant_is_not_crushed() -> void:
+	var tiny := box(Vector3(0, 0.5, 0))
+	var giant := box(Vector3(0, 4.0, 0))
+	for i in 4:
+		Effects.zap(&"shrink", tiny)
+		Effects.zap(&"grow", giant)
+	await step(70)
+	Effects.zap(&"magnet", tiny)
+	var lowest := INF
+	for f in 150:
+		await get_tree().physics_frame
+		lowest = minf(lowest, tiny.global_position.y)
+	assert_float(lowest).is_greater(tiny.size_now().y * 0.5 - 0.1)
 
 
 func test_glue_and_split() -> void:
