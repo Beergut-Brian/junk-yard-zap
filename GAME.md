@@ -356,4 +356,5 @@ On top of the template checklist in `docs/kid-design.md`.
   - **A "gun touch"** (for "from the loft" and the chain-reaction cards) is any zap on the object or holding it with gravity grab. Throws, magnets on *other* things, the see-saw and shoving with a held object are not touches, so bulldozing the egg off with a held hay bale counts as knocking it off.
   - **The piano card does not require the piano to slide down the pipe on its own.** Shrunk to fit, it slides part way and can wedge; a shove inside the pipe is fine. It must pass the pipe's top and bottom and then reach the pond.
   - **The deck checks the top card every 0.1 s** (was 0.25 s) so a car flying over the fence is not missed mid-arc. One card, at most 40 objects, no allocation beyond the group list.
+  - **Chain-reaction card is forgiving about where the ball lands:** it counts once the untouched ball rests below 2.5 m (the loft floor is about 4.7 m), so a ball that lands on a hay bale still counts (Gary, after a CI run where it did).
   - **The first two "anything" cards now hint** (bouncy: ball and tire; glue: the two crates) so every card glows something.

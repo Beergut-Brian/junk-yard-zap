@@ -21,7 +21,7 @@ steps = Array[ExtResource("1_goal")]([SubResource("Resource_chain_ba_1"), SubRes
 [sub_resource type="Resource" id="Resource_chain_ba_4"]
 script = ExtResource("1_goal")
 condition = 7
-amount = 1.5
+amount = 2.5
 untouched = true
 
 [resource]
