@@ -205,7 +205,7 @@ def fence(g):
 
 def scrap_pile(g):
     mound = sphere("Mound", 0.42, 12, 6, lambda i, p: RUST_DARK if p.z < 0.1 else GROUND_DARK)
-    place(mound, (0.0, 0.05, g - 0.02), scale=(1.15, 0.9, 0.55))
+    place(mound, (0.0, 0.05, 0.172), scale=(1.15, 0.9, 0.4))   # bottom just above the floor
     rnd = random.Random(7)
     cols = [RUST, METAL, CAR, CRATE, RUST_DARK, ENAMEL, TEAL]
     for k in range(11):
