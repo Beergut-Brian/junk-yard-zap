@@ -1,5 +1,5 @@
-## The yard, grey-boxed (GAME.md "The yard"): about six screens wide, fence to fence, five zones as
-## coloured blocks with their landmarks, the objects from data/yard_layout.tres, the goal deck on
+## The yard (GAME.md "The yard"): about six screens wide, fence to fence, five zones with their
+## landmarks (collision here, visuals in YardDressing), the objects from data/yard_layout.tres, the goal deck on
 ## the front fence, the Reset Yard sign and the tire pile. Owns the yard's save (transforms, sizes,
 ## effects, glue pairs, deck) and Reset Yard. Built in code so tests can drop a yard into any tree.
 class_name YardLevel
@@ -24,13 +24,13 @@ const AUTOSAVE := 30.0
 const SAVE_KEY := "yard"
 const LAYOUT := "res://data/yard_layout.tres"
 
-## Zones, left to right: name, x from, x to, backdrop colour (grey-box placeholders, not a palette).
+## Zones, left to right: name, x from, x to.
 const ZONES := [
-	[&"front_gate", -48.0, -29.0, Color(0.62, 0.58, 0.5)],
-	[&"scrap_heap", -29.0, -9.0, Color(0.55, 0.5, 0.47)],
-	[&"pond", -9.0, 9.0, Color(0.5, 0.62, 0.72)],
-	[&"barn", 9.0, 29.0, Color(0.66, 0.52, 0.42)],
-	[&"tower", 29.0, 48.0, Color(0.56, 0.56, 0.64)],
+	[&"front_gate", -48.0, -29.0],
+	[&"scrap_heap", -29.0, -9.0],
+	[&"pond", -9.0, 9.0],
+	[&"barn", 9.0, 29.0],
+	[&"tower", 29.0, 48.0],
 ]
 
 @export var layout: YardLayout
@@ -290,109 +290,48 @@ func _build_world() -> void:
 	var st := Node3D.new()
 	st.name = "Static"
 	add_child(st)
-	var ground := Color(0.55, 0.45, 0.33)
+	# Collision only: every visual is YardDressing (the Golden Afternoon diorama, scripts/art/).
 	# Ground either side of the pond, the basin, and ramps in and out.
-	_box(st, "GroundL", Vector3((LEFT - 4 + POND.x) * 0.5, -2.0, 0), Vector3(POND.x - LEFT + 4, 4, DEPTH), ground)
-	_box(st, "GroundR", Vector3((RIGHT + 4 + POND.y) * 0.5, -2.0, 0), Vector3(RIGHT + 4 - POND.y, 4, DEPTH), ground)
-	_box(st, "PondFloor", Vector3(0, POND_FLOOR - 1.0, 0), Vector3(POND.y - POND.x, 2, DEPTH), ground.darkened(0.2))
-	_box(st, "RampL", Vector3(POND.x + 1.3, POND_FLOOR * 0.5 - 0.3, 0), Vector3(3.6, 0.5, DEPTH), ground.darkened(0.1), -38.0)
-	_box(st, "RampR", Vector3(POND.y - 1.3, POND_FLOOR * 0.5 - 0.3, 0), Vector3(3.6, 0.5, DEPTH), ground.darkened(0.1), 38.0)
-	var water := MeshInstance3D.new()
-	var wm := BoxMesh.new()
-	wm.size = Vector3(POND.y - POND.x, WATER_Y - POND_FLOOR, DEPTH)
-	water.mesh = wm
-	var wmat := StandardMaterial3D.new()
-	wmat.albedo_color = Color(0.3, 0.55, 0.85, 0.45)
-	wmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	water.material_override = wmat
-	water.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	water.position = Vector3(0, (WATER_Y + POND_FLOOR) * 0.5, 0)
-	water.name = "Water"
-	st.add_child(water)
+	_box(st, "GroundL", Vector3((LEFT - 4 + POND.x) * 0.5, -2.0, 0), Vector3(POND.x - LEFT + 4, 4, DEPTH))
+	_box(st, "GroundR", Vector3((RIGHT + 4 + POND.y) * 0.5, -2.0, 0), Vector3(RIGHT + 4 - POND.y, 4, DEPTH))
+	_box(st, "PondFloor", Vector3(0, POND_FLOOR - 1.0, 0), Vector3(POND.y - POND.x, 2, DEPTH))
+	_box(st, "RampL", Vector3(POND.x + 1.3, POND_FLOOR * 0.5 - 0.3, 0), Vector3(3.6, 0.5, DEPTH), -38.0)
+	_box(st, "RampR", Vector3(POND.y - 1.3, POND_FLOOR * 0.5 - 0.3, 0), Vector3(3.6, 0.5, DEPTH), 38.0)
 	# Fences and the invisible walls and lid that keep everything in the yard.
 	for side in [-1.0, 1.0]:
 		var x: float = LEFT if side < 0 else RIGHT
-		_box(st, "Fence", Vector3(x + side * 0.25, 2.0, 0), Vector3(0.5, 4.0, DEPTH), Color(0.5, 0.5, 0.55))
-		_box(st, "Wall", Vector3(x + side * 0.25, (4.0 + LID_Y) * 0.5, 0), Vector3(0.5, LID_Y - 4.0, DEPTH), null)
-	_box(st, "Lid", Vector3(0, LID_Y + 0.25, 0), Vector3(RIGHT - LEFT + 4, 0.5, DEPTH), null)
-	# Zone backdrops: coloured blocks behind the play plane (looks only).
-	for z in ZONES:
-		var w: float = z[2] - z[1]
-		_deco(st, "Zone_%s" % z[0], Vector3((z[1] + z[2]) * 0.5, 5.0, -DEPTH * 0.5 - 0.2), Vector3(w, 14, 0.3), z[3])
-		_deco(st, "Strip_%s" % z[0], Vector3((z[1] + z[2]) * 0.5, 0.02, -DEPTH * 0.5 + 0.6), Vector3(w, 0.06, 1.2), (z[3] as Color).darkened(0.25))
-	# Front gate: the fence board with the card stack, the Reset Yard sign, the tire pile.
-	_deco(st, "CardBoard", Vector3(-45.5, 2.0, -1.2), Vector3(2.6, 4.0, 0.3), Color(0.5, 0.38, 0.25))
+		_box(st, "Fence", Vector3(x + side * 0.25, 2.0, 0), Vector3(0.5, 4.0, DEPTH))
+		_box(st, "Wall", Vector3(x + side * 0.25, (4.0 + LID_Y) * 0.5, 0), Vector3(0.5, LID_Y - 4.0, DEPTH))
+	_box(st, "Lid", Vector3(0, LID_Y + 0.25, 0), Vector3(RIGHT - LEFT + 4, 0.5, DEPTH))
+	# Front gate: the Reset Yard sign and the tire pile (the card board is dressing).
 	reset_sign = Node3D.new()
 	reset_sign.name = "ResetSign"
 	reset_sign.position = Vector3(-42.0, 0, -1.0)
 	st.add_child(reset_sign)
-	_deco(reset_sign, "Post", Vector3(0, 0.8, 0), Vector3(0.15, 1.6, 0.15), Color(0.45, 0.35, 0.25))
-	_deco(reset_sign, "Board", Vector3(0, 1.75, 0), Vector3(1.3, 0.9, 0.1), Color(0.95, 0.85, 0.3))
-	var swirl := MeshInstance3D.new()   # a whoosh arrow picture: a ring with a gap
-	var tm := TorusMesh.new()
-	tm.inner_radius = 0.22
-	tm.outer_radius = 0.32
-	swirl.mesh = tm
-	swirl.rotation_degrees.x = 90
-	swirl.position = Vector3(0, 1.75, 0.07)
-	var smat := StandardMaterial3D.new()
-	smat.albedo_color = Color(0.15, 0.15, 0.2)
-	swirl.material_override = smat
-	reset_sign.add_child(swirl)
 	tire_pile = Node3D.new()
 	tire_pile.name = "TirePile"
 	tire_pile.position = Vector3(-34.0, 0, -1.5)
 	st.add_child(tire_pile)
-	for i in 4:
-		var t := MeshInstance3D.new()
-		var cm := CylinderMesh.new()
-		cm.top_radius = 0.55
-		cm.bottom_radius = 0.55
-		cm.height = 0.4
-		t.mesh = cm
-		var tmat := StandardMaterial3D.new()
-		tmat.albedo_color = Color(0.15, 0.15, 0.17)
-		t.material_override = tmat
-		t.position = Vector3([-0.6, 0.6, 0.0, 1.5][i], [0.2, 0.2, 0.6, 0.2][i], 0)
-		tire_pile.add_child(t)
 	_add_spawn(Players.P1, Vector3(-39.0, 0.1, 0))
 	_add_spawn(Players.P2, Vector3(-34.0, 0.1, 0))
-	# Scrap heap: a junk mound to climb and a crane with a hook (looks only for now).
-	_box(st, "Mound", Vector3(-21.0, 0.0, 0), Vector3(5.0, 1.6, DEPTH * 0.6), Color(0.45, 0.4, 0.38), 0.0)
-	_box(st, "MoundL", Vector3(-24.0, 0.3, 0), Vector3(2.4, 0.5, DEPTH * 0.6), Color(0.45, 0.4, 0.38), 22.0)
-	_deco(st, "Crane", Vector3(-13.0, 4.5, -2.5), Vector3(0.5, 9.0, 0.5), Color(0.75, 0.6, 0.2))
-	_deco(st, "CraneArm", Vector3(-15.5, 9.0, -2.5), Vector3(5.5, 0.4, 0.4), Color(0.75, 0.6, 0.2))
-	_deco(st, "Hook", Vector3(-17.8, 7.0, -2.5), Vector3(0.1, 4.0, 0.1), Color(0.3, 0.3, 0.3))
+	# Scrap heap: a junk mound to climb (the crane and conveyor are dressing).
+	_box(st, "Mound", Vector3(-21.0, 0.0, 0), Vector3(5.0, 1.6, DEPTH * 0.6))
+	_box(st, "MoundL", Vector3(-24.0, 0.3, 0), Vector3(2.4, 0.5, DEPTH * 0.6), 22.0)
 	# Pond: a dock over the water.
-	_box(st, "Dock", Vector3(-6.5, 0.15, 0), Vector3(5.0, 0.3, 2.0), Color(0.6, 0.45, 0.3))
-	# Barn: the barn block, a loft with steps up, a see-saw.
-	_deco(st, "Barn", Vector3(22.0, 3.5, -3.0), Vector3(12.0, 7.0, 1.5), Color(0.6, 0.4, 0.3))
-	_box(st, "Loft", Vector3(26.0, 4.0, 0), Vector3(5.0, 0.4, DEPTH * 0.6), Color(0.7, 0.55, 0.35))
+	_box(st, "Dock", Vector3(-6.5, 0.15, 0), Vector3(5.0, 0.3, 2.0))
+	# Barn: a loft with steps up, a see-saw.
+	_box(st, "Loft", Vector3(26.0, 4.0, 0), Vector3(5.0, 0.4, DEPTH * 0.6))
 	for i in 3:
-		_box(st, "LoftStep%d" % i, Vector3(21.2 + i * 0.8, 1.0 + i * 1.0, 0), Vector3(0.9, 0.3, 2.0), Color(0.7, 0.55, 0.35))
+		_box(st, "LoftStep%d" % i, Vector3(21.2 + i * 0.8, 1.0 + i * 1.0, 0), Vector3(0.9, 0.3, 2.0))
 	_build_seesaw(st, Vector3(18.0, 0, 0))
 	# Tower: platforms going up and the pipe from the top back to the ground.
-	_deco(st, "TowerBack", Vector3(41.0, 6.0, -2.5), Vector3(6.0, 12.0, 1.0), Color(0.5, 0.5, 0.58))
 	for i in 3:
 		var y := 3.0 + i * 3.0
-		_box(st, "TowerDeck%d" % i, Vector3(41.0 + (i % 2) * 1.5, y, 0), Vector3(4.0, 0.4, DEPTH * 0.6), Color(0.6, 0.6, 0.68))
-		_box(st, "TowerStep%d" % i, Vector3(45.5 - (i % 2) * 8.0, y - 1.5, 0), Vector3(1.4, 0.3, 2.0), Color(0.6, 0.6, 0.68))
-	_box(st, "PipeFloor", Vector3(35.0, 5.0, 0), Vector3(9.0, 0.25, 1.6), Color(0.4, 0.6, 0.65), 32.0)
-	_box(st, "PipeRoof", Vector3(35.4, 6.6, 0), Vector3(9.0, 0.25, 1.6), Color(0.4, 0.6, 0.65, 0.5), 32.0)
-	# Light and sky.
-	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-50, 30, 0)
-	sun.shadow_enabled = true
-	sun.light_energy = 1.1
-	add_child(sun)
-	var env := WorldEnvironment.new()
-	env.environment = Environment.new()
-	env.environment.background_mode = Environment.BG_COLOR
-	env.environment.background_color = Color(0.62, 0.8, 0.95)
-	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.environment.ambient_light_color = Color(0.85, 0.85, 0.9)
-	env.environment.ambient_light_energy = 0.55
-	add_child(env)
+		_box(st, "TowerDeck%d" % i, Vector3(41.0 + (i % 2) * 1.5, y, 0), Vector3(4.0, 0.4, DEPTH * 0.6))
+		_box(st, "TowerStep%d" % i, Vector3(45.5 - (i % 2) * 8.0, y - 1.5, 0), Vector3(1.4, 0.3, 2.0))
+	_box(st, "PipeFloor", Vector3(35.0, 5.0, 0), Vector3(9.0, 0.25, 1.6), 32.0)
+	_box(st, "PipeRoof", Vector3(35.4, 6.6, 0), Vector3(9.0, 0.25, 1.6), 32.0)
+	YardDressing.build(self)
 
 
 func _add_spawn(player: int, at: Vector3) -> void:
@@ -410,7 +349,7 @@ func _add_spawn(player: int, at: Vector3) -> void:
 ## A see-saw: a plank on a hinge over a wedge. A landmark (guns don't change it), but anything
 ## dropped on one end flips the other end up.
 func _build_seesaw(parent: Node3D, at: Vector3) -> void:
-	var pivot := _box(parent, "SeesawPivot", at + Vector3(0, 0.45, 0), Vector3(0.6, 0.9, 1.2), Color(0.45, 0.35, 0.25))
+	var pivot := _box(parent, "SeesawPivot", at + Vector3(0, 0.45, 0), Vector3(0.6, 0.9, 1.2))
 	var plank := RigidBody3D.new()
 	plank.name = "SeesawPlank"
 	plank.mass = 3.0
@@ -423,14 +362,6 @@ func _build_seesaw(parent: Node3D, at: Vector3) -> void:
 	sh.size = Vector3(5.0, 0.2, 1.2)
 	cs.shape = sh
 	plank.add_child(cs)
-	var mi := MeshInstance3D.new()
-	var bm := BoxMesh.new()
-	bm.size = sh.size
-	mi.mesh = bm
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.75, 0.6, 0.4)
-	mi.material_override = mat
-	plank.add_child(mi)
 	parent.add_child(plank)
 	var hinge := HingeJoint3D.new()
 	hinge.name = "SeesawHinge"
@@ -443,7 +374,7 @@ func _build_seesaw(parent: Node3D, at: Vector3) -> void:
 	hinge.set_param(HingeJoint3D.PARAM_LIMIT_UPPER, deg_to_rad(22))
 
 
-func _box(parent: Node3D, n: String, pos: Vector3, size: Vector3, c, roll_deg := 0.0) -> StaticBody3D:
+func _box(parent: Node3D, n: String, pos: Vector3, size: Vector3, roll_deg := 0.0) -> StaticBody3D:
 	var b := StaticBody3D.new()
 	b.name = n
 	b.position = pos
@@ -454,30 +385,5 @@ func _box(parent: Node3D, n: String, pos: Vector3, size: Vector3, c, roll_deg :=
 	sh.size = size
 	cs.shape = sh
 	b.add_child(cs)
-	if c is Color:
-		var mi := MeshInstance3D.new()
-		var bm := BoxMesh.new()
-		bm.size = size
-		mi.mesh = bm
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = c
-		if (c as Color).a < 1.0:
-			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		mi.material_override = mat
-		b.add_child(mi)
 	parent.add_child(b)
 	return b
-
-
-func _deco(parent: Node3D, n: String, pos: Vector3, size: Vector3, c: Color) -> MeshInstance3D:
-	var mi := MeshInstance3D.new()
-	mi.name = n
-	var bm := BoxMesh.new()
-	bm.size = size
-	mi.mesh = bm
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = c
-	mi.material_override = mat
-	mi.position = pos
-	parent.add_child(mi)
-	return mi

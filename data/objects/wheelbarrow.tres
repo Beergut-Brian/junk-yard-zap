@@ -9,11 +9,5 @@ shape = 3
 size = Vector3(1.4, 0.55, 0.8)
 mass = 2.0
 color = Color(0.35, 0.5, 0.65, 1)
-face_at = Vector3(0, 0, 0.5)
-face_size = 0.3
-parts = Array[Dictionary]([{
-"at": Vector3(0.6, -0.4, 0),
-"color": Color(0.12, 0.1, 0.1, 1),
-"shape": "cylinder",
-"size": Vector3(0.45, 0.45, 0.15)
-}])
+face_at = Vector3(-0.05, 0.15, 0.5)
+face_size = 0.28

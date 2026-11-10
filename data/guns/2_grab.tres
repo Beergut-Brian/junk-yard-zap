@@ -10,5 +10,5 @@ params = {
 "reach": 1.0,
 "throw_speed": 14.0
 }
-beam_color = Color(1, 0.6, 0.15, 1)
+beam_color = Color(0.49411765, 0.32156864, 1, 1)
 cue = &"zap_grab"

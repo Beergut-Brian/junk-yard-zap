@@ -4,7 +4,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide (staged shots), --proto.
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|zone-<name> (staged shots), --proto.
 extends Node3D
 
 const ZAPPER := preload("res://scenes/players/zapper.tscn")
@@ -166,6 +166,9 @@ func _start_demo() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--demo-beat="):
 			beat = a.trim_prefix("--demo-beat=")
+	if beat.begins_with("zone-"):
+		_beat_zone(StringName(beat.trim_prefix("zone-")))
+		return
 	match beat:
 		"combo": _beat_combo()
 		"goal": _beat_goal()
@@ -203,6 +206,17 @@ func _beat_combo() -> void:
 			cow.speak()
 			Fx.ring(get_tree(), cow.global_position, level.guns_by_effect.get(&"size" if s[2] == &"grow" else s[2], level.guns_by_effect[&"size"]).beam_color, cow.radius())
 			z._flash())
+
+
+## Art check: Jeff and Chuck standing in one zone (front_gate, scrap_heap, pond, barn, tower), guns up.
+func _beat_zone(zone: StringName) -> void:
+	var at := {&"front_gate": [-41.0, -36.5], &"scrap_heap": [-24.5, -15.0], &"pond": [-7.0, 10.6],
+			&"barn": [14.0, 22.4], &"tower": [36.0, 45.0]}
+	var xs: Array = at.get(zone, at[&"front_gate"])
+	_place(Players.P1, xs[0], 1.0)
+	_place(Players.P2, xs[1], -1.0)
+	if zone == &"pond":
+		(_players[Players.P1] as Zapper).global_position.y = 0.45   # on the dock
 
 
 ## A goal card completing: the cow is by the fence; Jeff makes it big; fireworks.

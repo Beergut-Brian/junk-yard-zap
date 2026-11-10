@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Store art from the real yard (art/preview/store.tscn), per GAME.md "Store art":
+#   store/grid.png (600x900): the centre of a 1080p frame, cropped 2:3 and scaled.
+#   store/hero.png (920x430): a 1080p frame cropped to 2.14:1 and scaled.
+# Needs a renderer (godot-render or a display), an imported project, and python3 with Pillow.
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+if command -v godot-render >/dev/null; then RUN=godot-render
+elif [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]]; then RUN=godot
+else echo "render_store.sh: no renderer here" >&2; exit 2; fi
+[[ -d .godot ]] || godot --headless --path . --import >/dev/null 2>&1
+TMP="$(mktemp -d)"
+for shot in grid hero; do
+  "$RUN" --path . --resolution 1920x1080 res://art/preview/store.tscn -- --shot=$shot --out="$TMP/$shot.png" 2>&1 \
+    | grep -E "SCRIPT ERROR" || true
+done
+python3 -I - "$TMP" "$PWD/store" <<'PY'
+import sys
+from PIL import Image
+tmp, out = sys.argv[1], sys.argv[2]
+g = Image.open(f"{tmp}/grid.png").convert("RGB")
+g.crop((600, 0, 1320, 1080)).resize((600, 900), Image.LANCZOS).save(f"{out}/grid.png")
+h = Image.open(f"{tmp}/hero.png").convert("RGB")
+h.crop((0, 40, 1920, 937)).resize((920, 430), Image.LANCZOS).save(f"{out}/hero.png")
+print("store: wrote grid.png 600x900, hero.png 920x430")
+PY
+rm -rf "$TMP"

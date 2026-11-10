@@ -1,0 +1,49 @@
+{
+  "_note": "Single source for art/tools/palette_cards.py (swatch cards, palettes.md) and art/preview/diorama.gd (sample frames). Gun hues keep the same order in every palette: grow orange, bouncy yellow, freeze ice, magnet blue, grab violet, balloon magenta, glue bubblegum. None is near P1 green #3cc24a or P2 red #e4393c.",
+  "players": {"p1_green": "#3cc24a", "p2_red": "#e4393c"},
+  "a": {
+    "name": "Golden Afternoon",
+    "mood": "Sunny, warm and dusty: rusty junk under a clear teal sky, long soft shadows, the plan's 'sunny junk yard' at its most inviting.",
+    "sky_top": "#2f8fd0", "sky_horizon": "#9fe2dc", "cloud": "#fff4e2", "sun": "#ffe7a0", "pond": "#22a9bd",
+    "ground": "#c9965c", "ground_dark": "#94653c", "table": "#6b3f25", "room": "#2d2a33",
+    "fence": "#b88a58", "fence_dark": "#7f5a39",
+    "rust": "#c45a28", "rust_dark": "#86391b", "metal": "#97a3ab", "enamel": "#f4ecda",
+    "crate": "#d9a75e", "rubber": "#38302e", "car": "#d97a34",
+    "cow": "#fbf5ea", "cow_spot": "#4d3b33", "chicken": "#fffaf0", "beak": "#ffa22e",
+    "ink": "#24181a", "card": "#fff8e8",
+    "key": "#ffe6bd", "key_energy": 1.4, "key_pitch": -42, "key_yaw": 38,
+    "ambient": "#b8d8e6", "ambient_energy": 0.55, "glow": 0.25, "emit": 0.25,
+    "guns": {"grow": "#ff9a14", "bouncy": "#ffd21a", "freeze": "#4fd8ff", "magnet": "#2f68ff",
+             "grab": "#7e52ff", "balloon": "#ec3cf0", "glue": "#ff9fdf"}
+  },
+  "b": {
+    "name": "Candy Toy-Box",
+    "mood": "Bright, clean and pastel: the junk is painted toy wood and enamel, the sky is baby blue; the closest cousin of Spaceballs.",
+    "sky_top": "#5fbfff", "sky_horizon": "#d2f2ff", "cloud": "#ffffff", "sun": "#fff6c8", "pond": "#47d4ea",
+    "ground": "#f1c995", "ground_dark": "#d8a674", "table": "#9b7fd4", "room": "#3a3352",
+    "fence": "#ffd29c", "fence_dark": "#e3a874",
+    "rust": "#f58a5c", "rust_dark": "#d9673f", "metal": "#bfd3ea", "enamel": "#ffffff",
+    "crate": "#ffcf70", "rubber": "#4c4a6e", "car": "#ff9a6e",
+    "cow": "#ffffff", "cow_spot": "#6a5a92", "chicken": "#ffffff", "beak": "#ffab4a",
+    "ink": "#35264a", "card": "#ffffff",
+    "key": "#ffffff", "key_energy": 1.25, "key_pitch": -55, "key_yaw": 28,
+    "ambient": "#e2e6ff", "ambient_energy": 0.75, "glow": 0.15, "emit": 0.2,
+    "guns": {"grow": "#ffa233", "bouncy": "#ffe23d", "freeze": "#5fe2ff", "magnet": "#4a78ff",
+             "grab": "#8d6cff", "balloon": "#f04cf2", "glue": "#ffa6e4"}
+  },
+  "c": {
+    "name": "Storybook Dusk",
+    "mood": "Late-day picture book: deep rust and plum under a dusky violet sky fading to rose; the gun effects glow like lanterns.",
+    "sky_top": "#2a2463", "sky_horizon": "#e8939a", "cloud": "#c99bd8", "sun": "#ffd38a", "pond": "#3a62a8",
+    "ground": "#8c5c55", "ground_dark": "#553540", "table": "#3a251d", "room": "#16121f",
+    "fence": "#7d5560", "fence_dark": "#4f3448",
+    "rust": "#b84d26", "rust_dark": "#6f2c19", "metal": "#8590a4", "enamel": "#ece0d2",
+    "crate": "#b98252", "rubber": "#2a2232", "car": "#c4683a",
+    "cow": "#f6ebdd", "cow_spot": "#3d2b2e", "chicken": "#fbf1e4", "beak": "#ffab3a",
+    "ink": "#1a1222", "card": "#fbefd8",
+    "key": "#ffcc96", "key_energy": 1.55, "key_pitch": -28, "key_yaw": 48,
+    "ambient": "#7a68c8", "ambient_energy": 0.75, "glow": 0.8, "emit": 1.4,
+    "guns": {"grow": "#ffab1a", "bouncy": "#ffe23a", "freeze": "#5cf2ff", "magnet": "#5584ff",
+             "grab": "#9670ff", "balloon": "#f455ff", "glue": "#ffa0ea"}
+  }
+}

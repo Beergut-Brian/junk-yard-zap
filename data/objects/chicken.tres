@@ -9,21 +9,5 @@ size = Vector3(0.45, 0.45, 0.35)
 mass = 0.2
 color = Color(1, 1, 0.97, 1)
 bounce = 0.2
-face_at = Vector3(0.4, 0.55, 0.5)
-face_size = 0.16
-parts = Array[Dictionary]([{
-"at": Vector3(0.18, 0.3, 0),
-"color": Color(1, 1, 0.97, 1),
-"shape": "box",
-"size": Vector3(0.25, 0.28, 0.25)
-}, {
-"at": Vector3(0.34, 0.3, 0),
-"color": Color(1, 0.6, 0.1, 1),
-"shape": "box",
-"size": Vector3(0.1, 0.05, 0.08)
-}, {
-"at": Vector3(0.18, 0.48, 0),
-"color": Color(1, 0.45, 0.2, 1),
-"shape": "box",
-"size": Vector3(0.08, 0.1, 0.06)
-}])
+face_at = Vector3(0.26, 0.33, 0.5)
+face_size = 0.17

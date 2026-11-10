@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_od"]
+
+[resource]
+script = ExtResource("1_od")
+id = &"kettle"
+shape = 0
+size = Vector3(0.8, 0.7, 0.6)
+mass = 1.5
+color = Color(0.25, 0.62, 0.6, 1)
+bounce = 0.15
+face_at = Vector3(-0.05, 0.0, 0.5)
+face_size = 0.3

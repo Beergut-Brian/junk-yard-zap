@@ -17,6 +17,31 @@
 [ext_resource type="Resource" path="res://data/objects/piano.tres" id="15_037vr"]
 [ext_resource type="Resource" path="res://data/objects/cannonball.tres" id="16_24lix"]
 [ext_resource type="Script" path="res://scripts/levels/yard_layout.gd" id="17_qbqh1"]
+[ext_resource type="Resource" path="res://data/objects/watering_can.tres" id="18_art0"]
+[ext_resource type="Resource" path="res://data/objects/traffic_cone.tres" id="19_art1"]
+[ext_resource type="Resource" path="res://data/objects/bucket.tres" id="20_art2"]
+[ext_resource type="Resource" path="res://data/objects/oil_drum.tres" id="21_art3"]
+[ext_resource type="Resource" path="res://data/objects/tv.tres" id="22_art4"]
+[ext_resource type="Resource" path="res://data/objects/toolbox.tres" id="23_art5"]
+[ext_resource type="Resource" path="res://data/objects/toaster.tres" id="24_art6"]
+[ext_resource type="Resource" path="res://data/objects/pipe.tres" id="25_art7"]
+[ext_resource type="Resource" path="res://data/objects/washing_machine.tres" id="26_art8"]
+[ext_resource type="Resource" path="res://data/objects/beach_ball.tres" id="27_art9"]
+[ext_resource type="Resource" path="res://data/objects/boat.tres" id="28_art10"]
+[ext_resource type="Resource" path="res://data/objects/fish.tres" id="29_art11"]
+[ext_resource type="Resource" path="res://data/objects/pumpkin.tres" id="30_art12"]
+[ext_resource type="Resource" path="res://data/objects/pig.tres" id="31_art13"]
+[ext_resource type="Resource" path="res://data/objects/egg.tres" id="32_art14"]
+[ext_resource type="Resource" path="res://data/objects/sheep.tres" id="33_art15"]
+[ext_resource type="Resource" path="res://data/objects/milk_can.tres" id="34_art16"]
+[ext_resource type="Resource" path="res://data/objects/tractor.tres" id="35_art17"]
+[ext_resource type="Resource" path="res://data/objects/kettle.tres" id="36_art18"]
+[ext_resource type="Resource" path="res://data/objects/anvil.tres" id="37_art19"]
+[ext_resource type="Resource" path="res://data/objects/bowling_pin.tres" id="38_art20"]
+[ext_resource type="Resource" path="res://data/objects/kite.tres" id="39_art21"]
+[ext_resource type="Resource" path="res://data/objects/cannon.tres" id="40_art22"]
+[ext_resource type="Resource" path="res://data/objects/mattress.tres" id="41_art23"]
+[ext_resource type="Resource" path="res://data/objects/armchair.tres" id="42_art24"]
 
 [sub_resource type="Resource" id="Resource_w3nnk"]
 script = ExtResource("1_g6uod")
@@ -126,6 +151,156 @@ key = &"cannonball"
 object = ExtResource("16_24lix")
 position = Vector3(41, 3.6, 0)
 
+[sub_resource type="Resource" id="Resource_art00"]
+script = ExtResource("1_g6uod")
+key = &"watering_can"
+object = ExtResource("18_art0")
+position = Vector3(-46.7, 0.32, 0)
+
+[sub_resource type="Resource" id="Resource_art01"]
+script = ExtResource("1_g6uod")
+key = &"traffic_cone"
+object = ExtResource("19_art1")
+position = Vector3(-44.0, 0.42, 0)
+
+[sub_resource type="Resource" id="Resource_art02"]
+script = ExtResource("1_g6uod")
+key = &"bucket"
+object = ExtResource("20_art2")
+position = Vector3(-33.0, 0.3, 0)
+
+[sub_resource type="Resource" id="Resource_art03"]
+script = ExtResource("1_g6uod")
+key = &"oil_drum"
+object = ExtResource("21_art3")
+position = Vector3(-29.4, 0.52, 0)
+
+[sub_resource type="Resource" id="Resource_art04"]
+script = ExtResource("1_g6uod")
+key = &"tv"
+object = ExtResource("22_art4")
+position = Vector3(-22.6, 1.2, 0)
+
+[sub_resource type="Resource" id="Resource_art05"]
+script = ExtResource("1_g6uod")
+key = &"toolbox"
+object = ExtResource("23_art5")
+position = Vector3(-19.2, 1.07, 0)
+
+[sub_resource type="Resource" id="Resource_art06"]
+script = ExtResource("1_g6uod")
+key = &"toaster"
+object = ExtResource("24_art6")
+position = Vector3(-13.2, 0.5, 0)
+
+[sub_resource type="Resource" id="Resource_art07"]
+script = ExtResource("1_g6uod")
+key = &"pipe"
+object = ExtResource("25_art7")
+position = Vector3(-11.4, 0.52, 0)
+
+[sub_resource type="Resource" id="Resource_art08"]
+script = ExtResource("1_g6uod")
+key = &"washing_machine"
+object = ExtResource("26_art8")
+position = Vector3(-9.6, 0.52, 0)
+
+[sub_resource type="Resource" id="Resource_art09"]
+script = ExtResource("1_g6uod")
+key = &"beach_ball"
+object = ExtResource("27_art9")
+position = Vector3(-5.0, 0.72, 0)
+
+[sub_resource type="Resource" id="Resource_art10"]
+script = ExtResource("1_g6uod")
+key = &"boat"
+object = ExtResource("28_art10")
+position = Vector3(-1.8, 0.0, 0)
+
+[sub_resource type="Resource" id="Resource_art11"]
+script = ExtResource("1_g6uod")
+key = &"fish"
+object = ExtResource("29_art11")
+position = Vector3(3.2, 0.0, 0)
+
+[sub_resource type="Resource" id="Resource_art12"]
+script = ExtResource("1_g6uod")
+key = &"pumpkin"
+object = ExtResource("30_art12")
+position = Vector3(16.2, 1.65, 0)
+
+[sub_resource type="Resource" id="Resource_art13"]
+script = ExtResource("1_g6uod")
+key = &"pig"
+object = ExtResource("31_art13")
+position = Vector3(24.5, 0.47, 0)
+
+[sub_resource type="Resource" id="Resource_art14"]
+script = ExtResource("1_g6uod")
+key = &"egg"
+object = ExtResource("32_art14")
+position = Vector3(26.3, 4.42, 0)
+
+[sub_resource type="Resource" id="Resource_art15"]
+script = ExtResource("1_g6uod")
+key = &"sheep"
+object = ExtResource("33_art15")
+position = Vector3(26.6, 0.47, 0)
+
+[sub_resource type="Resource" id="Resource_art16"]
+script = ExtResource("1_g6uod")
+key = &"milk_can"
+object = ExtResource("34_art16")
+position = Vector3(28.3, 0.52, 0)
+
+[sub_resource type="Resource" id="Resource_art17"]
+script = ExtResource("1_g6uod")
+key = &"tractor"
+object = ExtResource("35_art17")
+position = Vector3(30.6, 0.67, 0)
+
+[sub_resource type="Resource" id="Resource_art18"]
+script = ExtResource("1_g6uod")
+key = &"kettle"
+object = ExtResource("36_art18")
+position = Vector3(33.0, 1.67, 0)
+
+[sub_resource type="Resource" id="Resource_art19"]
+script = ExtResource("1_g6uod")
+key = &"anvil"
+object = ExtResource("37_art19")
+position = Vector3(37.0, 0.42, 0)
+
+[sub_resource type="Resource" id="Resource_art20"]
+script = ExtResource("1_g6uod")
+key = &"bowling_pin"
+object = ExtResource("38_art20")
+position = Vector3(38.5, 0.52, 0)
+
+[sub_resource type="Resource" id="Resource_art21"]
+script = ExtResource("1_g6uod")
+key = &"kite"
+object = ExtResource("39_art21")
+position = Vector3(40.5, 9.82, 0)
+
+[sub_resource type="Resource" id="Resource_art22"]
+script = ExtResource("1_g6uod")
+key = &"cannon"
+object = ExtResource("40_art22")
+position = Vector3(42.3, 6.72, 0)
+
+[sub_resource type="Resource" id="Resource_art23"]
+script = ExtResource("1_g6uod")
+key = &"mattress"
+object = ExtResource("41_art23")
+position = Vector3(44.5, 0.2, 0)
+
+[sub_resource type="Resource" id="Resource_art24"]
+script = ExtResource("1_g6uod")
+key = &"armchair"
+object = ExtResource("42_art24")
+position = Vector3(46.8, 0.5, 0)
+
 [resource]
 script = ExtResource("17_qbqh1")
-entries = Array[ExtResource("1_g6uod")]([SubResource("Resource_w3nnk"), SubResource("Resource_v55ex"), SubResource("Resource_6smxs"), SubResource("Resource_iu525"), SubResource("Resource_y2564"), SubResource("Resource_c5uol"), SubResource("Resource_ucyoq"), SubResource("Resource_kvvnk"), SubResource("Resource_74iti"), SubResource("Resource_vw582"), SubResource("Resource_m1cjv"), SubResource("Resource_1d712"), SubResource("Resource_k0cwc"), SubResource("Resource_3sg1j"), SubResource("Resource_bhtao"), SubResource("Resource_b2u2k"), SubResource("Resource_adryi"), SubResource("Resource_qd8u1")])
+entries = Array[ExtResource("1_g6uod")]([SubResource("Resource_w3nnk"), SubResource("Resource_v55ex"), SubResource("Resource_6smxs"), SubResource("Resource_iu525"), SubResource("Resource_y2564"), SubResource("Resource_c5uol"), SubResource("Resource_ucyoq"), SubResource("Resource_kvvnk"), SubResource("Resource_74iti"), SubResource("Resource_vw582"), SubResource("Resource_m1cjv"), SubResource("Resource_1d712"), SubResource("Resource_k0cwc"), SubResource("Resource_3sg1j"), SubResource("Resource_bhtao"), SubResource("Resource_b2u2k"), SubResource("Resource_adryi"), SubResource("Resource_qd8u1"), SubResource("Resource_art00"), SubResource("Resource_art01"), SubResource("Resource_art02"), SubResource("Resource_art03"), SubResource("Resource_art04"), SubResource("Resource_art05"), SubResource("Resource_art06"), SubResource("Resource_art07"), SubResource("Resource_art08"), SubResource("Resource_art09"), SubResource("Resource_art10"), SubResource("Resource_art11"), SubResource("Resource_art12"), SubResource("Resource_art13"), SubResource("Resource_art14"), SubResource("Resource_art15"), SubResource("Resource_art16"), SubResource("Resource_art17"), SubResource("Resource_art18"), SubResource("Resource_art19"), SubResource("Resource_art20"), SubResource("Resource_art21"), SubResource("Resource_art22"), SubResource("Resource_art23"), SubResource("Resource_art24")])
