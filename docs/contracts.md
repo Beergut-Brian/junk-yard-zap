@@ -310,6 +310,11 @@ var asleep: bool                 # in the tire pile until his pad presses someth
 func wake() -> void
 func partner_zap(gun: GunData, from: Zapper) -> void     # harmless, at most PARTNER_TIME (1 s)
 var input_override: Dictionary   # tests and the demo bot: {move, aim, action, jump, next, prev}
+var character: String            # Roster id; "" at spawn = Roster.pick(player) (Jeff P1 / Chuck P2 by default)
+func bark(kind := "") -> String  # own cue bark_<id>[_kind] > Roster.bark(id) > generic bark[_kind]
+# Body: JarlingRig (scripts/players/jarling_rig.gd) loads Roster.info(id).glb, any standard-body
+# Jarling; belt on `waist`, junk gun on `hand_r`, tape in Players.COLOR[player]. set_character(id)
+# swaps the body in place (lobby podiums). Audio.has_cue(cue) -> bool: a recorded file exists.
 
 # Goal cards: data/goals/*.tres (GoalData); the checker is static and side-effect free
 func Goals.check(goal: GoalData, objects: Array = []) -> bool
@@ -324,7 +329,8 @@ Cues the grey-box plays (Audio lane: real files replace the synth beeps by name)
 grab, bouncy, balloon, freeze, glue, magnet), `grow`, `shrink`, `nope`, `sparkle`, `grab`, `throw`,
 `drop`, `glue_pick`, `unglue`, `jump`, `land`, `wheel_move`, `impact_light|medium|heavy|huge`,
 `splash`, `recall`, `voice_<object id>` (pitched by size), `card_view`, `card_done`, `card_skip`,
-`reset_hold`, `reset_yard`, `snore`, `snort`, `bark_jeff`, `bark_chuck`, `bark_<who>_cheer`, `boing`,
+`reset_hold`, `reset_yard`, `snore`, `snort`, `bark_<id>`, `bark_<id>_cheer` (per Roster id, optional), `bark`, `bark_cheer`
+(the generic fallback: never another character's voice), `boing`,
 `squelch`, `crack`, `solo_swap`.
 
 Save keys (`Save`, per profile): `yard` (YardLevel.to_save()), `guns` ({"0": belt index, "1": ...}).
