@@ -23,9 +23,18 @@ const MASS_MAX := 400.0
 ## heavier) but squeezes the range so stacks of very different sizes don't sink into each other.
 static var mass_exponent := 0.5
 const GLUE_MASS_RATIO := 10.0   # glued bodies stay within 10:1 of the heaviest in the island
-## Anything outside this box is recalled to the gate.
-const BOUNDS := AABB(Vector3(-34, -6, -8), Vector3(68, 30, 16))
-const GATE := Vector3(-24, 3, 0)
+## Anything outside this box is recalled to the gate. The yard level sets both (and restores them).
+const DEFAULT_BOUNDS := AABB(Vector3(-34, -6, -8), Vector3(68, 30, 16))
+const DEFAULT_GATE := Vector3(-24, 3, 0)
+static var BOUNDS := DEFAULT_BOUNDS
+static var GATE := DEFAULT_GATE
+## Water: anything lighter per cubic metre than this floats (ObjectData.density()).
+const WATER_DENSITY := 1.5
+const WATER_DRAG := 2.5        # 1/s at full submersion
+## Water volumes (the pond). The surface is the top of each box.
+static var water: Array[AABB] = []
+## Named zones (front_gate, scrap_heap, pond, barn, tower, ...) the level registers.
+static var zones := {}
 
 ## Counters the tests and the stress run read. Reset with reset_stats().
 static var gravity_queries := 0
@@ -63,6 +72,39 @@ static func body_mass(volume_mass: float) -> float:
 
 static func in_bounds(pos: Vector3) -> bool:
 	return BOUNDS.has_point(pos)
+
+
+## The water surface height above pos, or -INF when pos isn't over water.
+static func water_level_at(pos: Vector3) -> float:
+	for w in water:
+		if pos.x > w.position.x and pos.x < w.end.x and pos.y > w.position.y - 1.0 and pos.y < w.end.y + 3.0:
+			return w.end.y
+	return -INF
+
+
+## A named zone's box, or an empty AABB.
+static func zone(zone_name: StringName) -> AABB:
+	return zones.get(zone_name, AABB())
+
+
+## GAME.md contract: every yard object inside a named zone.
+static func objects_in_zone(zone_name: StringName) -> Array[Node3D]:
+	var out: Array[Node3D] = []
+	var box := zone(zone_name)
+	var tree := Engine.get_main_loop() as SceneTree
+	if box.size == Vector3.ZERO or tree == null:
+		return out
+	for o in tree.get_nodes_in_group(PhysicsObject.GROUP):
+		if box.has_point((o as Node3D).global_position):
+			out.append(o)
+	return out
+
+
+static func reset_world() -> void:
+	BOUNDS = DEFAULT_BOUNDS
+	GATE = DEFAULT_GATE
+	water.clear()
+	zones.clear()
 
 
 static func reset_stats() -> void:
