@@ -536,8 +536,8 @@ func partner_zap(g: GunData, from: Zapper) -> void:
 				if d.length() < 4.0 and po.volume_mass() < 5.0 and not po.freeze:
 					po.apply_central_impulse(d.normalized() * po.mass * 3.0)
 	_partner_look.sync(fake)
-	# He keeps talking: one bark per zap (Jeff delighted, Chuck blaming Jeff).
-	Audio.bark(String(CHARACTER[player]), "zapped")
+	# He keeps talking: one bark per zap (Jeff delighted, Chuck blaming Jeff). Audio.bark() once the
+	# openjar-characters voice packs land; a placeholder cue until then.
 	Audio.play("bark_%s" % CHARACTER[player], global_position)
 	partner_zapped.emit(player, g.id)
 
