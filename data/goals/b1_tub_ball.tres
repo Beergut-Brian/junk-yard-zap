@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_hur1l"]
+
+[resource]
+script = ExtResource("1_hur1l")
+id = &"b1_tub_ball"
+description = "Get the ball into the bathtub"
+band = 1
+condition = 2
+subject = &"ball"
+other = &"bathtub"
+effect = &""
+amount = 0.0
+hint_objects = Array[StringName]([&"ball", &"bathtub"])
