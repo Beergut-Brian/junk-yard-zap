@@ -50,6 +50,7 @@
 [ext_resource type="Resource" path="res://data/objects/kiddie_pool.tres" id="48_more5"]
 [ext_resource type="Resource" path="res://data/objects/swim_ring.tres" id="49_more6"]
 [ext_resource type="Resource" path="res://data/objects/tire_swing.tres" id="50_more7"]
+[ext_resource type="Resource" path="res://data/objects/balloon.tres" id="51_bal"]
 
 [sub_resource type="Resource" id="Resource_w3nnk"]
 script = ExtResource("1_g6uod")
@@ -363,6 +364,24 @@ key = &"pipe_2"
 object = ExtResource("25_art7")
 position = Vector3(-11.6, 0.98, 0)
 
+[sub_resource type="Resource" id="Resource_balloon"]
+script = ExtResource("1_g6uod")
+key = &"balloon"
+object = ExtResource("51_bal")
+position = Vector3(-34.5, 1.4, 0)
+
+[sub_resource type="Resource" id="Resource_balloon_2"]
+script = ExtResource("1_g6uod")
+key = &"balloon_2"
+object = ExtResource("51_bal")
+position = Vector3(-0.8, 2.0, 0)
+
+[sub_resource type="Resource" id="Resource_balloon_3"]
+script = ExtResource("1_g6uod")
+key = &"balloon_3"
+object = ExtResource("51_bal")
+position = Vector3(35.5, 2.4, 0)
+
 [resource]
 script = ExtResource("17_qbqh1")
-entries = Array[ExtResource("1_g6uod")]([SubResource("Resource_w3nnk"), SubResource("Resource_v55ex"), SubResource("Resource_6smxs"), SubResource("Resource_iu525"), SubResource("Resource_y2564"), SubResource("Resource_c5uol"), SubResource("Resource_ucyoq"), SubResource("Resource_kvvnk"), SubResource("Resource_74iti"), SubResource("Resource_vw582"), SubResource("Resource_m1cjv"), SubResource("Resource_1d712"), SubResource("Resource_k0cwc"), SubResource("Resource_3sg1j"), SubResource("Resource_bhtao"), SubResource("Resource_b2u2k"), SubResource("Resource_adryi"), SubResource("Resource_qd8u1"), SubResource("Resource_art00"), SubResource("Resource_art01"), SubResource("Resource_art02"), SubResource("Resource_art03"), SubResource("Resource_art04"), SubResource("Resource_art05"), SubResource("Resource_art06"), SubResource("Resource_art07"), SubResource("Resource_art08"), SubResource("Resource_art09"), SubResource("Resource_art10"), SubResource("Resource_art11"), SubResource("Resource_art12"), SubResource("Resource_art13"), SubResource("Resource_art14"), SubResource("Resource_art15"), SubResource("Resource_art16"), SubResource("Resource_art17"), SubResource("Resource_art18"), SubResource("Resource_art19"), SubResource("Resource_art20"), SubResource("Resource_art21"), SubResource("Resource_art22"), SubResource("Resource_art23"), SubResource("Resource_art24"), SubResource("Resource_more0"), SubResource("Resource_more1"), SubResource("Resource_more2"), SubResource("Resource_more3"), SubResource("Resource_more4"), SubResource("Resource_more5"), SubResource("Resource_more6"), SubResource("Resource_more7"), SubResource("Resource_pipe2")])
+entries = Array[ExtResource("1_g6uod")]([SubResource("Resource_w3nnk"), SubResource("Resource_v55ex"), SubResource("Resource_6smxs"), SubResource("Resource_iu525"), SubResource("Resource_y2564"), SubResource("Resource_c5uol"), SubResource("Resource_ucyoq"), SubResource("Resource_kvvnk"), SubResource("Resource_74iti"), SubResource("Resource_vw582"), SubResource("Resource_m1cjv"), SubResource("Resource_1d712"), SubResource("Resource_k0cwc"), SubResource("Resource_3sg1j"), SubResource("Resource_bhtao"), SubResource("Resource_b2u2k"), SubResource("Resource_adryi"), SubResource("Resource_qd8u1"), SubResource("Resource_art00"), SubResource("Resource_art01"), SubResource("Resource_art02"), SubResource("Resource_art03"), SubResource("Resource_art04"), SubResource("Resource_art05"), SubResource("Resource_art06"), SubResource("Resource_art07"), SubResource("Resource_art08"), SubResource("Resource_art09"), SubResource("Resource_art10"), SubResource("Resource_art11"), SubResource("Resource_art12"), SubResource("Resource_art13"), SubResource("Resource_art14"), SubResource("Resource_art15"), SubResource("Resource_art16"), SubResource("Resource_art17"), SubResource("Resource_art18"), SubResource("Resource_art19"), SubResource("Resource_art20"), SubResource("Resource_art21"), SubResource("Resource_art22"), SubResource("Resource_art23"), SubResource("Resource_art24"), SubResource("Resource_more0"), SubResource("Resource_more1"), SubResource("Resource_more2"), SubResource("Resource_more3"), SubResource("Resource_more4"), SubResource("Resource_more5"), SubResource("Resource_more6"), SubResource("Resource_more7"), SubResource("Resource_pipe2"), SubResource("Resource_balloon"), SubResource("Resource_balloon_2"), SubResource("Resource_balloon_3")])

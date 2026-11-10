@@ -1,6 +1,6 @@
 # Plan status: Junk Yard Zap
 
-Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Format: `~/openjar/lanes/plan-status-format.md`.
+Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Format: `~/openjar/lanes/plan-status-format.md`. Updated 2026-11-10 by the balloons lane (jyz-balloons-1, branch `feature/yard-balloons`): Y-11 to built.
 Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
 
 Sources (newest last):
@@ -99,10 +99,10 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | Y-08 | S1 Yard | Barn: trampoline landmark | built | test_polish.gd::test_the_trampoline_bounces_a_launched_object_and_a_player, contraptions.gd `Trampoline`, frame handoff/frames/y08_trampoline.png | On the play plane at the pond end of the barn (x 10.4, next to the cow). Objects bounce back at 86% (they settle); players pop to hayloft height. The scenery trampoline behind the plane is gone (yard_dressing.gd). Moving the cow instead broke test_goal_deck.gd::test_b2_egg_off_loft, so the cow stays put |
 | Y-09 | S1 Yard | Tower: platforms and a pipe you can send things down | built | test_goal_deck.gd::test_b3_piano_pipe_pond, ::test_b2_duck_on_tower | |
 | Y-10 | S1 Yard | Tower: a wind fan you can zap on | built | test_polish.gd::test_zapping_the_fan_blows_the_kite_off_the_tower, scripts/gameplay/contraptions.gd `YardFan`, frame handoff/frames/y10_fan_on.png | Any gun toggles it. Blows light things (volume mass < 4) left off the top deck; wind streaks and a yellow lamp while on. Off after Reset Yard |
-| Y-11 | S1 Yard | Loose objects per zone (tires, crates, car, bathtub, fridge, pipes, duck, boat, logs, chickens, cow, hay, tractor, piano, kite, cannon, cannonball, balloons…) | partial | data/yard_layout.tres, test_art.gd::test_layout_uses_every_object_type | Pipe pile done: two pipes stacked by the plank (pipe, pipe_2). A third would break the 6-11 per zone cap (test_more_objects.gd). Still no loose **balloon** object (needs an ObjectData that floats and art: Content + Art, **S**). The cow lives in the barn, not the pond |
+| Y-11 | S1 Yard | Loose objects per zone (tires, crates, car, bathtub, fridge, pipes, duck, boat, logs, chickens, cow, hay, tractor, piano, kite, cannon, cannonball, balloons…) | built | data/yard_layout.tres, data/objects/balloon.tres, scripts/physics/loose_balloon.gd, test_balloons.gd, test_art.gd::test_layout_uses_every_object_type, handoff/frames/balloon_*.png | Balloons (jyz-balloons-1): three loose balloons (front gate, pond, tower; zones now 11/11/11/11/11, cap 6-11 holds). BalloonData floats on a hover spring and drifts back inside its zone; pops into a smiling puff on a hard hit (speed change > 7 m/s) or a sharp poke (cone, gnome, flamingo, pin, pipe...), never on a nudge or a throw; back at its spot after 3 s. Voice: duck squeak; pop: the existing puff+pop cue. The cow lives in the barn, not the pond |
 | Y-12 | S1 Yard | Objects react to every gun with a sound and a face | partial | test_art.gd::test_about_forty_object_types_all_with_art_and_faces, frames | Faces react on all 48. Only 8 have recorded voices (A-06) |
 | Y-13 | S1 Yard | Survives any effect combination: capped scale and velocity, sleeps when still | built | test_more_objects.gd::test_stress_whole_yard_stays_clean, ::test_new_types_every_pair_composes_and_caps_hold, physics_object.gd:72 | |
-| Y-14 | S1 Yard | About 40 object types as `ObjectData`; Content adds more without code | built | data/objects/ (48 types), test_art.gd::test_about_forty_object_types_all_with_art_and_faces | |
+| Y-14 | S1 Yard | About 40 object types as `ObjectData`; Content adds more without code | built | data/objects/ (49 types, balloon is a BalloonData), test_art.gd::test_about_forty_object_types_all_with_art_and_faces | |
 | Y-15 | S1 Yard | Persistence of transform, scale and effects; Reset Yard restores the default layout | built | test_greybox.gd::test_save_load_round_trip, ::test_reset_yard_puts_everything_back, data/yard_layout.tres | |
 | Y-16 | S2 Kaden | "No personal info or real places, ever": generic, invented objects and landmarks | built | I read all 48 ids in data/objects/ and the landmarks in yard_dressing.gd: all generic | |
 
@@ -238,7 +238,7 @@ Missing and partial rows, ranked by how much Kaden (and his son) will notice the
 8. **G-13: trophy shelf you can flip through**. The done pile is only a growing stack. **M**
 9. **P-07: character idles** (poke and hum, kick a tire and check his hat), working for any picked Jarling. **M**
 10. ~~M-03~~ built.
-11. ~~Y-08~~ built; **Y-11: loose balloon objects** still missing (an ObjectData that floats, plus art: Content + Art). **S**
+11. ~~Y-08~~ built; ~~Y-11~~ built (loose balloons, jyz-balloons-1).
 12. **C-13: playtest #1 (Kaden and his son), then tag `v0.1.0`**. Add a "Playtest 2026-11-10 changes" section and new rows here from the notes. **S** (Gary)
 13. **S-18: measure 60 fps on the GTX 1060** with 51 bodies (F3). **S**
 14. **V-11: store hero at golden hour, tower in frame**. **S**

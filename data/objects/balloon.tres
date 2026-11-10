@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BalloonData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/balloon_data.gd" id="1_bal"]
+
+[resource]
+script = ExtResource("1_bal")
+id = &"balloon"
+shape = 1
+size = Vector3(0.75, 0.75, 0.75)
+mass = 0.05
+color = Color(0.3, 0.62, 0.93, 1)
+bounce = 0.5
+friction = 0.4
+voice = &"voice_duck"
+face_at = Vector3(0, 0.08, 0.5)
+face_size = 0.27

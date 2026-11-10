@@ -18,7 +18,7 @@ original designs (no brands, characters, real places or artists' styles imitated
 
 | File | Source / tool | Prompt or notes | License |
 | --- | --- | --- | --- |
-| `scripts/art/` (yard dressing, sky shader, 48 object models, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
+| `scripts/art/` (yard dressing, sky shader, 49 object models incl. the loose balloon, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
 | `store/jar.glb` | `art/tools/make_jar.py` (Blender 5.2.3, background) | Launcher jar world: a giant cow on a balloon over a scrap pile | Project's own |
 | `store/grid.png`, `store/hero.png` | `art/tools/render_store.sh` (Godot renders of `art/preview/store.tscn`) | Grid: Jeff grows the cow, Chuck in a ballooned bathtub. Hero: the whole yard | Project's own |
 

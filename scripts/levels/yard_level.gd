@@ -114,7 +114,7 @@ func spawn_layout() -> void:
 
 
 func spawn(e: YardLayoutEntry) -> PhysicsObject:
-	var o := PhysicsObject.new(e.object)
+	var o: PhysicsObject = LooseBalloon.new(e.object) if e.object is BalloonData else PhysicsObject.new(e.object)
 	o.key = e.key
 	o.name = String(e.key)
 	o.position = e.position
