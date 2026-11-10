@@ -1,6 +1,6 @@
 # Plan status: Junk Yard Zap
 
-Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Updated 2026-11-10 by the comedy lane (jyz-comedy-1, branch `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Updated 2026-11-10 by the trophy lane (jyz-trophy-1, branch `feature/yard-trophy`): G-13 to built. Format: `~/openjar/lanes/plan-status-format.md`.
+Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Store lane (jyz-store-hero-1, `feature/store-hero-golden`): V-11 to built. Comedy lane (jyz-comedy-1, `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Format: `~/openjar/lanes/plan-status-format.md`.
 Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
 
 Sources (newest last):
@@ -184,7 +184,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | V-08 | S1 Art | Juice: splash in the pond | built | physics_object.gd:21, :258 (`splashed`) | Sound is a placeholder (A-05) |
 | V-09 | S1 Art | Juice: fireworks on a finished card | built | fx.gd:90, yard_level.gd:194, test_greybox.gd::test_deck_completes_skips_and_cheers | |
 | V-10 | S1 Art | Store grid: Jeff zapping a cow to giant size while Chuck rides a ballooned bathtub | built | store/grid.png (looked at it) | |
-| V-11 | S1 Art | Store hero: the whole yard **at golden hour** | partial | store/hero.png (looked at it) | Midday light, not golden hour. The tower is cut off at the right edge |
+| V-11 | S1 Art | Store hero: the whole yard **at golden hour** | built | store/hero.png (looked at it), art/preview/store.gd `_golden_hour` (store shot only), art/tools/render_store.sh hero, test_store_hero.gd::test_store_hero_exists_at_920x430 | Front gate to tower in frame; low warm sun behind the tower. The yard reads smaller than the old crop because all 96 m fit in 920 px |
 
 ## Audio
 
