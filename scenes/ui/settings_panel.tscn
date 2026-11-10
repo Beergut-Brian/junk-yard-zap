@@ -52,9 +52,9 @@ text = "Saved on this machine for every player."
 
 [node name="Rows" type="VBoxContainer" parent="Card"]
 layout_mode = 0
-offset_left = 44.0
+offset_left = 64.0
 offset_top = 188.0
-offset_right = 836.0
+offset_right = 816.0
 offset_bottom = 636.0
 theme_override_constants/separation = 18
 
