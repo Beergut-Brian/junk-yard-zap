@@ -319,7 +319,7 @@ position = Vector3(-42.9, 0.53, 0)
 script = ExtResource("1_g6uod")
 key = &"trampoline"
 object = ExtResource("44_more1")
-position = Vector3(-14.25, 0.23, 0)
+position = Vector3(-14.65, 0.22, 0)
 
 [sub_resource type="Resource" id="Resource_more2"]
 script = ExtResource("1_g6uod")
