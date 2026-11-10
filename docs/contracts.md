@@ -259,7 +259,7 @@ func GoalMemory.touch(o: PhysicsObject) -> void   # a gun touched o here (the de
 | `OBJECT_IN_ZONE` | inside `other`: a Yard zone, a card spot, or an object (the bathtub) | other |
 | `GLUED_PAIR` | glued to `other` | other |
 | `OBJECT_HEIGHT_ABOVE` / `OBJECT_HEIGHT_BELOW` | centre above / below `amount` m | amount |
-| `OBJECT_SPEED_OVER` / `OBJECT_SPEED_UNDER` | faster / slower than `amount` m/s | amount |
+| `OBJECT_SPEED_OVER` / `OBJECT_SPEED_UNDER` | faster (and not held by gravity grab) / slower than `amount` m/s | amount |
 | `OBJECT_SCALE_AT_MOST` | shrunk to at most `amount` steps (negative), done shrinking | amount |
 | `STACK_HEIGHT` | `count` resting objects stand one on another and the top one's top is above `amount` m | count, amount |
 | `ALL_OF` | the same object satisfies every one of `steps` | steps |
