@@ -1,7 +1,7 @@
 ## Phase 1 risk prototype: a yard strip, ten physics objects, a capsule player with the aim cone and
 ## the seven effects. Run: godot --path . res://scenes/proto/risk_proto.tscn
 ## User args (after --): --plain skips the showcase setup, --stress runs scripts/proto/stress.gd,
-## --stress=40 also spawns copies up to 40 bodies.
+## --stress=40 also spawns copies up to 40 bodies. --fps-log prints frame stats every 2 s.
 extends Node3D
 
 const ROSTER := [
@@ -31,12 +31,12 @@ func _ready() -> void:
 		spawn(ObjectData.make(r[0], r[1], r[2], r[3], r[4]), Vector3(r[5], r[6], 0))
 	player = ProtoPlayer.new()
 	player.name = "Player"
-	player.position = Vector3(-14, 1.0, 0)
+	player.position = Vector3(-12, 1.0, 0)
 	add_child(player)
 	camera = Camera3D.new()
-	camera.fov = 32.0
-	camera.position = Vector3(0, 5.5, 26)
-	camera.rotation_degrees.x = -6.0
+	camera.fov = 34.0
+	camera.position = Vector3(0, 6.5, 30)
+	camera.rotation_degrees.x = -4.0
 	add_child(camera)
 	camera.make_current()
 	hud = Label.new()
@@ -90,8 +90,19 @@ func showcase() -> void:
 	Effects.zap(&"freeze", find(&"plank"))
 
 
-func _process(_delta: float) -> void:
-	camera.position.x = clampf(player.position.x * 0.6, -14.0, 14.0)
+var _fps_clock := 0.0
+
+
+func _process(delta: float) -> void:
+	_fps_clock += delta
+	if _fps_clock >= 2.0 and OS.get_cmdline_user_args().has("--fps-log"):
+		_fps_clock = 0.0
+		print("fps %d  physics-process %.2f ms  process %.2f ms  draw calls %d" % [Engine.get_frames_per_second(),
+			Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0,
+			Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0,
+			Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)])
+	# Dead zone: the camera only moves when the player gets near the edge of the view.
+	camera.position.x = clampf(clampf(camera.position.x, player.position.x - 10.0, player.position.x + 10.0), -12.0, 12.0)
 	var t := player.target
 	hud.text = "gun: %s   (Q/E or LB/RB)\ntarget: %s%s\nfps %d" % [
 		player.gun(), t.name if t else "-",

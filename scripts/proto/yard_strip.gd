@@ -12,7 +12,7 @@ const LID_Y := 18.0      # invisible ceiling and fence extensions up to here
 
 func _ready() -> void:
 	var ground_mat := _mat(Color(0.55, 0.42, 0.3))
-	_box("Ground", Vector3(0, -0.5, 0), Vector3(WIDTH + 4, 1, DEPTH), ground_mat)
+	_box("Ground", Vector3(0, -2.0, 0), Vector3(WIDTH + 4, 4, DEPTH), ground_mat)
 	var fence_mat := _mat(Color(0.5, 0.5, 0.55))
 	for side in [-1, 1]:
 		var x: float = side * WIDTH * 0.5

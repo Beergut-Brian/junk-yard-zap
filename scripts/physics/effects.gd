@@ -241,17 +241,18 @@ class Glue extends Effect:
 		joint.add_to_group(&"glue_joints")
 		blob = MeshInstance3D.new()
 		var m := SphereMesh.new()
-		m.radius = 0.18
-		m.height = 0.36
+		m.radius = 0.3
+		m.height = 0.6
 		var mat := StandardMaterial3D.new()
 		mat.albedo_color = color
 		mat.emission_enabled = true
-		mat.emission = color * 0.5
+		mat.emission = color * 0.8
+		mat.no_depth_test = true   # always visible, even inside the pair
 		m.material = mat
 		blob.mesh = m
 		joint.add_child(blob)
-		for o in a.stack.glued_group():
-			o.refresh_mass()
+		a.stack.recompute()   # label, look and the island's mass floor
+		b.stack.recompute()
 
 	## Pull together until touching, then lock. The blob follows A (the joint node doesn't move).
 	func tick(t: PhysicsObject, delta: float) -> void:
