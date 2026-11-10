@@ -1,16 +1,19 @@
-## Start screen and main menu in one, no text. Shown while Game.state == LOBBY.
-## Each pad presses A to join and be ready (its spot lights up, its character waves), B un-readies.
-## Both ready: a 3-dot countdown, then Game.finish_lobby(). A ready player holding A on Play for
-## HOLD_TO_START s starts alone. Two icon buttons: Play and Back to the launcher (Game.quit()).
-## Games: set title_texture (or replace TitleArt), swap Spots/P*/Character for their own; the lobby
-## calls set_joined(on) and wave() on it if it has them. Keep the node names.
+## Start screen and main menu in one. Menus are for the grown-up holding the pad (docs/ui.md).
+## Title art on top, a text menu in the middle (Play, Settings, Back to Open Jar), a join panel per
+## player either side. A on any pad joins and readies that player, B un-readies. Both ready: a
+## 3-step countdown, then Game.finish_lobby(). A ready player holding A on Play for HOLD_TO_START s
+## starts alone. Back to Open Jar asks "Leave the game?" first, then Game.quit().
+## Games customise it in code, in _ready() (exported builds drop overrides on instanced children):
+## title_texture or title_text, Backdrop.visible = false to show the level behind it,
+## Spots/P*/Character swapped for their own (the lobby calls set_joined(on) and wave() on it),
+## UiStyle.accent. Keep the node names.
 extends Control
 
 signal player_readied(player: int, ready: bool)
 signal countdown_started()
 signal countdown_cancelled()
 
-enum Choice { PLAY, DOOR }
+enum Choice { PLAY, SETTINGS, DOOR }
 
 const HOLD_TO_START := 1.5
 const COUNT_STEP := 0.7
@@ -18,95 +21,151 @@ const COUNT_DOTS := 3
 const P1 := Players.P1
 const P2 := Players.P2
 
+## The game's logo or key art, drawn big at the top. Empty: title_text in the display face.
 @export var title_texture: Texture2D:
 	set(v):
 		title_texture = v
 		if is_node_ready():
-			$TitleArt.texture = v
+			_apply_title()
+## Empty: the project name (application/config/name).
+@export var title_text := "":
+	set(v):
+		title_text = v
+		if is_node_ready():
+			_apply_title()
 
 var readied := { P1: false, P2: false }
 var focus := Choice.PLAY
 var counting := false
+## Screenshots (UiPreview): the countdown and hold stay where they are.
+var freeze := false
 
 var _hold := { P1: 0.0, P2: 0.0 }
 var _count_t := 0.0
 var _dots_lit := 0
+var _solo_pending := false
+var _tw: Tween
 
 @onready var _spots := { P1: $Spots/P1, P2: $Spots/P2 }
-@onready var _buttons := { Choice.PLAY: $Buttons/Play, Choice.DOOR: $Buttons/Door }
+@onready var _buttons := { Choice.PLAY: $Buttons/Play, Choice.SETTINGS: $Buttons/Settings, Choice.DOOR: $Buttons/Door }
+@onready var _items: Array = [$Buttons/Play, $Buttons/Settings, $Buttons/Door]
 @onready var _countdown: Control = $Countdown
+@onready var _settings: SettingsPanel = $Settings
+@onready var _confirm: ConfirmDialog = $Confirm
+@onready var _buttons_y: float = $Buttons.position.y
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	if title_texture:
-		$TitleArt.texture = title_texture
+	add_to_group("openjar_lobby")
+	_apply_title()
+	$Footer/Version.text = "v%s" % ProjectSettings.get_setting("application/config/version", "0.0.0")
 	_countdown.draw.connect(_draw_countdown)
 	Players.player_joined.connect(_on_player_joined)
 	Players.player_left.connect(_on_player_left)
 	Players.solo_changed.connect(_on_solo_changed)
 	Game.state_changed.connect(_on_state_changed)
+	_settings.closed.connect(_on_settings_closed)
+	_confirm.chosen.connect(_on_confirm_chosen)
 	visible = Game.state == Game.State.LOBBY
+	if SettingsPanel.value_of(SettingsPanel.SOLO) and not Players.solo and not Game.demo:
+		Players.set_solo.call_deferred(true)
 	open()
+	UiPreview.run.call_deferred(self)
 
 
-## Fresh lobby: nobody ready, Play focused. Joined pads keep their spots; solo readies both.
+## Fresh lobby: nobody ready, Play focused. Joined pads keep their panels; solo readies both.
 func open() -> void:
 	counting = false
 	_dots_lit = 0
-	_countdown.queue_redraw()
+	_settings.dismiss()
+	_confirm.dismiss()
 	for p in [P1, P2]:
 		readied[p] = false
 		_hold[p] = 0.0
 		_spots[p].readied = false
 		_spots[p].hold = 0.0
 		_set_joined(p, Players.is_active(p))
+	_buttons[Choice.PLAY].progress = 0.0
 	_set_focus(Choice.PLAY, false)
+	_countdown.queue_redraw()
 	if Players.solo and _live():
 		_ready_both()
+	if visible and is_inside_tree():
+		if _tw:
+			_tw.kill()
+		_tw = create_tween().set_parallel()
+		_tw.tween_property(self, "modulate:a", 1.0, 0.35).from(0.0)
+		_tw.tween_property($Buttons, "position:y", _buttons_y, 0.45).from(_buttons_y + 36.0) \
+				.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 
 func _live() -> bool:
 	return Game.state == Game.State.LOBBY and not Game.demo
 
 
+## Settings or the leave question is open over the menu.
+func in_submenu() -> bool:
+	return _settings.active or _confirm.active
+
+
 func _process(delta: float) -> void:
 	if not _live():
 		return
-	var move := 0
-	for p in Players.active_players():
-		if Input.is_action_just_pressed(Players.action(p, "move_up")) \
-				or Input.is_action_just_pressed(Players.action(p, "move_left")):
-			move = -1
-		elif Input.is_action_just_pressed(Players.action(p, "move_down")) \
-				or Input.is_action_just_pressed(Players.action(p, "move_right")):
-			move = 1
+	_countdown.queue_redraw()
+	if _confirm.active:
+		_confirm.handle(MenuInput.read())
+		return
+	if _settings.active:
+		_settings.handle(MenuInput.read())
+		return
+	var move: int = MenuInput.read().move.y
 	if move != 0:
-		_set_focus(Choice.PLAY if move < 0 else Choice.DOOR)
+		move_focus(move)
 	for p in Players.active_players():
 		if Input.is_action_just_pressed(Players.action(p, "action")):
 			press_a(p)
 		elif Input.is_action_just_pressed(Players.action(p, "jump")):
 			press_b(p)
+	if freeze or in_submenu():
+		return
 	for p in [P1, P2]:
 		hold_step(p, Players.is_active(p) and Input.is_action_pressed(Players.action(p, "action")), delta)
 	count_step(delta)
 
 
+func move_focus(dir: int) -> void:
+	_set_focus(MenuItem.step(_items, focus, dir) as Choice)
+
+
+func focus_item(choice: Choice) -> void:
+	_set_focus(choice)
+
+
 func press_a(player: int) -> void:
+	if in_submenu():
+		return
 	_buttons[focus].press()
-	if focus == Choice.DOOR:
-		Audio.play("ui_back")
-		Game.quit()
-	elif not readied[player]:
-		set_ready(player, true)
+	match focus:
+		Choice.PLAY:
+			if not readied[player]:
+				set_ready(player, true)
+		Choice.SETTINGS:
+			_settings.open()
+		Choice.DOOR:
+			_confirm.open()
 
 
 func press_b(player: int) -> void:
-	if readied[player]:
+	if _confirm.active:
+		_confirm.choose(false)
+	elif _settings.active:
+		_settings.close()
+	elif readied[player]:
 		set_ready(player, false)
-	elif focus == Choice.DOOR:
-		_set_focus(Choice.PLAY)
+	elif focus != Choice.PLAY:
+		Audio.play("ui_back")
+		_set_focus(Choice.PLAY, false)
 
 
 func set_ready(player: int, on: bool, quiet := false) -> void:
@@ -132,17 +191,20 @@ func set_ready(player: int, on: bool, quiet := false) -> void:
 
 ## The hold-to-start-alone rule, fed once a frame per player. Returns true when it started.
 func hold_step(player: int, down: bool, delta: float) -> bool:
-	if counting or not readied[player] or not down or focus != Choice.PLAY:
+	if counting or not readied[player] or not down or focus != Choice.PLAY or in_submenu():
 		if _hold[player] > 0.0:
 			_hold[player] = 0.0
 			_spots[player].hold = 0.0
+			_update_progress()
 		return false
 	_hold[player] += delta
 	_spots[player].hold = _hold[player] / HOLD_TO_START
+	_update_progress()
 	if _hold[player] < HOLD_TO_START:
 		return false
 	_hold[player] = 0.0
 	_spots[player].hold = 0.0
+	_update_progress()
 	start_countdown()
 	return true
 
@@ -163,6 +225,7 @@ func cancel_countdown() -> void:
 	counting = false
 	_dots_lit = 0
 	_countdown.queue_redraw()
+	Audio.play("ui_back")
 	countdown_cancelled.emit()
 
 
@@ -181,11 +244,29 @@ func ready_players() -> Array:
 	return [P1, P2].filter(func(p: int) -> bool: return readied[p])
 
 
+## What the centre line says when nothing is counting.
+func status_text() -> String:
+	var joined := Players.active_players()
+	var ready := ready_players()
+	if joined.is_empty():
+		return "Press [a] on a controller to join"
+	if ready.size() == 1:
+		var other: int = P2 if ready[0] == P1 else P1
+		if Players.is_active(other):
+			return "Waiting for %s, or hold [a] to start solo" % UiStyle.player_name(other)
+		return "Hold [a] on Play to start solo"
+	return "Press [a] on Play when you're ready"
+
+
+func _update_progress() -> void:
+	_buttons[Choice.PLAY].progress = maxf(_hold[P1], _hold[P2]) / HOLD_TO_START
+
+
 func _light_next_dot() -> void:
 	_dots_lit += 1
 	Audio.play("count_tick")
 	_countdown.queue_redraw()
-	_countdown.scale = Vector2.ONE * 1.15
+	_countdown.scale = Vector2.ONE * 1.08
 	var tw := _countdown.create_tween()
 	tw.tween_property(_countdown, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
@@ -196,7 +277,8 @@ func _ready_both() -> void:
 
 
 func _set_focus(to: Choice, sound := true) -> void:
-	if sound and to != focus:
+	# Bumping the end still makes a sound: every move does something.
+	if sound:
 		Audio.play("ui_move")
 	focus = to
 	for c in _buttons:
@@ -210,14 +292,22 @@ func _set_joined(player: int, on: bool) -> void:
 		who.set_joined(on)
 
 
+func _apply_title() -> void:
+	$TitleArt.texture = title_texture
+	var label: Label = $TitleArt/TitleLabel
+	label.visible = title_texture == null
+	label.text = title_text if title_text != "" else str(ProjectSettings.get_setting("application/config/name", ""))
+
+
 func _on_player_joined(player: int, device: int) -> void:
 	if not _live():
 		return
 	_set_joined(player, true)
 	# The join press readies too (whatever is focused), unless it was B.
-	if device >= 0 and Input.is_joy_button_pressed(device, JOY_BUTTON_B):
+	# Not behind an open Settings (solo turned on there readies both when it closes).
+	if device >= 0 and Input.is_joy_button_pressed(device, JOY_BUTTON_B) or in_submenu():
 		return
-	_set_focus(Choice.PLAY)
+	_set_focus(Choice.PLAY, false)
 	set_ready(player, true)
 
 
@@ -228,21 +318,49 @@ func _on_player_left(player: int) -> void:
 
 func _on_solo_changed(on: bool) -> void:
 	if on and _live():
+		# From Settings: ready both once Settings closes, not behind it.
+		if in_submenu():
+			_solo_pending = true
+		else:
+			_ready_both()
+
+
+func _on_settings_closed() -> void:
+	if _solo_pending and Players.solo and _live():
 		_ready_both()
+	_solo_pending = false
+
+
+func _on_confirm_chosen(leave: bool) -> void:
+	if leave:
+		Game.quit()
 
 
 func _on_state_changed(_from: int, to: int) -> void:
 	visible = to == Game.State.LOBBY
 	if visible:
 		open()
+	else:
+		_settings.dismiss()
+		_confirm.dismiss()
 
 
 func _draw_countdown() -> void:
-	if _dots_lit == 0:
+	var c := _countdown
+	var mid := c.size * 0.5
+	if not counting:
+		UiStyle.draw_rich(c, Vector2(mid.x, 34), status_text(), UiStyle.Role.HINT, UiStyle.TEXT_DIM, 1)
 		return
-	var c := _countdown.size * 0.5
-	var gap := 110.0
-	for i in COUNT_DOTS:
-		var pos := c + Vector2((i - 1) * gap, 0)
-		var lit := i < _dots_lit
-		_countdown.draw_circle(pos, 46.0 if lit else 30.0, Color.WHITE if lit else Color(1, 1, 1, 0.2), true, -1.0, true)
+	var n := COUNT_DOTS - _dots_lit + 1
+	var label := "Starting in"
+	var f := UiStyle.font(UiStyle.Role.BODY)
+	var lw := f.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 34).x
+	var nw := 50.0
+	var x := mid.x - (lw + 18 + nw) * 0.5
+	UiStyle.draw_text(c, Vector2(x, 34), label, UiStyle.Role.BODY, UiStyle.TEXT, 0, 34)
+	UiStyle.draw_text(c, Vector2(x + lw + 18 + nw * 0.5, 30), str(n), UiStyle.Role.HEADING, UiStyle.accent, 1, 64)
+	var t := clampf(_count_t / (COUNT_STEP * COUNT_DOTS), 0.0, 1.0)
+	var bar := Rect2(Vector2(mid.x - 180, 82), Vector2(360, 8))
+	c.draw_style_box(UiStyle.panel(Color(UiStyle.LINE, 1.0), 4, 0), bar)
+	c.draw_style_box(UiStyle.panel(UiStyle.accent, 4, 0), Rect2(bar.position, Vector2(maxf(bar.size.x * t, 8), bar.size.y)))
+	UiStyle.draw_rich(c, Vector2(mid.x, 124), "[b] Cancel", UiStyle.Role.HINT, UiStyle.TEXT_FAINT, 1, 24)
