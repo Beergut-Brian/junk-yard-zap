@@ -1,6 +1,7 @@
 ## Sound on every action. Autoload: Audio.
 ## play("cue") looks for assets/audio/sfx/cue.ogg, or cue_1.ogg..cue_N.ogg and picks one.
-## Missing cues warn once and never crash.
+## Missing cues warn once, never crash, and play a placeholder synth beep instead (Synth) so every
+## action is audible before the Audio lane lands files. pitch: object voices follow size.
 extends Node
 
 const SFX_DIR := "res://assets/audio/sfx/"
@@ -49,18 +50,34 @@ func get_volume(bus: String) -> float:
 	return db_to_linear(AudioServer.get_bus_volume_db(i))
 
 
-func play(cue: String, _position = null) -> void:
+## Every cue played, newest last (tests and the demo log read it). Capped.
+var history: PackedStringArray = []
+## Off: missing cues stay silent (tests that only care about history).
+var synth_fallback := true
+
+
+func play(cue: String, _position = null, pitch := 1.0) -> void:
+	history.append(cue)
+	if history.size() > 256:
+		history = history.slice(128)
 	var stream := _resolve(SFX_DIR, cue)
 	if stream == null:
-		return
+		if not synth_fallback:
+			return
+		stream = Synth.beep(cue)
+	var player: AudioStreamPlayer = _pool[0]
 	for p in _pool:
 		if not p.playing:
-			p.stream = stream
-			p.pitch_scale = randf_range(0.95, 1.05)
-			p.play()
-			return
-	_pool[0].stream = stream
-	_pool[0].play()
+			player = p
+			break
+	player.stream = stream
+	player.pitch_scale = clampf(pitch * randf_range(0.95, 1.05), 0.25, 4.0)
+	player.play()
+
+
+## True if cue was played since the history was last cleared (tests).
+func played(cue: String) -> bool:
+	return history.has(cue)
 
 
 func music(track: String, fade: float = 0.5) -> void:
@@ -114,6 +131,6 @@ func _resolve(dir: String, cue: String) -> AudioStream:
 	if variants.is_empty():
 		if not _warned.has(key):
 			_warned[key] = true
-			push_warning("Audio: no file for cue '%s' in %s" % [cue, dir])
+			print("Audio: no file for cue '%s' in %s, using a synth beep" % [cue, dir])
 		return null
 	return variants.pick_random()
