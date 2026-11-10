@@ -41,6 +41,7 @@ var deck: GoalDeck
 var card: FenceCard
 var reset_sign: Node3D
 var tire_pile: Node3D
+var contraptions: Contraptions
 var spawns := {}
 var objects := {}     # key -> PhysicsObject
 var guns_by_effect := {}
@@ -340,6 +341,7 @@ func _build_world() -> void:
 	_box(st, "PipeFloor", Vector3(35.0, 5.0, 0), Vector3(9.0, 0.25, 1.6), 32.0)
 	_box(st, "PipeRoof", Vector3(35.4, 6.6, 0), Vector3(9.0, 0.25, 1.6), 32.0)
 	YardDressing.build(self)
+	contraptions = Contraptions.build(self)   # fan, conveyor and button, crane hook, trampoline
 
 
 func _add_spawn(player: int, at: Vector3) -> void:
