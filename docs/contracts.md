@@ -114,7 +114,9 @@ to turn it off). Both players join on that pad; only `solo_focus`'s actions get 
 two-heads icon shows top-left while it is on. A keyboard key from a player's action joins that player.
 
 Input map actions (defined in `project.godot`, per player, prefix `p1_` / `p2_`):
-`move_left`, `move_right`, `move_up`, `move_down`, `action`, `jump`.
+`move_left`, `move_right`, `move_up`, `move_down`, `action`, `jump`, and for Junk Yard Zap
+`gun_next` (RB, E / .), `gun_prev` (LB, Q / ,), `aim_left/right/up/down` (right stick, IJKL / numpad).
+`restart` is keyboard-only (R): Select is not used in play (GAME.md).
 Global: `pause`, `restart`, `debug_overlay`, `debug_screenshot`.
 
 ### `Save` (`scripts/autoload/Save.gd`)
@@ -142,7 +144,9 @@ func wipe_settings() -> void
 ### `Audio` (`scripts/autoload/Audio.gd`)
 
 ```gdscript
-func play(cue: String, position = null) -> void   # cue = file stem in assets/audio/sfx/
+func play(cue: String, position = null, pitch := 1.0) -> void   # cue = file stem in assets/audio/sfx/
+var history: PackedStringArray     # every cue played, newest last (tests, demo logs)
+func played(cue: String) -> bool
 func music(track: String, fade: float = 0.5) -> void
 func stop_music(fade: float = 0.5) -> void
 func bark(character: String, bark: String) -> void   # from openjar-characters voice packs
@@ -153,7 +157,8 @@ func get_volume(bus: String) -> float
 Audio creates the `Music` and `SFX` buses at start if the project has no bus layout, and applies
 the saved volumes.
 
-Every action must call `Audio.play`. Missing cue files log a warning, never crash.
+Every action must call `Audio.play`. Missing cue files log a line once, never crash, and play a
+placeholder synth beep (`Synth.beep(cue)`, `scripts/autoload/synth.gd`) so the grey-box is never silent.
 
 Menu cues (Audio lane supplies the files): `ui_move`, `ui_confirm`, `ui_back`, `player_join`,
 `player_ready`, `player_unready`, `count_tick`, `round_start`, `pause`, `solo_on`, `solo_off`.
@@ -174,3 +179,73 @@ The launcher starts a game with `--profile=<id>` and expects the game to:
 ## Game-specific contracts
 
 Add this game's own signals and APIs below. Keep the same format.
+
+### Junk Yard Zap (Systems, grey-box)
+
+```gdscript
+# The yard: scripts/levels/yard_level.gd (scenes/levels/yard.tscn), group "yard_level"
+class_name YardLevel
+signal zapped(player: int, gun: StringName, target: Node3D)   # target null = sparkle at nothing
+signal goal_completed(goal_id: StringName)
+signal goal_skipped(goal_id: StringName)
+signal yard_reset()
+var deck: GoalDeck
+var objects: Dictionary          # layout key ("cow", "chicken_2") -> PhysicsObject
+func object(key: StringName) -> PhysicsObject
+func reset_yard() -> void        # Reset Yard: back to data/yard_layout.tres; the deck stays
+func to_save() -> Dictionary     # {"version": 1, "objects": {key: {p, r, size, fx}}, "glue": [[a, b]], "deck": {...}}
+func from_save(d: Dictionary) -> void
+static func find(n: Node) -> YardLevel
+
+# Physics rules (scripts/physics/yard.gd), static
+func Yard.gravity_at(pos: Vector3) -> Vector3
+func Yard.up_at(pos: Vector3) -> Vector3
+func Yard.water_level_at(pos: Vector3) -> float          # -INF when not over water
+func Yard.objects_in_zone(zone: StringName) -> Array[Node3D]   # front_gate, scrap_heap, pond, barn, tower, pond_air
+func Yard.zone(zone: StringName) -> AABB
+
+# Objects: PhysicsObject (RigidBody3D) configured by ObjectData (data/objects/*.tres)
+signal object_landed(target: Node3D, impulse: float)     # impulse = logical mass x speed change
+signal recalled(obj: PhysicsObject)                      # left the yard, sent back to the gate
+signal scale_refused(obj: PhysicsObject)                 # no room to grow: play "nope"
+signal splashed(obj: PhysicsObject)
+var key: StringName                                      # layout key
+func speak() -> void                                     # its voice, pitched by size
+EffectStack.effect_changed(target: Node3D, effect: StringName, on: bool)
+
+# Effects: every gun goes through these; nothing checks which other effects are on
+func Effects.zap(gun: StringName, target: PhysicsObject) -> bool   # grow, shrink, bouncy, balloon, freeze, magnet
+func Effects.glue(a: PhysicsObject, b: PhysicsObject) -> Effects.Glue
+func Effects.grab(target: PhysicsObject, holder: Node3D, color: Color) -> Effects.Grab   # holder.hold_point(t)
+func Effects.release(target: PhysicsObject, throw_velocity := Vector3.ZERO) -> void
+
+# Guns: data/guns/<n>_<id>.tres (GunData), belt order = file order
+class_name GunData   # id, kind (SIZE, GRAB, BOUNCY, BALLOON, FREEZE, GLUE, MAGNET), params, icon, beam_color, cue
+
+# Players: scenes/players/zapper.tscn (Zapper, CharacterBody3D, group "zappers")
+signal zapped(player: int, gun: StringName, target: Node3D)
+signal gun_changed(player: int, gun: GunData)
+signal woke(player: int)
+signal partner_zapped(player: int, gun: StringName)
+var asleep: bool                 # in the tire pile until his pad presses something
+func wake() -> void
+func partner_zap(gun: GunData, from: Zapper) -> void     # harmless, at most PARTNER_TIME (1 s)
+var input_override: Dictionary   # tests and the demo bot: {move, aim, action, jump, next, prev}
+
+# Goal cards: data/goals/*.tres (GoalData); the checker is static and side-effect free
+func Goals.check(goal: GoalData, objects: Array = []) -> bool
+class_name GoalDeck   # current(), complete(), skip(), order, done; signals goal_completed, goal_skipped, card_changed
+
+# Juice: scripts/fx/fx.gd, static (lift to openjar-addons later)
+func Fx.shake(amount: float) -> void    # respects SettingsPanel.screen_shake()
+func Fx.impact(tree, at, mass, speed) / burst(...) / ring(...) / sparkle(...) / fireworks(...)
+```
+
+Cues the grey-box plays (Audio lane: real files replace the synth beeps by name): `zap_<gun>` (size,
+grab, bouncy, balloon, freeze, glue, magnet), `grow`, `shrink`, `nope`, `sparkle`, `grab`, `throw`,
+`drop`, `glue_pick`, `unglue`, `jump`, `land`, `wheel_move`, `impact_light|medium|heavy|huge`,
+`splash`, `recall`, `voice_<object id>` (pitched by size), `card_view`, `card_done`, `card_skip`,
+`reset_hold`, `reset_yard`, `snore`, `snort`, `bark_jeff`, `bark_chuck`, `bark_<who>_cheer`, `boing`,
+`squelch`, `crack`, `solo_swap`.
+
+Save keys (`Save`, per profile): `yard` (YardLevel.to_save()), `guns` ({"0": belt index, "1": ...}).
