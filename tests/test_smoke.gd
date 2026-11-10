@@ -2,6 +2,21 @@
 class_name TestSmoke
 extends GdUnitTestSuite
 
+var _real_settings := ""
+
+
+func before() -> void:
+	Save.profile = "gdunit"
+	_real_settings = Save.settings_path
+	Save.settings_path = "user://test_settings_smoke.json"
+	Save.wipe_settings()
+
+
+func after() -> void:
+	Save.wipe_settings()
+	Save.settings_path = _real_settings
+	Save.reload_settings()
+
 
 func test_main_scene_loads() -> void:
 	var scene := load("res://scenes/main.tscn") as PackedScene

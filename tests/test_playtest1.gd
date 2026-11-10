@@ -11,10 +11,20 @@ const RED := Color("e4393c")
 const IDLE := {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
 
 var world: Node3D
+var _real_settings := ""
 
 
 func before() -> void:
 	Save.profile = "gdunit"
+	_real_settings = Save.settings_path
+	Save.settings_path = "user://test_settings_playtest1.json"
+	Save.wipe_settings()
+
+
+func after() -> void:
+	Save.wipe_settings()
+	Save.settings_path = _real_settings
+	Save.reload_settings()
 
 
 func before_test() -> void:

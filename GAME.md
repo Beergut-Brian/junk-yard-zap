@@ -301,3 +301,9 @@ On top of the template checklist in `docs/kid-design.md`.
   - **Ten goal cards** (the first-playable count), using the existing condition vocabulary: freeze the cow, ball in the bathtub (band 1), float the car, a cow-car (cow glued to car), a giant chicken (+3) (band 2). Content lane: replace or reorder freely. `b1_big_cow` stays the first card.
   - **Balloons park 6 m up** (`Effects.Balloon.MAX_RISE`) if nothing stops them first, so a ballooned cow stays on screen and in reach of a zap instead of floating up to the lid. Parked balloons stay parked across a save/reload.
   - **Reset Yard hold is 2.0 s** (was 1.2). The sign is 3 m from Jeff's spawn, and a kid holding A to grab or grow nearby must not wipe the yard by accident.
+- 2026-11-10 (Showtime menus lane, for Gary/Kaden to confirm):
+  - **Menus are the template's Showtime kit** (D48 d: "B Showtime + blurred game world + C squash"), skinned by `data/menu_skin.tres`: accent `#ffb21f`, sunburst `#ff6a2b`, deep `#33201a`, title "Junk Yard Zap" in the kit's Baloo face.
+  - **Backdrop is `SCREEN`:** the menu blurs the yard the game already draws behind the lobby (the overview camera). No second yard is loaded (`SCENE` mode would run the yard's physics twice).
+  - **Podiums:** Jeff (P1, green) and Chuck (P2, red) are the game's own Jarling rigs holding the size gun taped in their colour, turned three-quarters toward the menu so the gun points across the stage. Facing the camera, its dish read as a frisbee covering the body.
+  - **Round card:** "ZAP TIME!" with a "THE YARD IS OPEN" strip under it. The kit draws the card title at a fixed size, and "THE YARD IS OPEN" as the title ran off both edges of the screen.
+  - **Solo is never restored at boot.** The settings row still mirrors solo while it is on, but a saved "on" no longer turns it on next launch. Solo is `--solo` or Select+Start for 2 s only.
