@@ -26,6 +26,8 @@ func _ready() -> void:
 	if OS.get_cmdline_user_args().has("--proto"):   # Phase 1 risk prototype, reachable from an export
 		get_tree().change_scene_to_file.call_deferred("res://scenes/proto/risk_proto.tscn")
 		return
+	# The round card after the wipe (its title, "ZAP TIME!", is in data/menu_skin.tres).
+	lobby.round_card_subtitle = "THE YARD IS OPEN"
 	var cursor := Cursor.new()
 	cursor.name = "Cursor"
 	add_child(cursor)

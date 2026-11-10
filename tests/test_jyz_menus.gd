@@ -51,7 +51,7 @@ func test_skin_loads_with_the_game_look() -> void:
 	assert_int(sk.backdrop).is_equal(MenuSkin.Backdrop.SCREEN)
 	assert_object(sk.backdrop_scene).is_null()   # never a second yard (physics would run twice)
 	assert_bool(sk.round_card).is_true()
-	assert_str(sk.round_card_title).is_equal("THE YARD IS OPEN")
+	assert_str(sk.round_card_title).is_equal("ZAP TIME!")
 
 
 func test_lobby_shows_jeff_and_chuck() -> void:
@@ -78,3 +78,9 @@ func test_lobby_shows_jeff_and_chuck() -> void:
 	await await_idle_frame()
 	assert_bool(lobby.readied[P1]).is_true()
 	assert_that((lobby.get_node("Spots/P1/Character") as Control).modulate).is_equal(Color.WHITE)
+
+
+func test_round_card_says_the_yard_is_open() -> void:
+	_main = load("res://scenes/main.tscn").instantiate()
+	add_child(_main)
+	assert_str(_main.get_node("UI/Lobby").round_card_subtitle).is_equal("THE YARD IS OPEN")

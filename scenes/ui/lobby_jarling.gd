@@ -6,6 +6,11 @@ extends Node3D
 
 @export var player := Players.P1
 
+## Three-quarter turn toward the menu on the right (on top of CharacterSlot's turntable), so the
+## gun in the right hand points across the stage instead of straight at the camera, where its dish
+## read as a frisbee covering the body.
+const TURN := {Players.P1: 14.0, Players.P2: 50.0}
+
 var rig: JarlingRig
 var _joined := false
 
@@ -13,6 +18,7 @@ var _joined := false
 func _ready() -> void:
 	rig = JarlingRig.new()
 	rig.character = Zapper.CHARACTER[player]
+	rig.rotation_degrees.y = TURN[player]
 	add_child(rig)
 	rig.equip_gun(Players.COLOR[player])
 	set_joined(_joined)
