@@ -6,5 +6,5 @@
 script = ExtResource("1_ypjph")
 id = &"glue"
 kind = 5
-beam_color = Color(0.98, 0.95, 0.8, 1)
+beam_color = Color(1, 0.62352943, 0.8745098, 1)
 cue = &"zap_glue"

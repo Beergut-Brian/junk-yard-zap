@@ -99,6 +99,11 @@ func _ready() -> void:
 	look = EffectLook.new()
 	look.name = "Look"
 	look.size = data.size if data.shape != ObjectData.Shape.SPHERE else Vector3.ONE * data.size.x
+	if not _art_meshes.is_empty():
+		# Wrap the effects round what you see (a cow's head pokes out of its box).
+		var box := _art_bounds()
+		look.size = box.size.max(look.size * 0.9)
+		look.position = box.get_center()
 	_visual.add_child(look)
 	stack = EffectStack.new()
 	stack.name = "EffectStack"
@@ -495,6 +500,27 @@ func _update_look() -> void:
 	look.sync(stack.effects)
 	if face:
 		face.set_base(_mood_for_stack())
+
+
+func _art_bounds() -> AABB:
+	var box := AABB()
+	var first := true
+	for mi in _art_meshes:
+		var vi := mi as VisualInstance3D
+		var local: Transform3D = _visual.global_transform.affine_inverse() * vi.global_transform if vi.is_inside_tree() else _rel(vi)
+		var b: AABB = local * vi.get_aabb()
+		box = b if first else box.merge(b)
+		first = false
+	return box
+
+
+func _rel(n: Node3D) -> Transform3D:
+	var t := Transform3D.IDENTITY
+	var p: Node = n
+	while p and p != _visual:
+		t = (p as Node3D).transform * t
+		p = p.get_parent()
+	return t
 
 
 ## Bouncy things keep a rubbery wobble (looks only; the sim never sees it).

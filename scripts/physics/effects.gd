@@ -5,9 +5,10 @@ class_name Effects
 extends RefCounted
 
 const GUNS: Array[StringName] = [&"grow", &"shrink", &"bouncy", &"balloon", &"freeze", &"glue", &"magnet"]
+## The fixed gun hues (D44 palette; never P1 green or P2 red). Mirrors ArtKit.GUN.
 const COLORS := {
-	&"size": Color(0.62, 0.35, 1.0), &"bouncy": Color(1.0, 0.85, 0.1), &"balloon": Color(1.0, 0.45, 0.85),
-	&"freeze": Color(0.45, 0.9, 1.0), &"glue": Color(0.98, 0.95, 0.8), &"magnet": Color(0.25, 0.45, 1.0),
+	&"size": Color("#ff9a14"), &"bouncy": Color("#ffd21a"), &"balloon": Color("#ec3cf0"),
+	&"freeze": Color("#4fd8ff"), &"glue": Color("#ff9fdf"), &"magnet": Color("#2f68ff"),
 }
 
 
