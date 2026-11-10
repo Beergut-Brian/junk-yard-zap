@@ -67,8 +67,8 @@ func _ready() -> void:
 	gravity_scale = 0.0
 	can_sleep = true
 	continuous_cd = true
-	contact_monitor = true
-	max_contacts_reported = 4
+	# No contact_monitor: turning on contact reporting changes how Godot-Jolt solves contacts (the
+	# Phase 1 stress numbers drift). Landings are read from sudden velocity changes instead.
 	collision_layer = 1
 	collision_mask = 1
 	freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
@@ -181,6 +181,7 @@ func apply_props(p: BodyProps) -> void:
 		if not freeze:
 			linear_velocity = Vector3.ZERO
 			angular_velocity = Vector3.ZERO
+			_last_v = Vector3.ZERO
 	for o in stack.glued_group():
 		o.refresh_mass()
 	_update_look()
@@ -327,9 +328,11 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		state.linear_velocity = Vector3.ZERO
 		state.angular_velocity = Vector3.ZERO
 		return
-	if state.get_contact_count() > 0 and _land_cool <= 0.0:
+	# A landing: the solver took a big bite out of the speed, or turned it round (bouncy), since the
+	# velocity we handed it last step. Skipped while we steer the body ourselves (grab, size clamp).
+	if _land_cool <= 0.0 and _clamp_left <= 0.0 and not stack.has(&"grab"):
 		var dv := (v - _last_v).length()
-		if dv > LAND_DV:
+		if dv > LAND_DV and (_last_v.length() - v.length() > LAND_DV * 0.5 or v.dot(_last_v) < 0.0):
 			_pending_land = volume_mass() * dv
 			_land_cool = LAND_COOLDOWN
 	var up := Yard.up_at(pos)
@@ -370,6 +373,7 @@ func recall() -> void:
 		o.global_position += offset
 		o.linear_velocity = Vector3.ZERO
 		o.angular_velocity = Vector3.ZERO
+		o._last_v = Vector3.ZERO
 		o.recalled.emit(o)
 	Yard.recalls += 1
 	Audio.play("recall", Yard.GATE)
@@ -384,10 +388,14 @@ func _rebuild_shape() -> void:
 		add_child(cs)
 		_shapes.append(cs)
 	for i in _shapes.size():
-		_shapes[i].disabled = i >= parts.size()
-		if i < parts.size():
+		# Only touch what changed: re-setting transform or disabled makes Jolt rebuild the body.
+		var off := i >= parts.size()
+		if _shapes[i].disabled != off:
+			_shapes[i].disabled = off
+		if not off:
 			_shapes[i].shape = parts[i][0]
-			_shapes[i].transform = parts[i][1]
+			if not _shapes[i].transform.is_equal_approx(parts[i][1]):
+				_shapes[i].transform = parts[i][1]
 	sleeping = false
 	for o in stack.glued_group() if stack else [self]:
 		o.refresh_mass()

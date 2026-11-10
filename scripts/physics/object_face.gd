@@ -8,6 +8,8 @@ enum Mood { NEUTRAL, HAPPY, WIDE, DIZZY, SMUG, PANIC, SHUT, SAD }
 
 const MOUTH_DOTS := 5
 const INK := Color(0.08, 0.06, 0.06)
+## Own RNG: blinking must never shift a seeded simulation (the stress run).
+static var _rng := RandomNumberGenerator.new()
 
 var mood := Mood.NEUTRAL
 ## The mood the effects on the object ask for; flashes (react) fall back to it.
@@ -73,7 +75,7 @@ func _process(delta: float) -> void:
 			mood = base_mood
 	_blink -= delta
 	if _blink < -0.12:
-		_blink = randf_range(2.0, 4.5)
+		_blink = _rng.randf_range(2.0, 4.5)
 	_pose(delta)
 
 

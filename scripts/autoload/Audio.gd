@@ -13,6 +13,8 @@ var _pool: Array[AudioStreamPlayer] = []
 var _music: AudioStreamPlayer
 var _warned := {}
 var _cache := {}
+## Own RNG for pitch wobble and variant picks, so playing sounds never shifts a seeded simulation.
+var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
@@ -71,7 +73,7 @@ func play(cue: String, _position = null, pitch := 1.0) -> void:
 			player = p
 			break
 	player.stream = stream
-	player.pitch_scale = clampf(pitch * randf_range(0.95, 1.05), 0.25, 4.0)
+	player.pitch_scale = clampf(pitch * _rng.randf_range(0.95, 1.05), 0.25, 4.0)
 	player.play()
 
 
@@ -118,7 +120,7 @@ func _resolve(dir: String, cue: String) -> AudioStream:
 	var key := dir + cue
 	if _cache.has(key):
 		var variants: Array = _cache[key]
-		return variants.pick_random() if not variants.is_empty() else null
+		return variants[_rng.randi() % variants.size()] if not variants.is_empty() else null
 	var variants: Array = []
 	if ResourceLoader.exists(dir + cue + ".ogg"):
 		variants.append(load(dir + cue + ".ogg"))
@@ -133,4 +135,4 @@ func _resolve(dir: String, cue: String) -> AudioStream:
 			_warned[key] = true
 			print("Audio: no file for cue '%s' in %s, using a synth beep" % [cue, dir])
 		return null
-	return variants.pick_random()
+	return variants[_rng.randi() % variants.size()]

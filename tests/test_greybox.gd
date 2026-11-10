@@ -259,6 +259,17 @@ func test_flick_throws() -> void:
 	assert_bool(Audio.played("throw")).is_true()
 
 
+func test_a_dropped_object_lands_with_a_thud() -> void:
+	strip()
+	var o := box(Vector3(0, 4.0, 0), Vector3.ONE, 4.0)
+	var hits := []
+	o.object_landed.connect(func(_t: Node3D, impulse: float) -> void: hits.append(impulse))
+	await step(70)
+	assert_int(hits.size()).is_greater_equal(1)
+	assert_float(hits[0]).is_greater(10.0)
+	assert_bool(Audio.played("impact_medium")).is_true()
+
+
 # ------------------------------------------------------------------------------------- the yard
 
 func test_yard_spawns_the_layout_with_faces() -> void:
