@@ -54,6 +54,8 @@ var input_override: Dictionary = {}
 var statue_left := 0.0
 
 var rig: JarlingRig
+## Barks, reaction poses and idle bits (scripts/players/reactions.gd).
+var reactions: Reactions
 var _beam: MeshInstance3D
 var _beam_mat: StandardMaterial3D
 var _marker: MeshInstance3D
@@ -74,6 +76,7 @@ var _partner_left := 0.0
 var _partner_kind := -1
 var _float_up := 0.0
 var _snore := 2.0
+var _refused := false        # this press played "nope" (the reactions blame the partner)
 
 
 func _ready() -> void:
@@ -121,6 +124,10 @@ func _ready() -> void:
 	_zzz.position = Vector3(0.3, 0.9, 0.3)
 	_zzz.emitting = false
 	add_child(_zzz)
+	reactions = Reactions.new()
+	reactions.name = "Reactions"
+	reactions.zapper = self
+	add_child(reactions)
 	Audio.big_impact.connect(_on_big_impact)
 	if guns.is_empty():
 		guns = load_guns()
@@ -273,10 +280,10 @@ func _physics_process(delta: float) -> void:
 		aim_dir = Vector2(facing, 0.0)
 	if aim_dir.x != 0.0 and absf(aim_dir.x) > 0.3:
 		facing = signf(aim_dir.x)
-	rig.face_dir(facing, delta)
+	rig.face_dir(reactions.facing(facing), delta)
 	if absf(velocity.x) > 0.5 and on_floor:
 		rig.play("run", absf(velocity.x) / SPEED * 1.2)
-	elif _partner_left <= 0.0:
+	elif _partner_left <= 0.0 and not reactions.busy():
 		rig.play("idle")
 	# Belt.
 	var nxt: bool = inp.get("next", false)
@@ -297,6 +304,9 @@ func _physics_process(delta: float) -> void:
 	elif _action_was:
 		_release(mv)
 	_action_was = action
+	var active := action or nxt or prv or aim.length() > 0.3
+	var moved := jump or mv.length() > 0.2
+	reactions.tick(delta, active, on_floor and statue_left <= 0.0 and _partner_left <= 0.0 and live and held == null, moved)
 	_update_beam()
 
 
@@ -353,6 +363,7 @@ func _press() -> void:
 		level.reset_hold_begin(player)
 		return
 	_flash()
+	_refused = false
 	rig.set_expression("determined")
 	if target == null:
 		Audio.play("sparkle", global_position)
@@ -385,20 +396,22 @@ func _press() -> void:
 				changed = true
 			else:
 				Audio.play("nope", global_position)
+				_refused = true
 		GunData.Kind.GLUE:
 			changed = _fire_glue()
 		_:
 			var o := target as PhysicsObject
 			changed = Effects.zap(g.effect_id(), o)
 			Audio.play(g.zap_cue() if changed else "nope", o.global_position)
+			_refused = not changed
 			if changed:
 				o.speak()
 				o.last_touch = &"gun"
 	if changed:
 		Fx.ring(get_tree(), target.global_position, g.beam_color, (target as PhysicsObject).radius() if target is PhysicsObject else 1.0)
-		# Chuck narrates his own zaps (GAME.md "Audio"); the gate keeps it to one bark per zap.
-		if Audio.bark_style(character, "narrate") and Audio.can_bark(self):
-			bark("zap")
+	# Chuck narrates his own zaps and blames the partner when one is refused (GAME.md "Audio");
+	# at most one bark per zap, through the gate.
+	reactions.own_zap(changed, _refused)
 	zapped.emit(player, g.id, target)
 
 
@@ -420,6 +433,7 @@ func _size_step(dir: int) -> bool:
 		return false
 	var ok := Effects.zap(&"grow" if dir > 0 else &"shrink", o)
 	Audio.play(("grow" if dir > 0 else "shrink") if ok else "nope", o.global_position)
+	_refused = not ok
 	if ok:
 		o.speak()
 		o.last_touch = &"gun"
@@ -504,6 +518,7 @@ func _fire_glue() -> bool:
 	var ok := Effects.glue(glue_first, obj) != null
 	glue_first = null
 	Audio.play(gun().zap_cue() if ok else "nope", obj.global_position)
+	_refused = not ok
 	if ok:
 		obj.speak()
 	return ok
@@ -606,13 +621,10 @@ func bark(kind := "") -> String:
 	return Audio.bark(character, kind, self)
 
 
-## Jeff delights at every big impact near him (GAME.md "Audio"), at most one bark at a time.
-func _on_big_impact(at: Vector3, _band: String) -> void:
-	if asleep or not Audio.bark_style(character, "delight") or not Audio.can_bark(self):
-		return
-	if at != Vector3.ZERO and at.distance_to(global_position) > 30.0:
-		return
-	bark("delight")
+## Everyone wobbles at a big impact near him; Jeff claps and delights (GAME.md "Audio"), at most one
+## bark at a time (Reactions.big_impact).
+func _on_big_impact(at: Vector3, band: String) -> void:
+	reactions.big_impact(at, band)
 
 
 # ------------------------------------------------------------------------------------------ visuals
