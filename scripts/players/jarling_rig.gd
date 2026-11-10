@@ -7,7 +7,7 @@ extends Node3D
 const EXPR := {"neutral": Vector3(0, 0, 0), "happy": Vector3(0.5, 0, 0),
 		"surprised": Vector3(0, 0.5, 0), "determined": Vector3(0.5, 0.5, 0)}
 const SCENES := {&"jeff": "res://assets/characters/jeff/jeff.glb", &"chuck": "res://assets/characters/chuck/chuck.glb"}
-const BELT_GLB := "res://assets/characters/gear/belt.glb"
+const BELT_GLB := "res://assets/gear/belt.glb"
 ## The glbs are ~1.2 m tall; the yard's objects are sized for a ~1.55 m character.
 const SCALE := 1.3
 
