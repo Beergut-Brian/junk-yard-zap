@@ -1,6 +1,6 @@
 # Plan status: Junk Yard Zap
 
-Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Format: `~/openjar/lanes/plan-status-format.md`.
+Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Updated 2026-11-10 by the comedy lane (jyz-comedy-1, branch `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Format: `~/openjar/lanes/plan-status-format.md`.
 Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
 
 Sources (newest last):
@@ -51,9 +51,9 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | P-02 | S1 Players | Player-locked Jeff/Chuck | superseded | S6 "You play whoever you picked": test_jyz_chooser.gd::test_spawn_follows_the_pick_with_the_stand_in, ::test_swapped_picks_keep_the_slot_colours | |
 | P-03 | S1 Players, S2 | Each player has a gun belt; guns are gear (`hand_r` gun, `waist` belt) on Jarlings | built | test_jyz_chooser.gd::test_gear_equips_on_the_picked_body, test_art.gd::test_every_gun_is_gear_with_a_muzzle_and_player_tape, assets/gear/belt.glb | |
 | P-04 | S1 Players | Gun look: Jeff a hair dryer with a satellite dish, Chuck a leaf blower with a traffic cone | superseded | S1 Art direction "Guns" (one silhouette per gun, not per player): scripts/art/gun_art.gd:1-4 | Everyone gets the same hair-dryer body with a per-gun nozzle and their own tape colour. Chuck's leaf blower doesn't exist |
-| P-05 | S1 Players | Jeff: "Delighted by everything; applauds Chuck's disasters" | missing | none: Zapper only cheers on a finished card (zapper.gd:586-590) | Needs reaction triggers plus a clap animation |
-| P-06 | S1 Players | Chuck: "Takes credit for everything that works, blames Jeff" | missing | none | Same plumbing as P-05 and A-12 |
-| P-07 | S1 Players | Idles: Jeff pokes at junk and hums; Chuck kicks a tire and checks his hat | missing | jarling_rig.gd:75 has only a generic `idle` loop | The idles depend on the rig, so they need to work for any picked Jarling (S6) |
+| P-05 | S1 Players | Jeff: "Delighted by everything; applauds Chuck's disasters" | built | test_comedy.gd::test_jeff_claps_at_a_big_impact_and_everyone_wobbles, ::test_bark_rate_cap_holds_back_a_burst_of_impacts, scripts/players/reactions.gd `big_impact()`, frames handoff/frames/p05_delight_hop.png, p05_delight_full.png | A heavy or huge landing within 30 m: Jeff claps (the rig's own `cheer` clip), hops, beams, throws gold sparks and barks `delight`. Everyone else awake does the wobble (V: the reaction clip). He claps at every big impact, not only Chuck's: nothing tracks who caused a landing |
+| P-06 | S1 Players | Chuck: "Takes credit for everything that works, blames Jeff" | built | test_comedy.gd::test_one_bark_per_zap, ::test_chuck_blames_the_partner_when_a_zap_is_refused, reactions.gd `own_zap()`, `blame()`, frames handoff/frames/p06_chuck_narrates.png, p06_chuck_blames.png, p06_blame_full.png | Credit: his zap works, he puffs up, leans back, beams and barks `zap`. Blame: his zap gets a "nope", he turns on his partner, stamps, a ring in the partner's colour pops round the partner (whose face goes surprised) and he barks a plain `bark` ("hey!"): there is no blame cue. Any roster character who narrates also blames; Jeff never does |
+| P-07 | S1 Players | Idles: Jeff pokes at junk and hums; Chuck kicks a tire and checks his hat | built | test_comedy.gd::test_jeff_pokes_the_junk_and_it_answers, ::test_chuck_kicks_a_tire_with_his_own_kick, ::test_a_missing_action_falls_back_to_idle, ::test_nothing_in_reach_turns_into_the_other_bit, ::test_a_still_player_idles_on_his_own_and_moving_stops_it, frames handoff/frames/p07_idles.png, p07_poke_kick_full.png, p07_hum_hat_full.png | After 4 s standing still, a bit every 4.5-7 s. Each bit asks the rig for its action (`JarlingRig.has_action`, the glb's clips) and falls back to idle with a lean, hop or tilt on top. The standard Jarling has only `kick`, so poke, hum and hat are idle + procedural. Other Jarlings do all four bits. Hum uses `sparkle` played low and the hat a `wheel_move` click (no hum or hat cue) |
 | P-08 | S1 Players | Co-op: no one owns an object; both players' effects apply | built | test_physics_proto.gd::test_every_pair_of_effects_composes, frame combo (Jeff grows, Chuck bounces, the same cow) | |
 | P-09 | S1 Players | Zapping your partner: harmless and funny for each gun (huge, floats, a statue that keeps talking) | built | test_greybox.gd::test_partner_zaps_are_funny_and_last_at_most_a_second, ::test_frozen_partner_is_a_statue_then_moves_again | |
 | P-10 | S1 Players | Drop-in: second player asleep in the tire pile, a button press wakes him with a snort | built | test_greybox.gd::test_chuck_sleeps_in_the_tire_pile_and_wakes_with_a_snort, test_lobby.gd::test_late_joiner_wakes_up_in_the_tire_pile | S2: works from the lobby too |
@@ -201,7 +201,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | A-09 | S1 Audio | `wheel_move` click | partial | synth.gd:31 | Placeholder, though it already reads as a click |
 | A-10 | S1 Audio | Music: a lazy junk-yard loop (washboard, banjo, kazoo), quiet under the chaos | missing | assets/audio/music/ is empty; nothing calls music | Gary is generating it with ElevenLabs (QUEUE 2026-11-10) |
 | A-11 | S1 Audio | Music brightens for ten seconds after a finished card | missing | | Needs A-10 first |
-| A-12 | S1 Audio | Barks: Jeff delights at big impacts; Chuck narrates his zaps and blames Jeff; at most one bark per zap | partial | zapper.gd:557, :590, :596-599 (`bark()`: only on partner freeze and card cheer) | The voice plumbing is built (P-12), but the impact and zap triggers aren't |
+| A-12 | S1 Audio | Barks: Jeff delights at big impacts; Chuck narrates his zaps and blames Jeff; at most one bark per zap | built | test_comedy.gd::test_one_bark_per_zap, ::test_bark_rate_cap_holds_back_a_burst_of_impacts, test_audio.gd::test_bark_gate_one_at_a_time | Every bark passes `Audio.can_bark` (1.6 s per speaker, 0.7 s for anyone), and a zap asks for at most one. Voices come through the existing fallback: own cue, then voice pack, then generic. No character has a voice pack yet (roster v0.4.0), so all barks are the generic `bark_*` files. A gated reaction does nothing, so there is no silent pose |
 | A-13 | S1 Audio | Piano plays a chord when it lands | built | test_polish.gd::test_the_piano_plays_its_chord_when_it_lands_even_tiny, physics_object.gd `LANDING_GAGS` / `_landing_gag()`, frame handoff/frames/a13_piano_lands.png | The chord file (voice_piano_landed.ogg) existed but only played for medium+ landings and could be held back by the voice rate cap. Now it always plays on a real drop, any size, with a gold ring and black-and-white sparks |
 | A-14 | S1 Audio, K | No scary sounds; even the biggest crash is a cartoon crash | partial | | Placeholder beeps aren't scary, but this can't be judged until real SFX land |
 
@@ -222,7 +222,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 
 ## Totals
 
-152 rows: **built 113 · partial 21 · missing 7 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
+152 rows: **built 117 · partial 20 · missing 4 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
 
 ## Next up
 
@@ -230,13 +230,13 @@ Missing and partial rows, ranked by how much Kaden (and his son) will notice the
 
 1. **A-01, A-06, A-02..A-05, A-07..A-09, K-10, U-15: real SFX and object voices**. Every zap, impact and animal is a beep today, and "sound on every action" is the whole toy. Start with the 7 zaps, grow/shrink, and the voices of the 6 card-star objects (cow, car, piano, fridge, chicken, duck). **L**
 2. **A-10, A-11: music loop, brightening after a card**. The yard is silent between beeps. Gary is already generating the music. **M**
-3. **P-05, P-06, A-12: Jeff/Chuck reactions and barks** (delight at big impacts, Chuck narrating and blaming, one bark per zap). This is the comedy layer, and the bark plumbing exists. **M**
+3. ~~P-05, P-06, A-12~~ built (scripts/players/reactions.gd).
 4. ~~S-16~~ built (it already worked; now under test).
 5. ~~Y-10, Y-05, Y-04~~ built (scripts/gameplay/contraptions.gd).
 6. ~~A-13~~ built.
 7. ~~K-08~~ built.
 8. **G-13: trophy shelf you can flip through**. The done pile is only a growing stack. **M**
-9. **P-07: character idles** (poke and hum, kick a tire and check his hat), working for any picked Jarling. **M**
+9. ~~P-07~~ built (reactions.gd idle bits, any Jarling).
 10. ~~M-03~~ built.
 11. ~~Y-08~~ built; **Y-11: loose balloon objects** still missing (an ObjectData that floats, plus art: Content + Art). **S**
 12. **C-13: playtest #1 (Kaden and his son), then tag `v0.1.0`**. Add a "Playtest 2026-11-10 changes" section and new rows here from the notes. **S** (Gary)
