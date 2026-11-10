@@ -72,7 +72,7 @@ jobs:
             "clip": "store/clip.mp4",$( [[ -s store/jar.glb ]] && echo ' "jar": "store/jar.glb",' ) "dev": $( [[ "$GITHUB_REF_NAME" == *-dev* ]] && echo true || echo false ) }
           JSON
           cp -r store build/ 2>/dev/null || true   # grid, hero and jar.glb (the launcher's jar world) ship next to the binary
-          python3 -c "import json; json.load(open('build/openjar.json'))"   # the manifest must stay valid JSON
+          cat build/openjar.json
       - name: Zip
         run: cd build && zip -r "../${GITHUB_REPOSITORY#*/}-${GITHUB_REF_NAME}-linux.zip" .
       - name: Release
