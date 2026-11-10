@@ -347,6 +347,10 @@ On top of the template checklist in `docs/kid-design.md`.
   - **Podiums:** Jeff (P1, green) and Chuck (P2, red) are the game's own Jarling rigs holding the size gun taped in their colour, turned three-quarters toward the menu so the gun points across the stage. Facing the camera, its dish read as a frisbee covering the body.
   - **Round card:** "ZAP TIME!" with a "THE YARD IS OPEN" strip under it. The kit draws the card title at a fixed size, and "THE YARD IS OPEN" as the title ran off both edges of the screen.
   - **Solo is never restored at boot.** The settings row still mirrors solo while it is on, but a saved "on" no longer turns it on next launch. Solo is `--solo` or Select+Start for 2 s only.
+- 2026-11-10 (Systems, character chooser adoption, for Gary/Kaden to confirm):
+  - **You play whoever you picked.** The lobby chooser (template) picks each player's Jarling; the yard spawns that character with the same belt, taped junk guns (P1 green, P2 red, whoever is picked), partner zaps, aim rings and drop-in. Jeff (P1) and Chuck (P2) stay the defaults. Older text that says "Jeff" for P1 and "Chuck" for P2 means "the P1 / P2 pick".
+  - **Barks follow the character:** a character's own `bark_<id>` cue if the game has one, else their voice pack from `openjar-characters`, else a generic `bark` beep. Never another character's voice.
+  - **The belt moved** to `assets/gear/belt.glb`: `assets/characters/` belongs to the sync tool, which removes anything not in the roster.
 - 2026-11-10 (goal deck lane, for Gary/Kaden to confirm):
   - **"Taller than the barn" means the barn walls (7 m)**, not the ridge (about 10 m): three crates and a fridge on the loft get there; the ridge needed giant things stacked, a dad card at band 2.
   - **A "gun touch"** (for "from the loft" and the chain-reaction cards) is any zap on the object or holding it with gravity grab. Throws, magnets on *other* things, the see-saw and shoving with a held object are not touches, so bulldozing the egg off with a held hay bale counts as knocking it off.

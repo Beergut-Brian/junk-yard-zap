@@ -1,4 +1,5 @@
-## A player: Jeff (P1) or Chuck (P2) on the locked Z plane with a belt of guns (GAME.md "Camera and
+## A player (P1 green, P2 red) as whoever they picked in the lobby (Roster; Jeff and Chuck by
+## default) on the locked Z plane with a belt of guns (GAME.md "Camera and
 ## controls"). Left stick moves and aims, A fires (hold for grow/shrink steps and gravity grab),
 ## B jumps (low, floaty, forgiving), RB/LB cycle the belt, right stick also aims.
 ## Zapping the partner does something harmless and funny for at most PARTNER_TIME seconds.
@@ -25,9 +26,13 @@ const FLICK_WINDOW := 0.18
 const HEIGHT := 1.55
 const BEAM_LEN := 4.0
 const GUNS_DIR := "res://data/guns/"
-const CHARACTER := {Players.P1: &"jeff", Players.P2: &"chuck"}
+## Generic barks for a character with no voice of their own yet (never another character's voice).
+const GENERIC_BARK := "bark"
 
 @export var player := Players.P1
+## Roster id of the Jarling this player is. Empty (the default): Roster.pick(player), read once at
+## spawn; main.gd respawns everyone on the way back from the lobby, so a new pick shows next round.
+@export var character := ""
 ## Joined mid-session or not joined yet: asleep in the tire pile until his pad presses something.
 var asleep := false
 ## Template name for the same thing (tests/test_lobby.gd, main.gd).
@@ -84,8 +89,12 @@ func _ready() -> void:
 	cs.shape = cap
 	cs.position.y = HEIGHT * 0.5
 	add_child(cs)
+	if character == "":
+		character = Roster.pick(player)
+	if character == "":
+		character = Roster.default_for(player)
 	rig = JarlingRig.new()
-	rig.character = CHARACTER[player]
+	rig.character = StringName(character)
 	rig.name = "Rig"
 	add_child(rig)
 	rig.equip_gun(Players.COLOR[player])
@@ -545,9 +554,8 @@ func partner_zap(g: GunData, from: Zapper) -> void:
 				if d.length() < 4.0 and po.volume_mass() < 5.0 and not po.freeze:
 					po.apply_central_impulse(d.normalized() * po.mass * 3.0)
 	_partner_look.sync(fake)
-	# He keeps talking: one bark per zap (Jeff delighted, Chuck blaming Jeff). Audio.bark() once the
-	# openjar-characters voice packs land; a placeholder cue until then.
-	Audio.play("bark_%s" % CHARACTER[player], global_position)
+	# He keeps talking: one bark per zap, in his own voice (GAME.md "Audio").
+	bark()
 	partner_zapped.emit(player, g.id)
 
 
@@ -579,10 +587,26 @@ func _end_partner() -> void:
 func cheer() -> void:
 	rig.play("cheer")
 	rig.set_expression("happy")
-	Audio.play("bark_%s_cheer" % CHARACTER[player], global_position)
+	bark("cheer")
 	get_tree().create_timer(1.6).timeout.connect(func() -> void:
 		if is_instance_valid(self):
 			rig.play("idle"))
+
+
+## One bark in this character's own voice: the game's recorded cue bark_<id>[_<kind>] if there is
+## one, else the character's vendored voice pack (Roster.bark), else the generic bark[_<kind>].
+## Returns the cue name it used ("roster:<id>" for the voice pack). Never another character's voice.
+func bark(kind := "") -> String:
+	var tail := "_" + kind if kind != "" else ""
+	var own := "bark_%s%s" % [character, tail]
+	if Audio.has_cue(own):
+		Audio.play(own, global_position)
+		return own
+	if kind == "" and Roster.bark(character):
+		Audio.history.append("roster:" + character)
+		return "roster:" + character
+	Audio.play(GENERIC_BARK + tail, global_position)
+	return GENERIC_BARK + tail
 
 
 # ------------------------------------------------------------------------------------------ visuals
