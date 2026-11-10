@@ -77,6 +77,12 @@ func play(cue: String, _position = null, pitch := 1.0) -> void:
 	player.play()
 
 
+## True if the game has a recorded file for cue (cue.ogg or cue_1.ogg in SFX_DIR). No warning, no
+## synth: callers use it to choose between a character's own cue and a generic one.
+func has_cue(cue: String) -> bool:
+	return ResourceLoader.exists(SFX_DIR + cue + ".ogg") or ResourceLoader.exists("%s%s_1.ogg" % [SFX_DIR, cue])
+
+
 ## True if cue was played since the history was last cleared (tests).
 func played(cue: String) -> bool:
 	return history.has(cue)

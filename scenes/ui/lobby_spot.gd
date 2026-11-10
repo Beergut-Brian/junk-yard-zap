@@ -172,8 +172,11 @@ func _draw() -> void:
 		UiStyle.draw_show(self, Vector2(nx + 64, cy), "JOIN", 58, Color(UiStyle.CREAM, pulse))
 	else:
 		var name_x := nx + (40.0 if can_change else 0.0)
-		var size_n := int(62 * (1.0 + 0.18 * _pop))
-		var w := UiStyle.draw_show(self, Vector2(name_x, cy), UiStyle.skin().player_name(player), size_n, Color.WHITE)
+		var who := UiStyle.skin().player_name(player)
+		# Longer names shrink to fit between the arrows (the READY! stamp sits at the right end).
+		var room := plate.end.x - name_x - (64.0 if can_change else 24.0)
+		var size_n := int(name_size(who, room) * (1.0 + 0.18 * _pop))
+		var w := UiStyle.draw_show(self, Vector2(name_x, cy), who, size_n, Color.WHITE)
 		if can_change:
 			_arrow(Vector2(nx + 12, cy), -1, _kick[-1])
 			_arrow(Vector2(minf(name_x + w + 30, plate.end.x - 30), cy), 1, _kick[1])
@@ -184,6 +187,17 @@ func _draw() -> void:
 		_tag(Vector2(plate.end.x - UiStyle.rich_width(tag_text, UiStyle.Role.HINT, 28) - 50, PLATE_Y - 40), tag_text)
 	if readied:
 		_draw_stamp(Vector2(plate.end.x - 50, PLATE_Y - 14))
+
+
+## The name plate's font size: 62, smaller for a name that would not fit in `room` px (never below 34).
+static func name_size(text: String, room: float) -> int:
+	var w := UiStyle.show_width(text, 62)
+	if w <= room or w <= 0.0:
+		return 62
+	var size := maxi(34, int(62.0 * room / w))
+	while size > 34 and UiStyle.show_width(text, size) > room:   # widths aren't exactly linear
+		size -= 1
+	return size
 
 
 ## A small dark tag above the plate.

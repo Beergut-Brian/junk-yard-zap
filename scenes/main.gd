@@ -1,5 +1,6 @@
-## Boot scene: the lobby (start screen and main menu) over the yard (its look, Jeff and Chuck on the
-## podiums and the blurred yard behind, is data/menu_skin.tres), Jeff and Chuck in play, the shared
+## Boot scene: the lobby (start screen and main menu) over the yard (its look, each player's pick on
+## the podiums and the blurred yard behind, is data/menu_skin.tres), the picks in play (Roster; Jeff
+## and Chuck by default, Zapper reads the pick at spawn), the shared
 ## camera, the HUD, the pause menu. There are no rounds: a session is however long you want, and
 ## the yard saves as you leave it (scripts/levels/yard_level.gd).
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
@@ -65,7 +66,7 @@ func _spawn_all(awake: Array) -> void:
 			_players[p].wake()
 
 
-## A pad joined while playing: if it's Chuck's, he wakes up.
+## A pad joined while playing: if that player is asleep in the tire pile, they wake up.
 func _on_player_joined(player: int, _device: int) -> void:
 	if Game.state == Game.State.LOBBY:
 		return
