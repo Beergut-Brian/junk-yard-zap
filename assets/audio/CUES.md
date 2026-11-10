@@ -158,7 +158,7 @@ Kinds the code asks for: `""` (plain), `zap`, `delight`, `cheer`. A voice pack d
 
 ## Music (drop-in spec)
 
-The placeholders here are synth loops with the final names; replace the files, keep the names.
+The music files are the ElevenLabs tracks (2026-11-10, 96 BPM; base 32.6 s, bright layer 12.6 s, so the beat may shift a little through the crossfade; regenerate the bright layer at the base length if it bothers anyone).
 `YardLevel._ready` calls `Audio.music("music_yard")`; `card_done` calls `Audio.brighten()`.
 
 | File | Plays | Length | Loop |
