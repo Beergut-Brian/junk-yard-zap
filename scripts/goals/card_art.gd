@@ -365,6 +365,21 @@ static func thing(id: StringName, m: Vector2, size: float) -> void:
 			_ci.draw_circle(m, s * 0.3, METAL)
 			_eyes(m + Vector2(0, -s * 0.45), s * 0.5, Color.WHITE)
 			return
+		&"cow":   # Pictos' cow, with an ink edge and patches so white reads on the cream card
+			var c2: Color = Pictos.OBJ_COLORS[&"cow"]
+			_ci.draw_rect(Rect2(m + Vector2(-s, -s * 0.5), Vector2(s * 1.6, s)).grow(ow), INK)
+			_ci.draw_rect(Rect2(m + Vector2(s * 0.5, -s * 0.85), Vector2(s * 0.6, s * 0.65)).grow(ow), INK)
+			for x in [-0.85, -0.3, 0.2, 0.45]:
+				_ci.draw_rect(Rect2(m + Vector2(s * x, s * 0.5), Vector2(s * 0.16, s * 0.4)).grow(ow), INK)
+			Pictos.object(_ci, id, m, s)
+			_ci.draw_circle(m + Vector2(s * 0.1, s * 0.15), s * 0.25, Color(0.55, 0.35, 0.2))
+			_ci.draw_rect(Rect2(m + Vector2(s * 0.62, -s * 0.38), Vector2(s * 0.36, s * 0.16)), Color(0.95, 0.7, 0.75))
+			return
+		&"chicken":   # white too: an ink edge behind Pictos' chicken
+			_ci.draw_circle(m, s * 0.7 + ow, INK)
+			_ci.draw_circle(m + Vector2(s * 0.45, -s * 0.6), s * 0.38 + ow, INK)
+			Pictos.object(_ci, id, m, s)
+			return
 		_:
 			Pictos.object(_ci, id, m, s)
 			return
