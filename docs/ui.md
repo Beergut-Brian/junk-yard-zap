@@ -244,9 +244,10 @@ Remove `p1_name` / `p2_name` from `data/menu_skin.tres` so the plates follow the
   with the same `jarling_rig.gd`, gear and `windup_<id>` cue falling back to a generic windup.
 - **Junk Yard Zap** (3D): title "JUNK YARD ZAP", accent `#ffb21f`, sunburst `#ff6a2b`, deep
   `#33201a`; the yard diorama as `backdrop_scene`, the JYZ Jarling rig as characters.
-  **Chooser:** leave the skin's character slots empty (or give the JYZ rig scene
-  `set_character(id)`), and spawn each zapper's body from `Roster.info(Roster.pick(p)).glb` with
-  the JYZ equipment (tool in `slot_hand_r`, backpack in `slot_back`) on any standard body.
+  **Chooser (done, jyz-chooser-1):** the podiums are `scenes/ui/lobby_p1.tscn` / `lobby_p2.tscn`
+  (`lobby_jarling.gd`, with `set_character(id)`: same rig, gun and tape, new body); the skin has no
+  fixed names; each `Zapper` builds its `JarlingRig` from `Roster.info(Roster.pick(p)).glb` with the
+  belt on `waist` and the junk gun on `hand_r`; barks are `bark_<id>` else the generic `bark`.
 - **The Hill** (2D pixel art): `pixel_art = true`, `character_scale = 4` (or whatever integer
   your sprites use), characters as Node2D scenes (an `AnimatedSprite2D` with feet at the origin;
   add `cheer()` to play a jump animation), title as a pixel logo PNG in `title_texture`
