@@ -2,7 +2,7 @@
 ## (and the odd hard throw, standing in for gravity-grab flicks), logging anything that would break a
 ## kid's yard. Run headless and deterministic:
 ##   godot --headless --path . --fixed-fps 60 res://scenes/proto/risk_proto.tscn -- --stress
-##   ... -- --stress=40      (spawn copies up to 40 bodies)
+##   ... -- --stress=40      (spawn copies up to 40 bodies)   ... --seed=N  (another fixed seed)
 ## Exits 0 when the summary is clean, 1 otherwise.
 extends Node
 
@@ -15,6 +15,7 @@ const SPIKE_MS := 16.0
 const SINK_Y := -0.05             # a centre below the ground surface = tunnelled into the floor
 
 var count := 0
+var seed_used := SEED
 var rng := RandomNumberGenerator.new()
 var proto: Node
 var frames := 0
@@ -39,7 +40,10 @@ var _drifting := {}
 
 
 func _ready() -> void:
-	rng.seed = SEED
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--seed="):
+			seed_used = int(a.trim_prefix("--seed="))
+	rng.seed = seed_used
 	proto = get_parent()
 	process_physics_priority = 100   # after every object has moved this frame
 	await get_tree().process_frame
@@ -50,7 +54,7 @@ func _ready() -> void:
 		proto.spawn(d, Vector3(rng.randf_range(-24, 24), rng.randf_range(2, 10), 0))
 	for o: PhysicsObject in proto.objects:
 		o.recalled.connect(func(obj): _note("escape: %s recalled from bounds" % obj.name))
-	print("stress: seed %d, %d bodies, %.0f s of physics" % [SEED, proto.objects.size(), SECONDS])
+	print("stress: seed %d, %d bodies, %.0f s of physics" % [seed_used, proto.objects.size(), SECONDS])
 
 
 func _physics_process(delta: float) -> void:
@@ -159,7 +163,7 @@ func _finish() -> void:
 	var p99 := sorted[int(sorted.size() * 0.99)] if sorted.size() > 0 else 0.0
 	var clean := nan_count == 0 and escapes == 0 and spikes == 0 and over_cap == 0 and sunk == 0
 	var lines := PackedStringArray([
-		"=== stress summary (seed %d) ===" % SEED,
+		"=== stress summary (seed %d) ===" % seed_used,
 		"physics time %.1f s, %d frames, %d bodies, glue joints alive at end %d" % [t, frames, proto.objects.size(), get_tree().get_nodes_in_group(&"glue_joints").size()],
 		"actions: %s" % JSON.stringify(actions),
 		"NaN events: %d" % nan_count,
