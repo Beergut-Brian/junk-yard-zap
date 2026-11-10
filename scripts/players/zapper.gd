@@ -121,6 +121,7 @@ func _ready() -> void:
 	_zzz.position = Vector3(0.3, 0.9, 0.3)
 	_zzz.emitting = false
 	add_child(_zzz)
+	Audio.big_impact.connect(_on_big_impact)
 	if guns.is_empty():
 		guns = load_guns()
 	set_gun(gun_index, false)
@@ -380,7 +381,7 @@ func _press() -> void:
 				held = o
 				o.last_touch = &"gun"
 				Audio.play("grab", o.global_position)
-				o.speak()
+				o.speak("grabbed")
 				changed = true
 			else:
 				Audio.play("nope", global_position)
@@ -395,6 +396,9 @@ func _press() -> void:
 				o.last_touch = &"gun"
 	if changed:
 		Fx.ring(get_tree(), target.global_position, g.beam_color, (target as PhysicsObject).radius() if target is PhysicsObject else 1.0)
+		# Chuck narrates his own zaps (GAME.md "Audio"); the gate keeps it to one bark per zap.
+		if Audio.bark_style(character, "narrate") and Audio.can_bark(self):
+			bark("zap")
 	zapped.emit(player, g.id, target)
 
 
@@ -478,6 +482,7 @@ func _let_go(throw: bool) -> void:
 		var speed: float = gun().param("throw_speed", 14.0) if gun() else 14.0
 		Effects.release(o, Vector3(aim_dir.x, aim_dir.y + 0.25, 0).normalized() * speed + Vector3(velocity.x, 0, 0))
 		Audio.play("throw", o.global_position)
+		o.speak("thrown")
 		Fx.burst(get_tree(), o.global_position, Color(1, 1, 1, 0.6), 10, 0.8, 0.4)
 	else:
 		Effects.release(o)
@@ -555,7 +560,8 @@ func partner_zap(g: GunData, from: Zapper) -> void:
 					po.apply_central_impulse(d.normalized() * po.mass * 3.0)
 	_partner_look.sync(fake)
 	# He keeps talking: one bark per zap, in his own voice (GAME.md "Audio").
-	bark()
+	if Audio.can_bark(self):
+		bark()
 	partner_zapped.emit(player, g.id)
 
 
@@ -597,16 +603,16 @@ func cheer() -> void:
 ## one, else the character's vendored voice pack (Roster.bark), else the generic bark[_<kind>].
 ## Returns the cue name it used ("roster:<id>" for the voice pack). Never another character's voice.
 func bark(kind := "") -> String:
-	var tail := "_" + kind if kind != "" else ""
-	var own := "bark_%s%s" % [character, tail]
-	if Audio.has_cue(own):
-		Audio.play(own, global_position)
-		return own
-	if kind == "" and Roster.bark(character):
-		Audio.history.append("roster:" + character)
-		return "roster:" + character
-	Audio.play(GENERIC_BARK + tail, global_position)
-	return GENERIC_BARK + tail
+	return Audio.bark(character, kind, self)
+
+
+## Jeff delights at every big impact near him (GAME.md "Audio"), at most one bark at a time.
+func _on_big_impact(at: Vector3, _band: String) -> void:
+	if asleep or not Audio.bark_style(character, "delight") or not Audio.can_bark(self):
+		return
+	if at != Vector3.ZERO and at.distance_to(global_position) > 30.0:
+		return
+	bark("delight")
 
 
 # ------------------------------------------------------------------------------------------ visuals

@@ -570,8 +570,9 @@ func _on_effect_changed(_t: Node3D, _effect: StringName, on: bool) -> void:
 
 
 ## The object's voice, pitched by size: a giant cow moos low, a tiny car beeps high.
-func speak() -> void:
-	Audio.play(data.voice_cue(), global_position, 1.0 / sqrt(current_scale))
+## kind: react, grabbed, thrown, landed (Audio.voice caps it at one per object per 0.5 s).
+func speak(kind := "react") -> void:
+	Audio.voice(data.voice_cue(), kind, self, 1.0 / sqrt(current_scale))
 
 
 ## Thrown or launched: dizzy for a moment.
@@ -584,5 +585,7 @@ func _on_landed(impulse: float) -> void:
 	var m := volume_mass()
 	var band := "light" if m < 1.0 else ("medium" if m < 8.0 else ("heavy" if m < 60.0 else "huge"))
 	Audio.play("impact_%s" % band, global_position, 1.0 / sqrt(current_scale))
+	if band != "light":
+		speak("landed")
 	Fx.impact(get_tree(), global_position - Yard.up_at(global_position) * _half_along(Yard.up_at(global_position), current_scale), m, impulse / maxf(m, 0.01))
 	object_landed.emit(self, impulse)

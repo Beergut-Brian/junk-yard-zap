@@ -223,18 +223,29 @@ func wipe_settings() -> void
 ### `Audio` (`scripts/autoload/Audio.gd`)
 
 ```gdscript
+signal big_impact(position: Vector3, band: String)               # impact_heavy / impact_huge played
 func play(cue: String, position = null, pitch := 1.0) -> void   # cue = file stem in assets/audio/sfx/
 var history: PackedStringArray     # every cue played, newest last (tests, demo logs)
 func played(cue: String) -> bool
-func music(track: String, fade: float = 0.5) -> void
+func has_cue(cue: String) -> bool   # a file exists (cue.ogg or cue_1.ogg)
+func variants(cue: String) -> int   # how many files; play() rotates them, never the same twice running
+func voice(base: String, kind := "react", owner: Object = null, pitch := 1.0) -> bool
+	# object voice voice_<id>_<kind> (react, grabbed, thrown, landed); one per owner per 0.5 s
+func bark(character: String, kind := "", speaker = null) -> String
+	# bark_<id>[_kind] cue, else the roster voice pack (<voice>/<kind>.ogg, "roster:<id>"), else bark[_kind]
+func can_bark(speaker) -> bool      # one bark per zap: per-speaker and global gaps
+func bark_style(character: String, style: String) -> bool   # "delight" (Jeff), "narrate" (Chuck)
+func music(track: String, fade: float = 0.5) -> void       # loops music/<track>.ogg (+ <track>_bright)
+func brighten(secs := 10.0) -> bool  # crossfade to the bright layer and back; card_done calls it
 func stop_music(fade: float = 0.5) -> void
-func bark(character: String, bark: String) -> void   # from openjar-characters voice packs
-func set_volume(bus: String, linear: float) -> void  # "Music" / "SFX", 0..1; Settings calls it
+func duck(db: float) -> void         # dip the music (big impacts and barks do it themselves)
+func set_volume(bus: String, linear: float) -> void  # "Music" / "SFX" (Voice follows SFX), 0..1
 func get_volume(bus: String) -> float
 ```
 
-Audio creates the `Music` and `SFX` buses at start if the project has no bus layout, and applies
-the saved volumes.
+Audio creates the `Music`, `SFX` and `Voice` buses at start if the project has no bus layout, a
+hard limiter on Master, a duck stage on Music, and applies the saved volumes. Cue list, file rules
+and the music drop-in spec: `assets/audio/CUES.md`.
 
 Every action must call `Audio.play`. Missing cue files log a line once, never crash, and play a
 placeholder synth beep (`Synth.beep(cue)`, `scripts/autoload/synth.gd`) so the grey-box is never silent.
