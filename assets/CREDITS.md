@@ -28,7 +28,9 @@ original designs (no brands, characters, real places or artists' styles imitated
 
 | File | Source / tool | Prompt or notes | License |
 | --- | --- | --- | --- |
+| `characters/jeff/jeff.glb` | `openjar-characters` `v0.3.0`, `characters/jeff/refs/jarling/jeff.glb` (Jarlings avatar kit, Blender, procedural); Godot extracts its textures (`jeff_*.png`) on import | Jeff, playable; copied unchanged | Open Jar Games, in-house (same terms as openjar-characters) |
 | `characters/jeff/pixel.png` | `openjar-characters` `v0.3.0`, `tools/pixel/residents.py` `jeff()` (Python + Pillow, drawn in code) | Jeff pixel form (the-hill pixel), front view, native size | Open Jar Games, in-house (same terms as openjar-characters) |
+| `characters/chuck/chuck.glb` | `openjar-characters` `v0.3.0`, `characters/chuck/refs/jarling/chuck.glb` (Jarlings avatar kit, Blender, procedural); Godot extracts its textures (`chuck_*.png`) on import | Chuck, playable; copied unchanged | Open Jar Games, in-house (same terms as openjar-characters) |
 | `characters/chuck/pixel.png` | `openjar-characters` `v0.3.0`, `tools/pixel/residents.py` `chuck()` (Python + Pillow, drawn in code) | Chuck pixel form (the-hill pixel), front view, native size | Open Jar Games, in-house (same terms as openjar-characters) |
 
 <!-- characters:end -->
