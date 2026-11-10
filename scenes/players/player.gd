@@ -9,6 +9,11 @@ signal jumped(player: int)
 @export var speed := 600.0
 @export var jump_velocity := -1100.0
 @export var gravity := 2600.0
+## Joined mid-round: stands see-through on its spawn and plays from the next round.
+var waiting := false:
+	set(v):
+		waiting = v
+		modulate.a = 0.35 if v else 1.0
 
 @onready var visual: ColorRect = $Visual
 
@@ -20,7 +25,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if Game.state != Game.State.PLAYING:
+	if Game.state != Game.State.PLAYING or waiting:
 		return
 	var dir := Players.move_vector(player)
 	velocity.x = dir.x * speed
