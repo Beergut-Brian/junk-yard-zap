@@ -25,6 +25,9 @@ var _gun_tip: Node3D
 var _gun_tape: MeshInstance3D
 var _tape := Color.WHITE
 var _current := ""
+## The actions this character's own rig can play (its AnimationPlayer's clips; the standard Jarling
+## has idle, run, kick, cheer). Reactions and idles ask has_action() and fall back to idle.
+var actions: PackedStringArray = []
 
 
 func _ready() -> void:
@@ -71,6 +74,7 @@ func _build() -> void:
 	model.scale = Vector3.ONE * SCALE
 	add_child(model)
 	anim = model.find_child("AnimationPlayer", true, false)
+	actions = anim.get_animation_list() if anim else PackedStringArray()
 	if anim:
 		for a in ["idle", "run", "cheer"]:
 			if anim.has_animation(a):
@@ -103,6 +107,63 @@ func play(a: String, speed := 1.0) -> void:
 	if _current != a:
 		_current = a
 		anim.play(a, 0.15)
+
+
+func has_action(a: String) -> bool:
+	return a in actions
+
+
+## Play one of the character's own actions; a clip this rig hasn't got falls back to idle.
+## Returns the clip it played ("idle" on the fallback, "" if the rig has no idle either).
+func play_action(a: String, speed := 1.0) -> String:
+	var use := a if has_action(a) else "idle"
+	if not has_action(use):
+		return ""
+	if use == _current and anim:
+		anim.stop()   # same one-shot again (a second kick): restart it
+		_current = ""
+	play(use, speed)
+	return use
+
+
+## The clip playing now ("" before the first).
+func current() -> String:
+	return _current
+
+
+## A quick cartoon wobble (squash, stretch, settle) of the body: the reaction clip for a big
+## impact. Works on any rig (it scales the model, not a bone).
+func wobble(strength := 1.0) -> void:
+	if model == null:
+		return
+	var rest := Vector3.ONE * SCALE
+	var k := 0.2 * strength
+	var tw := model.create_tween()
+	tw.tween_property(model, "scale", rest * Vector3(1.0 + k, 1.0 - k, 1.0 + k), 0.08)
+	tw.tween_property(model, "scale", rest * Vector3(1.0 - k * 0.7, 1.0 + k * 0.9, 1.0 - k * 0.7), 0.12)
+	tw.tween_property(model, "scale", rest, 0.3).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+
+
+## A little hop of the body (the feet leave the ground; the player's capsule doesn't move).
+func hop(height := 0.25, secs := 0.3) -> void:
+	if model == null:
+		return
+	var tw := model.create_tween()
+	tw.tween_property(model, "position:y", height, secs * 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(model, "position:y", 0.0, secs * 0.6).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+
+
+## Tilt the body (radians, x = lean forward / back, z = sideways) for secs, then back upright.
+func tilt(to: Vector2, secs := 0.6, hold := 0.0) -> void:
+	if model == null:
+		return
+	var tw := model.create_tween()
+	tw.tween_property(model, "rotation:x", to.x, secs * 0.35).set_trans(Tween.TRANS_SINE)
+	tw.parallel().tween_property(model, "rotation:z", to.y, secs * 0.35).set_trans(Tween.TRANS_SINE)
+	if hold > 0.0:
+		tw.tween_interval(hold)
+	tw.tween_property(model, "rotation:x", 0.0, secs * 0.65).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(model, "rotation:z", 0.0, secs * 0.65).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func set_expression(e: String) -> void:
