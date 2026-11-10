@@ -16,14 +16,37 @@ var _cache := {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	for bus in ["Music", "SFX"]:
+		if AudioServer.get_bus_index(bus) == -1:
+			AudioServer.add_bus()
+			AudioServer.set_bus_name(AudioServer.bus_count - 1, bus)
+			AudioServer.set_bus_send(AudioServer.bus_count - 1, "Master")
 	for i in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
-		p.bus = "SFX" if AudioServer.get_bus_index("SFX") != -1 else "Master"
+		p.bus = "SFX"
 		add_child(p)
 		_pool.append(p)
 	_music = AudioStreamPlayer.new()
-	_music.bus = "Music" if AudioServer.get_bus_index("Music") != -1 else "Master"
+	_music.bus = "Music"
 	add_child(_music)
+	set_volume("Music", Save.get_setting("music_volume", 0.8))
+	set_volume("SFX", Save.get_setting("sound_volume", 1.0))
+
+
+## bus: "Music" or "SFX"; linear 0..1 (the Settings sliders). 0 mutes.
+func set_volume(bus: String, linear: float) -> void:
+	var i := AudioServer.get_bus_index(bus)
+	if i == -1:
+		return
+	AudioServer.set_bus_volume_db(i, linear_to_db(maxf(linear, 0.0001)))
+	AudioServer.set_bus_mute(i, linear <= 0.0)
+
+
+func get_volume(bus: String) -> float:
+	var i := AudioServer.get_bus_index(bus)
+	if i == -1 or AudioServer.is_bus_mute(i):
+		return 0.0
+	return db_to_linear(AudioServer.get_bus_volume_db(i))
 
 
 func play(cue: String, _position = null) -> void:

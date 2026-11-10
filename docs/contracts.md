@@ -32,29 +32,53 @@ func finish_lobby(players: Array) -> void   # the lobby calls this: emits lobby_
 func quit(code: int = 0) -> void            # Save.flush(), then exit; the launcher resumes
 ```
 
-Start (`pause`) toggles `PLAYING` <-> `PAUSED`. The pause menu (`scenes/ui/pause_menu.tscn`) shows
-three icon buttons: Resume, Restart (`to_lobby()`), Back to the launcher (`quit()`). Either pad
-moves the cursor; A presses; B or Start resumes. Window close also goes through `quit()`.
+Start (`pause`) toggles `PLAYING` <-> `PAUSED`. The pause menu (`scenes/ui/pause_menu.tscn`) is a
+text menu over the blurred game: Resume, Restart (`to_lobby()`), Settings, Back to Open Jar
+("Leave the game?" Stay / Leave, then `quit()`). It shows who paused (`paused_by`). Either pad
+moves the cursor; A selects; B backs out of Settings / the question, else resumes; Start resumes.
+Window close also goes through `quit()`. Menus are for the grown-up: see `docs/ui.md`.
 
 ### Lobby (`scenes/ui/lobby.tscn`, `scenes/ui/lobby.gd`)
 
-Start screen and main menu in one, no text. Two player spots (P1 green left, P2 red right), the
-game's title art on top, two icon buttons below: Play and Back to the launcher (a door).
+Start screen and main menu in one, a text menu for the grown-up (`docs/ui.md`). Title on top,
+Play / Settings / Back to Open Jar in the middle, a join panel per player (P1 green left, P2 red
+right) with "Press A to join", the player's character and READY.
 
-- A on Play: that pad joins (if new) and is ready; its spot lights up and its character waves.
-- B: un-ready. Both players ready: a 3-dot countdown, then `Game.finish_lobby(ready_players)`.
-- A held on Play for 1.5 s by a ready player starts without the other (a ring fills round the spot).
+- A on a new pad: that pad joins and is ready; its panel lights up and its character waves.
+- B: un-ready (or back out of Settings / the question). Both ready: "Starting in 3, 2, 1", then
+  `Game.finish_lobby(ready_players)`. Un-readying cancels.
+- A held on Play for 1.5 s by a ready player starts without the other (Play fills up).
+- Back to Open Jar asks "Leave the game?" (Stay focused first), Leave calls `Game.quit()`.
 - Solo mode readies both. A pad that joins mid-game plays from the next round.
 
 Hooks a game uses (keep the node names):
 
 ```gdscript
-@export var title_texture: Texture2D        # the title art; or replace the TitleArt node
+@export var title_texture: Texture2D        # the logo / key art; empty: title_text in the display face
+@export var title_text: String              # empty: the project name
 signal player_readied(player: int, ready: bool)
 signal countdown_started()
 signal countdown_cancelled()
 # Spots/P1/Character, Spots/P2/Character: swap in your character. The lobby calls
 # set_joined(on: bool) and wave() on it if it has them.
+# Backdrop (hide it to show the level), TitleArt, Spots/P*/fill_alpha (0..1, see-through panels),
+# Buttons/Play, Buttons/Settings, Buttons/Door, Settings, Confirm. Customise in _ready(), in code.
+```
+
+Theme: `UiStyle.accent = Color(...)` sets the game's accent (focus, sliders, progress). The rest
+of the look is shared; see `docs/ui.md`.
+
+### Settings (`scenes/ui/settings_panel.gd`, class `SettingsPanel`)
+
+Music volume, sound volume, screen shake, solo playtest mode; in the lobby and the pause menu.
+Per install, through `Save.set_setting()`, written the moment a value changes.
+
+```gdscript
+const MUSIC := "music_volume"     # 0..1, default 0.8 -> Audio "Music" bus
+const SOUND := "sound_volume"     # 0..1, default 1.0 -> Audio "SFX" bus
+const SHAKE := "screen_shake"     # bool, default true
+const SOLO := "solo_playtest"     # bool, default false; on at boot turns Players solo on
+static func screen_shake() -> bool  # games check this before shaking the camera
 ```
 
 ### `Players` (`scripts/autoload/Players.gd`)
@@ -106,6 +130,13 @@ func get_value(key: String, default = null)
 func set_value(key: String, value) -> void   # marks dirty
 func flush() -> void                         # writes if dirty; Game.end_round() calls this
 func wipe() -> void
+
+# Per install, not per profile: user://settings.json, written on every set_setting().
+var settings_path: String                    # tests point this elsewhere
+func get_setting(key: String, default = null)
+func set_setting(key: String, value) -> void
+func reload_settings() -> void
+func wipe_settings() -> void
 ```
 
 ### `Audio` (`scripts/autoload/Audio.gd`)
@@ -115,7 +146,12 @@ func play(cue: String, position = null) -> void   # cue = file stem in assets/au
 func music(track: String, fade: float = 0.5) -> void
 func stop_music(fade: float = 0.5) -> void
 func bark(character: String, bark: String) -> void   # from openjar-characters voice packs
+func set_volume(bus: String, linear: float) -> void  # "Music" / "SFX", 0..1; Settings calls it
+func get_volume(bus: String) -> float
 ```
+
+Audio creates the `Music` and `SFX` buses at start if the project has no bus layout, and applies
+the saved volumes.
 
 Every action must call `Audio.play`. Missing cue files log a warning, never crash.
 
