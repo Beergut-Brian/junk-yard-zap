@@ -411,7 +411,10 @@ func _size_step(dir: int) -> bool:
 func _hold(delta: float, _mv: Vector2) -> void:
 	var level := YardLevel.find(self)
 	if level and level.reset_holding(player):
-		level.reset_hold_step(player, delta)
+		if level.near_reset_sign(self):
+			level.reset_hold_step(player, delta)
+		else:
+			level.reset_hold_end(player)   # walked away from the sign: no reset
 		return
 	if gun() == null:
 		return
