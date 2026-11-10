@@ -17,9 +17,25 @@ original designs (no brands, characters, real places or artists' styles imitated
 
 | File | Source / tool | Prompt or notes | License |
 | --- | --- | --- | --- |
-| `scripts/art/` (yard dressing, sky shader, 40 object models, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
+| `scripts/art/` (yard dressing, sky shader, 48 object models, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
 | `store/jar.glb` | `art/tools/make_jar.py` (Blender 5.2.3, background) | Launcher jar world: a giant cow on a balloon over a scrap pile | Project's own |
 | `store/grid.png`, `store/hero.png` | `art/tools/render_store.sh` (Godot renders of `art/preview/store.tscn`) | Grid: Jeff grows the cow, Chuck in a ballooned bathtub. Hero: the whole yard | Project's own |
+
+## Object voices (feature/more-objects)
+
+Synthesised from scratch by `art/tools/make_voices.py` (Python stdlib oscillators, encoded with ffmpeg
+libvorbis), in the style of the placeholder synth (`scripts/autoload/synth.gd`). No samples, no recordings.
+
+| File | Source / tool | Prompt or notes | License |
+| --- | --- | --- | --- |
+| `audio/sfx/voice_rubber_chicken.ogg` | `art/tools/make_voices.py` | Squeak-toy squeal up, wheeze down (saw + vibrato) | Project's own |
+| `audio/sfx/voice_garden_gnome.ogg` | `art/tools/make_voices.py` | Stony little "hm-hmm!" (two low triangle hums) | Project's own |
+| `audio/sfx/voice_kiddie_pool.ogg` | `art/tools/make_voices.py` | Wobbly bloop with a noise slosh | Project's own |
+| `audio/sfx/voice_trampoline.ogg` | `art/tools/make_voices.py` | Sproing: rising sine with springy vibrato | Project's own |
+| `audio/sfx/voice_tire_swing.ogg` | `art/tools/make_voices.py` | Rubbery creak and a low boop | Project's own |
+| `audio/sfx/voice_swim_ring.ogg` | `art/tools/make_voices.py` | Two quick inflatable squeaks | Project's own |
+| `audio/sfx/voice_lawn_flamingo.ogg` | `art/tools/make_voices.py` | Plastic kazoo honk (square wave) | Project's own |
+| `audio/sfx/voice_surfboard.ogg` | `art/tools/make_voices.py` | Breathy "wheee" rise and a soft drop | Project's own |
 
 <!-- characters:begin (scripts/tools/sync_characters.sh writes this block) -->
 
