@@ -240,9 +240,12 @@ func _oldest(list: Array[AudioStreamPlayer]) -> AudioStreamPlayer:
 
 
 ## True if the game has a recorded file for cue (cue.ogg or cue_1.ogg in SFX_DIR). No warning, no
-## synth: callers use it to choose between a character's own cue and a generic one.
+## synth: callers use it to choose between a character's own cue and a generic one. An object
+## voice base ("voice_cow") counts when its voice set has a react file (what voice() plays).
 func has_cue(cue: String) -> bool:
-	return ResourceLoader.exists(SFX_DIR + cue + ".ogg") or ResourceLoader.exists("%s%s_1.ogg" % [SFX_DIR, cue])
+	if ResourceLoader.exists(SFX_DIR + cue + ".ogg") or ResourceLoader.exists("%s%s_1.ogg" % [SFX_DIR, cue]):
+		return true
+	return cue.begins_with("voice_") and ResourceLoader.exists(SFX_DIR + cue + "_react.ogg")
 
 
 ## True if cue was played since the history was last cleared (tests).
