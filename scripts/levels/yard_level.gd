@@ -82,6 +82,7 @@ func _ready() -> void:
 	card.position = Vector3(-45.5, 2.6, -0.9)
 	add_child(card)
 	spawn_layout()
+	Audio.music("music_yard")
 	if use_save:
 		load_yard()
 		Game.state_changed.connect(_on_state_changed)
