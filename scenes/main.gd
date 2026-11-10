@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
@@ -162,6 +162,12 @@ func _start_demo() -> void:
 		"goal": _beat_goal()
 		"rings": _beat_rings()
 		"apart": _beat_apart()
+		"chute": _beat_chute()
+		"piano": _beat_piano()
+		"fan": _beat_fan()
+		"belt": _beat_belt()
+		"hook": _beat_hook()
+		"trampoline": _beat_trampoline()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -248,3 +254,83 @@ func _beat_apart() -> void:
 	for p in _players:
 		(_players[p] as Zapper).input_override = {"aim": Vector2.UP}
 
+
+## K-08: the bathtub flies off the map and floats back down at the gate under a parachute.
+func _beat_chute() -> void:
+	_place(Players.P1, -41.5, 1.0)
+	_place(Players.P2, -32.5, -1.0)
+	var tub := level.object(&"bathtub")
+	camera.focus = [tub]
+	get_tree().create_timer(0.3).timeout.connect(func() -> void:
+		tub.global_position = Vector3(YardLevel.LEFT - 20.0, 5.0, 0))
+
+
+## A-13: the piano drops from the loft height and lands with its chord.
+func _beat_piano() -> void:
+	var piano := level.object(&"piano")
+	_place(Players.P1, 10.0, 1.0)
+	_place(Players.P2, 15.0, -1.0)
+	piano.global_position = Vector3(12.5, 6.0, 0)
+	piano.linear_velocity = Vector3.ZERO
+	camera.focus = [piano]
+
+
+## Y-10: Jeff on the top deck zaps the fan on; the kite blows off the tower.
+func _beat_fan() -> void:
+	var c := level.contraptions
+	_place(Players.P1, 42.8, -1.0)
+	(_players[Players.P1] as Zapper).global_position.y = 9.3
+	_place(Players.P2, 36.0, 1.0)
+	camera.focus = [c.fan, level.object(&"kite")]
+	get_tree().create_timer(0.4).timeout.connect(func() -> void:
+		Audio.play("zap_bouncy", c.fan.global_position)
+		Fx.ring(get_tree(), c.fan.global_position, Color(1, 0.85, 0.3), 1.1)
+		c.fan.zapped_by(_players[Players.P1], null))
+
+
+## Y-05: Chuck zaps the belt button; the belt carries the car toward the gate.
+func _beat_belt() -> void:
+	var c := level.contraptions
+	_place(Players.P1, -31.5, 1.0)
+	_place(Players.P2, -23.2, -1.0)
+	camera.focus = [level.object(&"car"), c.button]
+	get_tree().create_timer(0.3).timeout.connect(func() -> void:
+		Audio.play("zap_glue", c.button.global_position)
+		c.button.zapped_by(_players[Players.P2], null))
+
+
+## Y-04: Jeff grabs the crane hook and swings it onto the chicken; the rope lifts the chicken.
+func _beat_hook() -> void:
+	var c := level.contraptions
+	var chicken := level.object(&"chicken")
+	for o in level.objects.values():   # just the chicken under the crane
+		if o != chicken and absf(o.global_position.x + 17.8) < 3.0:
+			o.global_position.x -= 9.0
+	chicken.global_position = Vector3(-17.8, 0.3, 0)
+	_place(Players.P1, -15.6, -1.0)
+	_place(Players.P2, -21.0, 1.0)
+	camera.focus = [c.hook, chicken]
+	var z: Zapper = _players[Players.P1]
+	get_tree().create_timer(0.2).timeout.connect(func() -> void:
+		z.set_gun(1, false)
+		z.aim_dir = Vector2(-0.6, 0.8).normalized()
+		if Effects.grab(c.hook, z, Players.COLOR[Players.P1]):
+			z.held = c.hook
+			Audio.play("grab", c.hook.global_position))
+	get_tree().create_timer(1.6).timeout.connect(func() -> void:
+		z._let_go(false)
+		c.hook.global_position = chicken.global_position + Vector3(0, 0.55, 0))
+
+
+## Y-08: the ball drops onto the barn trampoline and Chuck bounces beside it.
+func _beat_trampoline() -> void:
+	var t := level.contraptions.trampoline
+	for o in level.objects.values():
+		if absf(o.global_position.x - t.global_position.x) < 2.0:
+			o.global_position.x -= 3.0
+	_place(Players.P1, 9.6, 1.0)
+	_place(Players.P2, t.global_position.x + 0.3, -1.0)
+	(_players[Players.P2] as Zapper).global_position.y = 3.0
+	var ball := level.object(&"ball")
+	ball.global_position = t.global_position + Vector3(-0.5, 5.0, 0)
+	camera.focus = [t, ball]
