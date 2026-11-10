@@ -8,4 +8,4 @@ id = &"plank"
 size = Vector3(4, 0.25, 0.8)
 color = Color(0.72, 0.6, 0.42, 1)
 face_at = Vector3(0.38, 0, 0.5)
-face_size = 0.2
+face_size = 0.23
