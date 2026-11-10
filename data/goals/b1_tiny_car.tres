@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_goal"]
+[ext_resource type="Texture2D" path="res://assets/sprites/goals/b1_tiny_car.png" id="2_pic"]
+
+[resource]
+script = ExtResource("1_goal")
+id = &"b1_tiny_car"
+description = "Make the car tiny"
+picture = ExtResource("2_pic")
+band = 1
+rank = 35
+condition = 6
+subject = &"car"
+amount = -1.0
+hint_objects = Array[StringName]([&"car"])

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_goal"]
+[ext_resource type="Texture2D" path="res://assets/sprites/goals/b2_duck_on_tower.png" id="2_pic"]
+
+[resource]
+script = ExtResource("1_goal")
+id = &"b2_duck_on_tower"
+description = "Put the duck on top of the tower"
+picture = ExtResource("2_pic")
+band = 2
+rank = 60
+condition = 2
+subject = &"duck"
+other = &"tower_top"
+hint_objects = Array[StringName]([&"duck"])

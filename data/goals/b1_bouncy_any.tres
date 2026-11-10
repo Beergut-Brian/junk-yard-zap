@@ -6,4 +6,6 @@
 script = ExtResource("1_c6u8c")
 id = &"b1_bouncy_any"
 description = "Make anything bouncy"
+rank = 30
 effect = &"bouncy"
+hint_objects = Array[StringName]([&"ball", &"tire"])

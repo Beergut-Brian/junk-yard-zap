@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_goal"]
+[ext_resource type="Texture2D" path="res://assets/sprites/goals/b2_car_over_fence.png" id="2_pic"]
+
+[sub_resource type="Resource" id="Resource_car_over_1"]
+script = ExtResource("1_goal")
+condition = 4
+amount = 4.5
+
+[sub_resource type="Resource" id="Resource_car_over_2"]
+script = ExtResource("1_goal")
+condition = 5
+amount = 8.0
+
+[resource]
+script = ExtResource("1_goal")
+id = &"b2_car_over_fence"
+description = "Make the car fly over the fence"
+picture = ExtResource("2_pic")
+band = 2
+rank = 90
+condition = 10
+subject = &"car"
+steps = Array[ExtResource("1_goal")]([SubResource("Resource_car_over_1"), SubResource("Resource_car_over_2")])
+hint_objects = Array[StringName]([&"car"])
