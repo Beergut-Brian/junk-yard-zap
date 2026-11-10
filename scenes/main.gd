@@ -187,6 +187,7 @@ func _place(p: int, x: float, face: float) -> void:
 ## A giant bouncy balloon cow: Jeff grows it, Chuck makes it bouncy, Jeff balloons it.
 func _beat_combo() -> void:
 	var cow := level.object(&"cow")
+	camera.focus = [cow]
 	_place(Players.P1, 8.2, 1.0)
 	_place(Players.P2, 17.5, -1.0)
 	var steps := [

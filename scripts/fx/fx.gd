@@ -89,5 +89,5 @@ static func sparkle(tree: SceneTree, at: Vector3) -> void:
 
 static func fireworks(tree: SceneTree, at: Vector3) -> void:
 	for i in 6:
-		var c := Color.from_hsv(randf(), 0.7, 1.0)
+		var c := Color.from_hsv(randf_range(0.1, 0.22) if randf() < 0.4 else randf_range(0.48, 0.9), 0.7, 1.0)   # never green or red
 		burst(tree, at + Vector3(randf_range(-3, 3), randf_range(2, 5), 0), c, 30, 1.6, 1.2)

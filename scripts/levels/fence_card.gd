@@ -14,6 +14,7 @@ var _face: Control
 var _sprite: Sprite3D
 var _viewed := false
 var _pile: Node3D
+var _hint_t := 0.0
 
 
 func _ready() -> void:
@@ -59,7 +60,14 @@ func zapped_by(_z: Node, _gun: GunData) -> void:
 		Audio.play("sparkle", global_position)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_hint_t -= delta
+	if _viewed and _hint_t <= 0.0 and deck and deck.current():
+		_hint_t = 1.2
+		for o in get_tree().get_nodes_in_group(PhysicsObject.GROUP):   # hint_objects glow softly
+			for h in deck.current().hint_objects:
+				if Goals.matches(o, h):
+					Fx.sparkle(get_tree(), (o as Node3D).global_position + Vector3(0, 0.6, 0))
 	var near := false
 	for z in get_tree().get_nodes_in_group(Zapper.GROUP):
 		if not (z as Zapper).asleep and absf((z as Node3D).global_position.x - global_position.x) < VIEW_DIST:

@@ -14,6 +14,8 @@ var left := YardLevel.LEFT
 var right := YardLevel.RIGHT
 ## Frame the whole yard (the "yard wide" shot, and the lobby backdrop).
 var overview := false
+## Extra things to keep in frame (the demo's staged shots).
+var focus: Array[Node3D] = []
 var _trauma := 0.0
 
 
@@ -35,6 +37,9 @@ func targets() -> Array[Node3D]:
 	for z in get_tree().get_nodes_in_group(Zapper.GROUP):
 		if not (z as Zapper).asleep:
 			out.append(z)
+	for f in focus:
+		if is_instance_valid(f):
+			out.append(f)
 	return out
 
 
@@ -76,7 +81,7 @@ func goal_position() -> Vector3:
 	for t in ts:
 		var p := t.global_position
 		lo = Vector2(minf(lo.x, p.x), minf(lo.y, p.y))
-		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.y + 1.6))
+		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.y + (t.radius() * 1.8 if t is PhysicsObject else 1.6)))
 	var c := (lo + hi) * 0.5
 	var t_h := tan(deg_to_rad(fov * 0.5))
 	var z := maxf((hi.x - lo.x) * 0.5 + MARGIN, 0.0) / (t_h * _aspect())
