@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://jyz_zapper"]
+
+[ext_resource type="Script" path="res://scripts/players/zapper.gd" id="1_zapper"]
+
+[node name="Zapper" type="CharacterBody3D"]
+script = ExtResource("1_zapper")

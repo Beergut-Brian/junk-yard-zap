@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GunData" format=3]
+
+[ext_resource type="Script" path="res://scripts/guns/gun_data.gd" id="1_ifdeq"]
+
+[resource]
+script = ExtResource("1_ifdeq")
+id = &"freeze"
+kind = 4
+beam_color = Color(0.45, 0.9, 1, 1)
+cue = &"zap_freeze"

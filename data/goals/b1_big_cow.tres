@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_3l0jb"]
+
+[resource]
+script = ExtResource("1_3l0jb")
+id = &"b1_big_cow"
+description = "Make the cow big"
+condition = 0
+subject = &"cow"
+amount = 2.0
+hint_objects = Array[StringName]([&"cow"])

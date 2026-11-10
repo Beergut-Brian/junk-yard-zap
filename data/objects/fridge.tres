@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_pdpk1"]
+
+[resource]
+script = ExtResource("1_pdpk1")
+id = &"fridge"
+size = Vector3(0.9, 1.8, 0.8)
+mass = 6.0
+color = Color(0.92, 0.92, 0.88, 1)
+face_at = Vector3(0, 0.2, 0.5)
+face_size = 0.4
+parts = Array[Dictionary]([{
+"at": Vector3(0.35, 0.45, 0.42),
+"color": Color(0.5, 0.5, 0.5, 1),
+"shape": "box",
+"size": Vector3(0.06, 0.4, 0.06)
+}])

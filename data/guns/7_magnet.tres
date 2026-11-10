@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GunData" format=3]
+
+[ext_resource type="Script" path="res://scripts/guns/gun_data.gd" id="1_2twpp"]
+
+[resource]
+script = ExtResource("1_2twpp")
+id = &"magnet"
+kind = 6
+beam_color = Color(0.25, 0.45, 1, 1)
+cue = &"zap_magnet"

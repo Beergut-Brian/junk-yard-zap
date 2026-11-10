@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_ofxbe"]
+
+[resource]
+script = ExtResource("1_ofxbe")
+id = &"crate"
+color = Color(0.8, 0.6, 0.35, 1)
+face_at = Vector3(0, 0.1, 0.5)
+face_size = 0.4

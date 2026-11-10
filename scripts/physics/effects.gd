@@ -45,6 +45,29 @@ static func glue(a: PhysicsObject, b: PhysicsObject) -> Glue:
 	return g if g.apply(a) else null
 
 
+## Gravity grab: holder is any Node3D with hold_point() -> Vector3 (a player's hand at arm's length).
+## Returns null if the object is already held by someone else.
+static func grab(target: PhysicsObject, holder: Node3D, color: Color) -> Grab:
+	var on: Grab = target.stack.get_effect(&"grab")
+	if on:
+		return on if on.holder == holder else null
+	var g := Grab.new(holder, color)
+	return g if g.apply(target) else null
+
+
+## Let go. throw_velocity adds a flick (kept under the speed cap by the body).
+static func release(target: PhysicsObject, throw_velocity := Vector3.ZERO) -> void:
+	var on: Grab = target.stack.get_effect(&"grab")
+	if on == null:
+		return
+	on.undo(target)
+	if throw_velocity != Vector3.ZERO and not target.freeze:
+		target.linear_velocity += throw_velocity
+		target.angular_velocity += Vector3(0, 0, -signf(throw_velocity.x) * 6.0)
+		target.last_touch = &"throw"
+		target.dizzy()
+
+
 ## Grow/shrink. A stack holds at most one Size; new steps merge into it and it leaves at step 0.
 class Size extends Effect:
 	var steps := 0
@@ -279,3 +302,30 @@ class Glue extends Effect:
 
 	func label() -> String:
 		return "GL" if joined() else "gl~"
+
+
+## Carried at arm's length: no gravity, heavy damping, steered toward the holder's hand every frame.
+## A frozen object stays put (freeze wins by being static, not by a special case).
+class Grab extends Effect:
+	const FOLLOW := 12.0        # 1/s: how hard it chases the hand
+	const MAX_CHASE := 18.0     # m/s
+	var holder: Node3D
+
+	func _init(p_holder: Node3D = null, p_color := Color.WHITE) -> void:
+		id = &"grab"
+		color = p_color
+		holder = p_holder
+
+	func modify(p: BodyProps) -> void:
+		p.gravity_scale *= 0.0
+		p.angular_damp += 4.0
+
+	func tick(t: PhysicsObject, _delta: float) -> void:
+		if not is_instance_valid(holder):
+			undo(t)
+			return
+		var to: Vector3 = holder.hold_point(t) - t.global_position
+		var want := to * FOLLOW
+		if want.length() > MAX_CHASE:
+			want = want.normalized() * MAX_CHASE
+		t.apply_central_force((want - t.linear_velocity) * t.mass * 10.0)

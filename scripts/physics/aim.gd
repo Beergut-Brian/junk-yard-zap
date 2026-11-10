@@ -8,7 +8,8 @@ const RANGE := 12.0
 
 
 ## Best target for a stick direction from origin, or null. Candidates are Node3Ds; a PhysicsObject's
-## surface (not its centre) counts for distance, so big things are easy to hit.
+## surface (not its centre) counts for distance, so big things are easy to hit; anything with a
+## radius() method (players, the goal card) gets the same treatment.
 ## Score is distance, nudged toward the beam's centre line so two neighbours split sensibly.
 static func pick(origin: Vector3, dir: Vector2, candidates: Array, half_angle := HALF_ANGLE, reach := RANGE) -> Node3D:
 	if dir.length_squared() < 0.0001:
@@ -21,7 +22,7 @@ static func pick(origin: Vector3, dir: Vector2, candidates: Array, half_angle :=
 		if n == null or not is_instance_valid(n):
 			continue
 		var to := Vector2(n.global_position.x - origin.x, n.global_position.y - origin.y)
-		var r := (n as PhysicsObject).radius() * 0.7 if n is PhysicsObject else 0.0
+		var r: float = n.radius() * 0.7 if n.has_method(&"radius") else 0.0
 		var dist := maxf(0.0, to.length() - r)
 		if dist > reach:
 			continue

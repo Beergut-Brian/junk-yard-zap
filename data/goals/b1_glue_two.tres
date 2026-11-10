@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_hur1l"]
+
+[resource]
+script = ExtResource("1_hur1l")
+id = &"b1_glue_two"
+description = "Glue two things together"
+condition = 3
+other = &"any"
