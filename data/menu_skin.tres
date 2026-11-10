@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="MenuSkin" format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/kit/menu_skin.gd" id="1_skin"]
-[ext_resource type="PackedScene" path="res://scenes/ui/lobby_jeff.tscn" id="2_jeff"]
-[ext_resource type="PackedScene" path="res://scenes/ui/lobby_chuck.tscn" id="3_chuck"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby_p1.tscn" id="2_p1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lobby_p2.tscn" id="3_p2"]
 
 [resource]
 script = ExtResource("1_skin")
@@ -10,10 +10,8 @@ title_text = "Junk Yard Zap"
 accent = Color(1, 0.698039, 0.121569, 1)
 accent2 = Color(1, 0.415686, 0.168627, 1)
 deep = Color(0.2, 0.12549, 0.101961, 1)
-p1_character = ExtResource("2_jeff")
-p2_character = ExtResource("3_chuck")
-p1_name = "JEFF"
-p2_name = "CHUCK"
+p1_character = ExtResource("2_p1")
+p2_character = ExtResource("3_p2")
 camera_3d_distance = 3.6
 camera_3d_height = 0.95
 backdrop = 3

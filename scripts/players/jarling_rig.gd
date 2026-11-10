@@ -1,16 +1,19 @@
-## A Jarling from openjar-characters (assets/characters/<id>/<id>.glb) set up for Junk Yard Zap:
-## looping idle/run/cheer, side-view facing, face expressions, and gear on the equipment system
-## (the gun belt on `waist`, the held gun on `hand_r`). Also used by the lobby panels.
+## A Jarling from openjar-characters set up for Junk Yard Zap: whichever Roster character `character`
+## names (its vendored .glb from data/roster.json), with looping idle/run/cheer, side-view facing,
+## face expressions, and gear on the equipment system (the gun belt on `waist`, the held gun on
+## `hand_r`). Works on any standard-body Jarling. Also used by the lobby podiums (set_character).
 class_name JarlingRig
 extends Node3D
 
 const EXPR := {"neutral": Vector3(0, 0, 0), "happy": Vector3(0.5, 0, 0),
 		"surprised": Vector3(0, 0.5, 0), "determined": Vector3(0.5, 0.5, 0)}
-const SCENES := {&"jeff": "res://assets/characters/jeff/jeff.glb", &"chuck": "res://assets/characters/chuck/chuck.glb"}
-const BELT_GLB := "res://assets/characters/gear/belt.glb"
+## Used when the id has no vendored .glb (an id from an older roster, an empty roster).
+const FALLBACK_GLB := "res://assets/characters/jeff/jeff.glb"
+const BELT_GLB := "res://assets/gear/belt.glb"
 ## The glbs are ~1.2 m tall; the yard's objects are sized for a ~1.55 m character.
 const SCALE := 1.3
 
+## A Roster id (data/roster.json). Change it after _ready with set_character().
 @export var character: StringName = &"jeff"
 
 var model: Node3D
@@ -25,7 +28,46 @@ var _current := ""
 
 
 func _ready() -> void:
-	model = (load(SCENES.get(character, SCENES[&"jeff"])) as PackedScene).instantiate()
+	_build()
+
+
+## The .glb for a Roster id; FALLBACK_GLB when the id is unknown or its file is missing.
+static func glb_for(id: String) -> String:
+	var who := Roster.info(id)
+	if not who.is_empty() and str(who.glb) != "" and ResourceLoader.exists(str(who.glb)):
+		return str(who.glb)
+	return FALLBACK_GLB
+
+
+## Become another Roster character in place: same gun (and tape), belt, facing and animation.
+func set_character(id: String) -> void:
+	if StringName(id) == character and model != null:
+		return
+	character = StringName(id)
+	if model == null:
+		return   # not in the tree yet: _ready builds it
+	var turn := model.rotation.y
+	var kind: StringName = gun_gear.id if gun_gear else &""
+	var had_gun := gun_gear != null
+	var was := _current
+	model.free()
+	equipment.free()
+	model = null
+	gun_gear = null
+	_gun_tip = null
+	_gun_tape = null
+	_face_mats.clear()
+	_current = ""
+	_build()
+	model.rotation.y = turn
+	if had_gun:
+		show_gun(StringName(str(kind).trim_prefix("gun_")), false)
+	if was != "":
+		play(was)
+
+
+func _build() -> void:
+	model = (load(glb_for(str(character))) as PackedScene).instantiate()
 	model.scale = Vector3.ONE * SCALE
 	add_child(model)
 	anim = model.find_child("AnimationPlayer", true, false)
@@ -84,7 +126,7 @@ static func belt_gear() -> JarlingGear:
 
 
 ## The held gun: one of the seven junk-built guns (GunArt) worn on `hand_r` through the equipment
-## system. tape is the player's colour (Jeff green, Chuck red); show_gun() swaps to another gun.
+## system. tape is the player's colour (P1 green, P2 red, whoever they picked); show_gun() swaps to another gun.
 func equip_gun(tape: Color, kind: StringName = &"size") -> void:
 	_tape = tape
 	show_gun(kind, false)
