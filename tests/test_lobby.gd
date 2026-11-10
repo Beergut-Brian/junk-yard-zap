@@ -18,6 +18,7 @@ var _real_settings := ""
 
 
 func before() -> void:
+	Save.profile = "gdunit"   # main.tscn saves the yard: never touch the family's profile
 	_real_settings = Save.settings_path
 	Save.settings_path = "user://test_settings.json"
 	Game.quit_exits = false
@@ -416,17 +417,17 @@ func test_restart_returns_to_lobby() -> void:
 
 # --- joins mid-game, demo ------------------------------------------------------
 
-func test_late_joiner_plays_from_next_round() -> void:
+## Junk Yard Zap: instead of waiting for the next round, Chuck sleeps in the tire pile and a
+## press on his pad wakes him straight away (GAME.md "Drop-in").
+func test_late_joiner_wakes_up_in_the_tire_pile() -> void:
 	_boot()
 	Players.join_virtual(P1)
 	_lobby().hold_step(P1, true, Lobby.HOLD_TO_START)
 	_finish_countdown()
-	Players.join_virtual(P2)
 	var p2: Node = _main.get_node("Arena/Players").get_child(1)
 	assert_int(p2.player).is_equal(P2)
 	assert_bool(p2.waiting).is_true()
-	Game.end_round()
-	Game.start_round()
+	Players.join_virtual(P2)
 	assert_bool(p2.waiting).is_false()
 
 
