@@ -10,3 +10,14 @@ One line per file. Nothing enters `assets/` without a line here.
 | `characters/jeff/jeff.glb` | openjar-characters `v0.1.0` (commit `6e03db9`), `characters/jeff/refs/jarling/jeff.glb`, built with `avatar/kit/build_jarling.py` (Blender) | Jeff (P1), rigged Jarling with equipment slots; original Open Jar character | Open Jar Games, project's own |
 | `characters/chuck/chuck.glb` | openjar-characters `v0.1.0` (commit `6e03db9`), `characters/chuck/refs/jarling/chuck.glb`, built with `avatar/kit/build_jarling.py` (Blender) | Chuck (P2), rigged Jarling with equipment slots; original Open Jar character | Open Jar Games, project's own |
 | `characters/gear/belt.glb`, `belt.json` | openjar-characters `v0.1.0` (commit `6e03db9`), `avatar/gear/belt.*`, built with `avatar/gear/build_gear.py` | Starter-set belt, worn on `waist` as the gun belt (proof art) | Open Jar Games, project's own |
+
+## Art built in code (Golden Afternoon, D44)
+
+No files in `assets/` for these: they are generated at runtime or by the repo's own tools, from
+original designs (no brands, characters, real places or artists' styles imitated).
+
+| File | Source / tool | Prompt or notes | License |
+| --- | --- | --- | --- |
+| `scripts/art/` (yard dressing, sky shader, 40 object models, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
+| `store/jar.glb` | `art/tools/make_jar.py` (Blender 5.2.3, background) | Launcher jar world: a giant cow on a balloon over a scrap pile | Project's own |
+| `store/grid.png`, `store/hero.png` | `art/tools/render_store.sh` (Godot renders of `art/preview/store.tscn`) | Grid: Jeff grows the cow, Chuck in a ballooned bathtub. Hero: the whole yard | Project's own |
