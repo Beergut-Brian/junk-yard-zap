@@ -290,3 +290,7 @@ On top of the template checklist in `docs/kid-design.md`.
 
 - [ ] Palette: pick one of three.
 - [ ] Should the cow be a library character (a name, a personality, appears in other games) or stay a yard object? Recommendation: library character; a recurring cow is a gift that keeps giving.
+
+## Decisions made without Kaden
+
+- 2026-11-09 (Gary): physics bodies use `body_mass = volume_mass ^ 0.5` (`Yard.mass_exponent`); the logical mass by volume still drives cards, impact sounds and juice. Jolt sinks light bodies under heavy ones past ~25:1; this keeps "heavier is heavier" stable. Grow is refused (a "nope" boing) when it would push into static or frozen things; glue pulls the two objects together before locking and lets go after 3 s if they can't meet.

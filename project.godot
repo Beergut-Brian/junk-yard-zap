@@ -143,6 +143,10 @@ debug_screenshot={
 3d_physics/layer_3="pickups"
 3d_physics/layer_4="hazards"
 
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
