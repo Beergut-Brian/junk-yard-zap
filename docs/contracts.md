@@ -86,7 +86,7 @@ Per install, through `Save.set_setting()`, written the moment a value changes.
 const MUSIC := "music_volume"     # 0..1, default 0.8 -> Audio "Music" bus
 const SOUND := "sound_volume"     # 0..1, default 1.0 -> Audio "SFX" bus
 const SHAKE := "screen_shake"     # bool, default true
-const SOLO := "solo_playtest"     # bool, default false; on at boot turns Players solo on
+const SOLO := "solo_playtest"     # bool, default false; mirrors Players.solo, never restored at boot
 static func screen_shake() -> bool  # games check this before shaking the camera
 ```
 

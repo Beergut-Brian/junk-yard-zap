@@ -1,4 +1,5 @@
-## Boot scene: the lobby (start screen and main menu) over the yard, Jeff and Chuck, the shared
+## Boot scene: the lobby (start screen and main menu) over the yard (its look, Jeff and Chuck on the
+## podiums and the blurred yard behind, is data/menu_skin.tres), Jeff and Chuck in play, the shared
 ## camera, the HUD, the pause menu. There are no rounds: a session is however long you want, and
 ## the yard saves as you leave it (scripts/levels/yard_level.gd).
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
@@ -9,7 +10,6 @@
 extends Node3D
 
 const ZAPPER := preload("res://scenes/players/zapper.tscn")
-const LobbyJarling := preload("res://scenes/ui/lobby_jarling.gd")
 const SWAP_BUTTONS := [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER, JOY_BUTTON_BACK]
 
 @onready var level: YardLevel = $Arena
@@ -26,7 +26,6 @@ func _ready() -> void:
 	if OS.get_cmdline_user_args().has("--proto"):   # Phase 1 risk prototype, reachable from an export
 		get_tree().change_scene_to_file.call_deferred("res://scenes/proto/risk_proto.tscn")
 		return
-	_adopt_lobby()
 	var cursor := Cursor.new()
 	cursor.name = "Cursor"
 	add_child(cursor)
@@ -47,24 +46,6 @@ func _ready() -> void:
 			_start_demo()).call_deferred()
 	elif Game.state != Game.State.LOBBY:
 		Game.to_lobby()
-
-
-## Game customisation of the template lobby, in code (exported builds drop .tscn overrides on
-## instanced children): Jeff and Chuck in the join panels.
-func _adopt_lobby() -> void:
-	lobby.title_text = "Junk Yard Zap"
-	for p in [Players.P1, Players.P2]:
-		var spot: Control = lobby.get_node("Spots/P%d" % (p + 1))
-		var old: Control = spot.get_node("Character")
-		var j := LobbyJarling.new()
-		j.player = p
-		j.position = old.position
-		j.size = old.size
-		old.name = "Placeholder"
-		old.queue_free()
-		j.name = "Character"
-		spot.add_child(j)
-		j.set_joined(Players.is_active(p))
 
 
 func _on_lobby_ready(players: Array) -> void:

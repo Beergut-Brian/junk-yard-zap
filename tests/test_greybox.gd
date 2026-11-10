@@ -14,7 +14,7 @@ var _real_settings := ""
 func before() -> void:
 	Save.profile = "gdunit"   # never touch the family's yard
 	_real_settings = Save.settings_path
-	Save.settings_path = "user://test_settings.json"
+	Save.settings_path = "user://test_settings_greybox.json"
 	Save.wipe_settings()
 
 

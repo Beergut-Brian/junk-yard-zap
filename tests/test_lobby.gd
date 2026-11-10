@@ -20,7 +20,7 @@ var _real_settings := ""
 func before() -> void:
 	Save.profile = "gdunit"   # main.tscn saves the yard: never touch the family's profile
 	_real_settings = Save.settings_path
-	Save.settings_path = "user://test_settings.json"
+	Save.settings_path = "user://test_settings_lobby.json"
 	Game.quit_exits = false
 	Game.quit_requested.connect(_on_quit)
 	Game.lobby_ready.connect(_on_lobby_ready)
@@ -321,11 +321,13 @@ func test_settings_solo_toggle_saves_and_readies_on_close() -> void:
 	assert_bool(lobby.counting).is_true()
 
 
-func test_saved_solo_turns_on_at_boot() -> void:
+## Solo is playtest-only: a saved "Solo playtest" never turns it on at the next boot.
+func test_saved_solo_stays_off_at_boot() -> void:
 	Save.set_setting(SettingsPanel.SOLO, true)
 	_boot()
 	await await_idle_frame()
-	assert_bool(Players.solo).is_true()
+	await await_idle_frame()
+	assert_bool(Players.solo).is_false()
 
 
 # --- pause menu ----------------------------------------------------------------

@@ -22,6 +22,7 @@ func _on_cover() -> void:
 
 
 func before() -> void:
+	Save.profile = "gdunit"   # main.tscn saves the yard: never touch the family's profile
 	_real_settings = Save.settings_path
 	Save.settings_path = "user://test_settings_showtime.json"
 

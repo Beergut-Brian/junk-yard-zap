@@ -78,8 +78,7 @@ func _ready() -> void:
 	_settings.closed.connect(_on_settings_closed)
 	_confirm.chosen.connect(_on_confirm_chosen)
 	visible = Game.state == Game.State.LOBBY
-	if SettingsPanel.value_of(SettingsPanel.SOLO) and not Players.solo and not Game.demo:
-		Players.set_solo.call_deferred(true)
+	# Solo is playtest-only: never restored from settings at boot (--solo / Select+Start turn it on).
 	open()
 	UiPreview.run.call_deferred(self)
 
