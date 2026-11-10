@@ -44,6 +44,10 @@ var last_touch: StringName = &""
 var _shapes: Array[CollisionShape3D] = []
 var _visual: Node3D
 var _mats: Array[StandardMaterial3D] = []
+## Art-lane meshes (ObjectArt) share cached materials, so effects tint them with one overlay instead.
+var _art_meshes: Array[GeometryInstance3D] = []
+var _overlay: StandardMaterial3D
+var _overlay_on := false
 var _last_v := Vector3.ZERO
 var _land_cool := 0.0
 var _pending_land := 0.0
@@ -78,6 +82,9 @@ func _ready() -> void:
 	add_child(_visual)
 	if data.mesh:
 		_visual.add_child(data.mesh.instantiate())
+	elif ObjectArt.build(data, _visual):
+		for mi in _visual.find_children("*", "GeometryInstance3D", true, false):
+			_art_meshes.append(mi)
 	else:
 		_build_greybox()
 	if data.has_face:
@@ -234,7 +241,7 @@ func _physics_process(delta: float) -> void:
 		_scale_step(delta)
 	elif _clamp_left > 0.0:
 		_clamp_left -= delta
-	_visual.scale = squash * current_scale
+	_visual.scale = squash * current_scale * _wobble()
 	if sleeping and absf(global_position.z) > 0.02:
 		sleeping = false   # don't let a body fall asleep off the plane
 	stack.tick(delta)
@@ -484,9 +491,36 @@ func _update_look() -> void:
 		m.albedo_color = base.lerp(tint, 0.3) if tint.a > 0.0 else base
 		m.emission_enabled = not stack.effects.is_empty()
 		m.emission = glow
+	_tint_art(glow)
 	look.sync(stack.effects)
 	if face:
 		face.set_base(_mood_for_stack())
+
+
+## Bouncy things keep a rubbery wobble (looks only; the sim never sees it).
+func _wobble() -> Vector3:
+	if stack == null or not stack.has(&"bouncy"):
+		return Vector3.ONE
+	var w := sin(Time.get_ticks_msec() * 0.011 + float(get_instance_id() % 97)) * 0.045
+	return Vector3(1.0 + w, 1.0 - w, 1.0 + w)
+
+
+func _tint_art(glow: Color) -> void:
+	if _art_meshes.is_empty():
+		return
+	var on := glow != Color.BLACK
+	if on and _overlay == null:
+		_overlay = StandardMaterial3D.new()
+		_overlay.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		_overlay.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	if on:
+		_overlay.albedo_color = Color(glow.r, glow.g, glow.b, 1.0) * 0.55
+	if on != _overlay_on:
+		_overlay_on = on
+		for mi in _art_meshes:
+			if is_instance_valid(mi):
+				mi.material_overlay = _overlay if on else null
 
 
 func _mood_for_stack() -> ObjectFace.Mood:
