@@ -63,6 +63,7 @@ func play(on_cover := Callable(), card_title := "", card_subtitle := "", card_co
 	if _tw:
 		_tw.kill()
 	UiSound.play("ui_wipe")
+	t = 0.0
 	_tw = create_tween()
 	_tw.tween_property(self, "t", 1.0, IN_TIME).from(0.0).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN_OUT)
 	_tw.tween_callback(func() -> void:

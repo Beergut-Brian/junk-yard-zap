@@ -70,9 +70,9 @@ func host(p: int) -> void:
 		vp.add_child(rim)
 		var cam := Camera3D.new()
 		cam.fov = 30.0
-		cam.position = Vector3(0, sk.camera_3d_height, sk.camera_3d_distance)
 		vp.add_child(cam)
-		cam.look_at_from_position(cam.position, Vector3(0, sk.camera_3d_height * 0.72, 0))
+		cam.look_at_from_position(Vector3(0, sk.camera_3d_height + 0.3, sk.camera_3d_distance),
+				Vector3(0, sk.camera_3d_height, 0))
 		_pivot3d = Node3D.new()
 		_pivot3d.rotation_degrees.y = 18.0 if p == 0 else -18.0
 		vp.add_child(_pivot3d)

@@ -83,6 +83,11 @@ static func _go(lobby: Control, n: int) -> void:
 			if n <= 4:
 				lobby.process_mode = Node.PROCESS_MODE_DISABLED
 				wipe.pose(-1.0 if n == 3 else 0.55)
+				# Software renderers take long frames: pose the squash and the jump by hand.
+				lobby.get_node("Buttons/Play").call("_set_press", 0.85 if n == 3 else 0.4)
+				for p in [P1, P2]:
+					var slot: Control = lobby.get_node("Spots/P%d/Character" % (p + 1))
+					slot.position.y = slot.get("_base_y") - (55.0 if n == 3 else 20.0)
 			else:
 				lobby.count_step(1.0)
 				wipe.pose(1.0 if n == 5 else 1.42, 1.0)

@@ -39,15 +39,21 @@ enum Backdrop {
 @export var pixel_art := false
 ## Node2D / Control characters are scaled by this (pixel games: a whole number, e.g. 4).
 @export var character_scale := 1.0
-## Node3D characters: camera distance and height for the podium shot.
-@export var camera_3d_distance := 4.2
-@export var camera_3d_height := 1.1
+## Node3D characters: camera distance, and the height it looks at (about the middle of the
+## character, in metres). Feet at y = 0 stand on the podium.
+@export var camera_3d_distance := 3.4
+@export var camera_3d_height := 0.9
 
 @export_group("Backdrop")
 @export var backdrop := Backdrop.SUNBURST
 ## Backdrop.SCENE: the game's world (a level, a diorama). Instanced into a SubViewport at 1/4
 ## resolution, so it is cheap and already soft. It brings its own Camera2D/3D.
 @export var backdrop_scene: PackedScene
+## A 3D backdrop_scene without a Camera3D of its own gets one here (where it stands, what it
+## looks at, field of view).
+@export var backdrop_camera_position := Vector3(5.6, 2.9, 7.4)
+@export var backdrop_camera_target := Vector3(-3.0, 1.2, -1.0)
+@export var backdrop_camera_fov := 50.0
 ## Backdrop.TEXTURE, and the fallback for SCENE when the scene is missing.
 @export var backdrop_texture: Texture2D
 ## 0..1: how strongly the sunburst covers the world behind it (SUNBURST mode ignores this).

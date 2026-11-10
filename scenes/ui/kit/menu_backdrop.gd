@@ -33,6 +33,7 @@ func _ready() -> void:
 
 func apply_skin() -> void:
 	for n in _layers:
+		remove_child(n)
 		n.queue_free()
 	_layers.clear()
 	world = null
@@ -61,6 +62,12 @@ func apply_skin() -> void:
 			world = sk.backdrop_scene.instantiate()
 			world.process_mode = Node.PROCESS_MODE_PAUSABLE
 			vp.add_child(world)
+			if world is Node3D and world.find_children("*", "Camera3D", true, false).is_empty():
+				var cam := Camera3D.new()
+				cam.fov = sk.backdrop_camera_fov
+				vp.add_child(cam)
+				cam.look_at_from_position(sk.backdrop_camera_position, sk.backdrop_camera_target)
+				cam.current = true
 			_add_layer(box)
 		MenuSkin.Backdrop.TEXTURE:
 			var tr := TextureRect.new()

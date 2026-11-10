@@ -11,7 +11,7 @@
 
 [sub_resource type="ShaderMaterial" id="blur_mat"]
 shader = ExtResource("4_blur")
-shader_parameter/lod = 1.2
+shader_parameter/lod = 0.8
 shader_parameter/tint = Color(0.09, 0.07, 0.25, 0.4)
 
 [node name="PauseMenu" type="Control"]

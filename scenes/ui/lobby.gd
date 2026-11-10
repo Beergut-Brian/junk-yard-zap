@@ -91,6 +91,11 @@ func open() -> void:
 	_dots_lit = 0
 	_settings.dismiss()
 	_confirm.dismiss()
+	$Buttons.visible = true
+	_countdown.visible = true
+	$TitleArt.scale = Vector2.ONE
+	$TitleArt.position.x = 70.0
+	$Spots.position.x = 0.0
 	for p in [P1, P2]:
 		readied[p] = false
 		_hold[p] = 0.0
@@ -409,6 +414,8 @@ func _on_solo_changed(on: bool) -> void:
 
 ## Settings' wider wedge: the title shrinks and the podiums step left to make room.
 func _settings_stage(on: bool) -> void:
+	$Buttons.visible = not on
+	_countdown.visible = not on
 	if not is_inside_tree():
 		return
 	var tw := create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
