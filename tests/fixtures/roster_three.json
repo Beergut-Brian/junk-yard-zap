@@ -1,5 +1,5 @@
 {
-	"source": "test fixture: three playable characters (the third has no files)",
+	"source": "test fixture: three playable characters (Pip borrows Jeff's files)",
 	"characters_tag": "test",
 	"roster": ["jeff", "chuck", "pip"],
 	"defaults": {"P1": "jeff", "P2": "chuck"},
@@ -7,6 +7,6 @@
 	"characters": {
 		"jeff": {"name": "Jeff", "glb": "res://assets/characters/jeff/jeff.glb", "pixel": "res://assets/characters/jeff/pixel.png", "voice": "", "barks": [], "default_for": 1},
 		"chuck": {"name": "Chuck", "glb": "res://assets/characters/chuck/chuck.glb", "pixel": "res://assets/characters/chuck/pixel.png", "voice": "", "barks": [], "default_for": 2},
-		"pip": {"name": "Pip", "glb": "", "pixel": "", "voice": "", "barks": [], "default_for": 0}
+		"pip": {"name": "Pip", "glb": "res://assets/characters/jeff/jeff.glb", "pixel": "res://assets/characters/jeff/pixel.png", "voice": "", "barks": [], "default_for": 0}
 	}
 }
