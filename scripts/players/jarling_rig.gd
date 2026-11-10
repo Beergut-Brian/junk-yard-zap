@@ -18,8 +18,9 @@ var anim: AnimationPlayer
 var equipment: JarlingEquipment
 var gun_gear: JarlingGear
 var _face_mats: Array[StandardMaterial3D] = []
-var _gun_tip: MeshInstance3D
+var _gun_tip: Node3D
 var _gun_tape: MeshInstance3D
+var _tape := Color.WHITE
 var _current := ""
 
 
@@ -82,58 +83,46 @@ static func belt_gear() -> JarlingGear:
 	return g
 
 
-## The held gun: a placeholder junk blaster packed into a scene so it goes on like any gear.
-## tape is the player's colour (Jeff green, Chuck red); recolour() sets the nozzle per gun.
-func equip_gun(tape: Color) -> void:
-	var root := Node3D.new()
-	root.name = "blaster"
-	var body := _part(root, BoxMesh.new(), Vector3(0.07, 0.08, 0.22), Vector3(0, 0, 0.06), Color(0.55, 0.55, 0.58))
-	body.name = "body"
-	var tape_node := _part(root, BoxMesh.new(), Vector3(0.075, 0.085, 0.04), Vector3(0, 0, 0.02), tape)
-	tape_node.name = "tape"
-	var tip := _part(root, CylinderMesh.new(), Vector3(0.1, 0.1, 0.08), Vector3(0, 0, 0.2), Color.WHITE)
-	tip.rotation_degrees.x = 90
-	tip.name = "tip"
-	var pack := PackedScene.new()
-	pack.pack(root)
-	root.free()
+## The held gun: one of the seven junk-built guns (GunArt) worn on `hand_r` through the equipment
+## system. tape is the player's colour (Jeff green, Chuck red); show_gun() swaps to another gun.
+func equip_gun(tape: Color, kind: StringName = &"size") -> void:
+	_tape = tape
+	show_gun(kind, false)
+
+
+## Swap the gun in the hand for `kind` (GunArt.KINDS), with a little pop.
+func show_gun(kind: StringName, pop := true) -> void:
+	if not GunArt.KINDS.has(kind):
+		kind = &"size"
+	if gun_gear and gun_gear.id == StringName("gun_%s" % kind):
+		return
 	gun_gear = JarlingGear.new()
-	gun_gear.id = &"blaster"
+	gun_gear.id = StringName("gun_%s" % kind)
 	gun_gear.slots = [&"hand_r"]
-	gun_gear.scene = pack
+	gun_gear.scene = GunArt.packed(kind, _tape)
 	equipment.equip(gun_gear)
-	var holder := equipment.slot_node(&"hand_r").get_node("gear_blaster")
-	_gun_tip = holder.find_child("tip", true, false)
-	_gun_tape = holder.find_child("tape", true, false)
+	var holder := equipment.slot_node(&"hand_r").get_node_or_null("gear_%s" % gun_gear.id) as Node3D
+	_gun_tip = holder.find_child("tip", true, false) if holder else null
+	_gun_tape = holder.find_child("tape", true, false) if holder else null
+	if holder and pop:
+		var h := holder
+		var rest := h.scale
+		h.scale = rest * 1.5
+		h.create_tween().tween_property(h, "scale", rest, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
+## Older callers (the art-direction preview) pick a gun by its colour.
 func recolor_gun(c: Color) -> void:
-	if _gun_tip:
-		(_gun_tip.material_override as StandardMaterial3D).albedo_color = c
-		(_gun_tip.material_override as StandardMaterial3D).emission_enabled = true
-		(_gun_tip.material_override as StandardMaterial3D).emission = c * 0.6
-		var h := _gun_tip.get_parent() as Node3D
-		h.scale = Vector3.ONE * 1.6
-		h.create_tween().tween_property(h, "scale", Vector3.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var best: StringName = &"size"
+	var dist := INF
+	for k in GunArt.KINDS:
+		var g := ArtKit.gun(k)
+		var d := Vector3(g.r - c.r, g.g - c.g, g.b - c.b).length()
+		if d < dist:
+			dist = d
+			best = k
+	show_gun(best)
 
 
 func gun_tip_position() -> Vector3:
 	return _gun_tip.global_position if _gun_tip else global_position + Vector3(0, 0.8, 0)
-
-
-func _part(root: Node3D, m: Mesh, size: Vector3, at: Vector3, c: Color) -> MeshInstance3D:
-	if m is BoxMesh:
-		m.size = size
-	elif m is CylinderMesh:
-		m.top_radius = size.x * 0.5
-		m.bottom_radius = size.x * 0.5
-		m.height = size.z
-	var mi := MeshInstance3D.new()
-	mi.mesh = m
-	mi.position = at
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = c
-	mi.material_override = mat
-	root.add_child(mi)
-	mi.owner = root
-	return mi

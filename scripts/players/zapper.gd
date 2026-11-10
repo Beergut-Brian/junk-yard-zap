@@ -145,7 +145,7 @@ func set_gun(i: int, sound := true) -> void:
 	glue_first = null
 	gun_index = posmod(i, guns.size())
 	_beam_mat.albedo_color = Color(gun().beam_color, 0.07)
-	rig.recolor_gun(gun().beam_color)
+	rig.show_gun(gun().effect_id())
 	if sound:
 		Audio.play("wheel_move")
 	gun_changed.emit(player, gun())
