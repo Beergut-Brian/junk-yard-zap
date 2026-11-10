@@ -4,7 +4,8 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|zone-<name> (staged shots), --proto.
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|zone-<name> (staged
+## shots), --proto.
 extends Node3D
 
 const ZAPPER := preload("res://scenes/players/zapper.tscn")
@@ -26,6 +27,9 @@ func _ready() -> void:
 		get_tree().change_scene_to_file.call_deferred("res://scenes/proto/risk_proto.tscn")
 		return
 	_adopt_lobby()
+	var cursor := Cursor.new()
+	cursor.name = "Cursor"
+	add_child(cursor)
 	hud.attach(level, camera)
 	camera.make_current()
 	Players.player_joined.connect(_on_player_joined)
@@ -172,6 +176,8 @@ func _start_demo() -> void:
 	match beat:
 		"combo": _beat_combo()
 		"goal": _beat_goal()
+		"rings": _beat_rings()
+		"apart": _beat_apart()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -230,3 +236,27 @@ func _beat_goal() -> void:
 			Effects.zap(&"grow", cow)
 			Audio.play("grow", cow.global_position)
 			_players[Players.P1]._flash())
+
+
+## Colour check: Jeff aims at a crate (green ring), Chuck aims at Jeff (a red ring round Jeff's body).
+func _beat_rings() -> void:
+	_place(Players.P1, -38.0, 1.0)
+	_place(Players.P2, -35.0, -1.0)
+	for o in level.objects.values():   # clear the ground between them so Chuck's beam finds Jeff
+		var po := o as PhysicsObject
+		if po and po.global_position.x > -39.5 and po.global_position.x < -33.0:
+			po.global_position.x += 8.0
+	var crate := level.object(&"crate")
+	crate.global_position = Vector3(-41.0, 0.6, 0)
+	(func() -> void:
+		(_players[Players.P1] as Zapper).input_override = {"aim": Vector2.LEFT}
+		(_players[Players.P2] as Zapper).input_override = {"aim": Vector2.LEFT}).call_deferred()
+
+
+## The widest play zoom: Jeff at the gate, Chuck at the tower; the camera must not show under the table.
+func _beat_apart() -> void:
+	_place(Players.P1, YardLevel.LEFT + 3.0, 1.0)
+	_place(Players.P2, YardLevel.RIGHT - 3.0, -1.0)
+	for p in _players:
+		(_players[p] as Zapper).input_override = {"aim": Vector2.UP}
+

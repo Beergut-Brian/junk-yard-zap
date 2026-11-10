@@ -179,6 +179,12 @@ func radius() -> float:
 	return 0.6
 
 
+## The middle of the body. global_position is the feet, so rings and aim marks use this instead
+## (a partner's aim ring at the feet read as a player ring in the wrong colour).
+func center() -> Vector3:
+	return global_position + Vector3(0, HEIGHT * 0.5, 0)
+
+
 ## Where a gravity-grabbed object floats: arm's length along the aim, clear of the body.
 func hold_point(t: Node3D = null) -> Vector3:
 	var r: float = t.radius() * 0.8 if t and t.has_method(&"radius") else 0.5
@@ -302,7 +308,7 @@ func _gravity(delta: float) -> void:
 func candidates() -> Array:
 	var out: Array = get_tree().get_nodes_in_group(PhysicsObject.GROUP).duplicate()
 	for z in get_tree().get_nodes_in_group(GROUP):
-		if z != self:
+		if z != self and not (z as Zapper).asleep:   # the sleeper in the tire pile isn't a target
 			out.append(z)
 	out.append_array(get_tree().get_nodes_in_group(&"zap_targets"))
 	if gun() and gun().kind == GunData.Kind.GLUE:
@@ -614,9 +620,18 @@ func _update_beam() -> void:
 	_beam.rotation.z = aim_dir.angle()
 	_marker.visible = target != null
 	if target:
-		var r: float = target.radius() if target.has_method(&"radius") else 0.4
-		_marker.global_position = target.global_position + Vector3(0, 0, 1.2)
-		_marker.scale = Vector3.ONE * maxf(0.5, r * 0.8)
+		_marker.global_position = marker_point(target)
+		if target is Zapper:   # round the whole partner, centred on his body, never at his feet
+			_marker.scale = Vector3.ONE * HEIGHT * 0.55
+		else:
+			var r: float = target.radius() if target.has_method(&"radius") else 0.4
+			_marker.scale = Vector3.ONE * maxf(0.5, r * 0.8)
+
+
+## Where this player's aim ring sits for `t`: in front of its centre, on the camera side.
+static func marker_point(t: Node3D) -> Vector3:
+	var c: Vector3 = (t as Zapper).center() if t is Zapper else t.global_position
+	return c + Vector3(0, 0, 1.2)
 
 
 func _flash() -> void:
