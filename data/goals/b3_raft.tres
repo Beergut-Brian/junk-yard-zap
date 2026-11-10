@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_goal"]
+[ext_resource type="Texture2D" path="res://assets/sprites/goals/b3_raft.png" id="2_pic"]
+
+[sub_resource type="Resource" id="Resource_raft_1"]
+script = ExtResource("1_goal")
+condition = 3
+other = &"car"
+
+[sub_resource type="Resource" id="Resource_raft_2"]
+script = ExtResource("1_goal")
+condition = 1
+effect = &"balloon"
+group = true
+
+[sub_resource type="Resource" id="Resource_raft_3"]
+script = ExtResource("1_goal")
+condition = 2
+other = &"over_pond"
+
+[resource]
+script = ExtResource("1_goal")
+id = &"b3_raft"
+description = "Cow-car-balloon raft: the cow glued to the car, floating over the pond"
+picture = ExtResource("2_pic")
+band = 3
+rank = 60
+condition = 10
+subject = &"cow"
+steps = Array[ExtResource("1_goal")]([SubResource("Resource_raft_1"), SubResource("Resource_raft_2"), SubResource("Resource_raft_3")])
+hint_objects = Array[StringName]([&"cow", &"car"])

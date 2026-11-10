@@ -6,5 +6,7 @@
 script = ExtResource("1_hur1l")
 id = &"b1_glue_two"
 description = "Glue two things together"
+rank = 70
 condition = 3
 other = &"any"
+hint_objects = Array[StringName]([&"crate", &"crate_2"])

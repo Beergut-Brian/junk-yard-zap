@@ -6,6 +6,7 @@
 script = ExtResource("1_8k2rl")
 id = &"b1_duck_in_tub"
 description = "Put the duck in the bathtub"
+rank = 60
 condition = 2
 subject = &"duck"
 other = &"bathtub"

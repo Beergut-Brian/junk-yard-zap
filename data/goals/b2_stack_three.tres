@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_goal"]
+[ext_resource type="Texture2D" path="res://assets/sprites/goals/b2_stack_three.png" id="2_pic"]
+
+[resource]
+script = ExtResource("1_goal")
+id = &"b2_stack_three"
+description = "Stack three things taller than the barn walls"
+picture = ExtResource("2_pic")
+band = 2
+rank = 100
+condition = 9
+subject = &"any"
+amount = 7.0
+count = 3
+hint_objects = Array[StringName]([&"crate", &"crate_2"])

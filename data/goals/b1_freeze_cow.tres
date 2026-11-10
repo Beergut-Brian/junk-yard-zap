@@ -7,6 +7,7 @@ script = ExtResource("1_hur1l")
 id = &"b1_freeze_cow"
 description = "Freeze the cow"
 band = 1
+rank = 40
 condition = 1
 subject = &"cow"
 other = &""

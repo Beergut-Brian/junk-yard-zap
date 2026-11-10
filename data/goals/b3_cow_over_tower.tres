@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_goal"]
+[ext_resource type="Texture2D" path="res://assets/sprites/goals/b3_cow_over_tower.png" id="2_pic"]
+
+[resource]
+script = ExtResource("1_goal")
+id = &"b3_cow_over_tower"
+description = "Make the cow fly higher than the tower"
+picture = ExtResource("2_pic")
+band = 3
+rank = 30
+condition = 4
+subject = &"cow"
+amount = 13.0
+hint_objects = Array[StringName]([&"cow"])

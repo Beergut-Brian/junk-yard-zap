@@ -6,6 +6,7 @@
 script = ExtResource("1_mshi2")
 id = &"b1_float_chicken"
 description = "Float a chicken"
+rank = 20
 subject = &"chicken"
 effect = &"balloon"
 hint_objects = Array[StringName]([&"chicken"])

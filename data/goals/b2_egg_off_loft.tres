@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_goal"]
+[ext_resource type="Texture2D" path="res://assets/sprites/goals/b2_egg_off_loft.png" id="2_pic"]
+
+[sub_resource type="Resource" id="Resource_egg_off__1"]
+script = ExtResource("1_goal")
+condition = 2
+other = &"barn_loft"
+
+[sub_resource type="Resource" id="Resource_egg_off__2"]
+script = ExtResource("1_goal")
+condition = 8
+amount = 0.5
+
+[sub_resource type="Resource" id="Resource_egg_off__3"]
+script = ExtResource("1_goal")
+condition = 10
+steps = Array[ExtResource("1_goal")]([SubResource("Resource_egg_off__1"), SubResource("Resource_egg_off__2")])
+
+[sub_resource type="Resource" id="Resource_egg_off__4"]
+script = ExtResource("1_goal")
+condition = 7
+amount = 1.5
+untouched = true
+
+[resource]
+script = ExtResource("1_goal")
+id = &"b2_egg_off_loft"
+description = "Knock the egg off the loft without zapping the egg"
+picture = ExtResource("2_pic")
+band = 2
+rank = 80
+condition = 11
+subject = &"egg"
+steps = Array[ExtResource("1_goal")]([SubResource("Resource_egg_off__3"), SubResource("Resource_egg_off__4")])
+hint_objects = Array[StringName]([&"egg"])

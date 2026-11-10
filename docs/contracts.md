@@ -316,9 +316,42 @@ func bark(kind := "") -> String  # own cue bark_<id>[_kind] > Roster.bark(id) > 
 # Jarling; belt on `waist`, junk gun on `hand_r`, tape in Players.COLOR[player]. set_character(id)
 # swaps the body in place (lobby podiums). Audio.has_cue(cue) -> bool: a recorded file exists.
 
-# Goal cards: data/goals/*.tres (GoalData); the checker is static and side-effect free
-func Goals.check(goal: GoalData, objects: Array = []) -> bool
-class_name GoalDeck   # current(), complete(), skip(), order, done; signals goal_completed, goal_skipped, card_changed
+# Goal cards: data/goals/*.tres (GoalData); the checker is static and never touches the yard
+func Goals.check(goal: GoalData, objects: Array = [], memory: GoalMemory = null) -> bool
+func Goals.spot(name: StringName) -> AABB      # Yard.zone(name), else a card spot (Goals.SPOTS)
+class_name GoalDeck   # current(), complete(), skip(), order, done, memory; signals goal_completed, goal_skipped, card_changed
+class_name GoalMemory # what the yard can't tell you right now: where each object was last touched, sequence progress
+func GoalMemory.touch(o: PhysicsObject) -> void   # a gun touched o here (the deck calls it on every zap and while held)
+```
+
+**Goal conditions** (`GoalData.Condition`; a card holds when at least `count` distinct objects matching
+`subject` satisfy it, or a glued-mate does when `group` is on):
+
+| Condition | Holds when | Fields |
+| --- | --- | --- |
+| `OBJECT_SCALE_AT_LEAST` | grown at least `amount` steps, done growing | amount |
+| `OBJECT_HAS_EFFECT` | carries `effect` | effect |
+| `OBJECT_IN_ZONE` | inside `other`: a Yard zone, a card spot, or an object (the bathtub) | other |
+| `GLUED_PAIR` | glued to `other` | other |
+| `OBJECT_HEIGHT_ABOVE` / `OBJECT_HEIGHT_BELOW` | centre above / below `amount` m | amount |
+| `OBJECT_SPEED_OVER` / `OBJECT_SPEED_UNDER` | faster (and not held by gravity grab) / slower than `amount` m/s | amount |
+| `OBJECT_SCALE_AT_MOST` | shrunk to at most `amount` steps (negative), done shrinking | amount |
+| `STACK_HEIGHT` | `count` resting objects stand one on another and the top one's top is above `amount` m | count, amount |
+| `ALL_OF` | the same object satisfies every one of `steps` | steps |
+| `SEQUENCE` | the same object satisfies `steps` in order (needs a GoalMemory; false without one) | steps |
+
+Guards, on any card or step: `touched_in` (the object's last gun touch was inside that zone/spot; needs
+a GoalMemory) and `untouched` (in a sequence: no gun touched it since the previous step; a touch sends
+the object back to step 1). A "gun touch" is any zap on it, or being held by gravity grab. Knocks from
+other objects, magnets on *other* objects and the see-saw are not touches: that is the chain-reaction rule.
+
+Card spots (`Goals.SPOTS`, boxes copied from the yard's landmarks; `tests/test_goal_deck.gd` keeps them
+honest): `barn_loft`, `pipe_top`, `pipe_bottom`, `over_pond`, `tower_top`.
+
+Cards sort by `band`, then `rank`, then `id`. The deck checks the top card every 0.1 s; sequence progress
+resets when the top card changes and on Reset Yard.
+
+```gdscript
 
 # Juice: scripts/fx/fx.gd, static (lift to openjar-addons later)
 func Fx.shake(amount: float) -> void    # respects SettingsPanel.screen_shake()

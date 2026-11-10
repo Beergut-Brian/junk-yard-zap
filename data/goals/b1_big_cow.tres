@@ -6,6 +6,7 @@
 script = ExtResource("1_3l0jb")
 id = &"b1_big_cow"
 description = "Make the cow big"
+rank = 10
 condition = 0
 subject = &"cow"
 amount = 2.0

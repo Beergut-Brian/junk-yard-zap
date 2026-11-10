@@ -7,6 +7,7 @@ script = ExtResource("1_hur1l")
 id = &"b2_cow_car"
 description = "Glue the cow to the car (a cow-car)"
 band = 2
+rank = 20
 condition = 3
 subject = &"cow"
 other = &"car"
