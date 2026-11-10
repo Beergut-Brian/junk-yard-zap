@@ -488,6 +488,8 @@ func _build_tower() -> void:
 		box(self, Vector3(1.45, 0.3, 2.05), 0.06, c("metal").darkened(0.08), step)
 		add("pole", ArtKit.cyl(1.0, 1.0, -1.0, 10), xf(Vector3(step.x, step.y * 0.5, -0.9), Vector3.ZERO, Vector3(0.1, step.y, 0.1)), pole)
 	var cols := [c("rust"), c("crate"), c("enamel"), c("denim"), c("rust_dark"), c("mustard")]
+	for i in cols.size():
+		cols[i] = (cols[i] as Color).lerp(c("metal"), 0.3)
 	var y := 0.0
 	var k := 0
 	while y < 12.0:
@@ -508,13 +510,13 @@ func _build_tower() -> void:
 	var dir := Vector3(cos(deg_to_rad(32.0)), sin(deg_to_rad(32.0)), 0)
 	var n := Vector3(-dir.y, dir.x, 0)
 	var mid := Vector3(35.0, 5.0, 0) + n * 0.57 + dir * 0.6
-	var tube := ArtKit.put_mat(self, ArtKit.cyl(0.78, 9.6, -1.0, 28), ArtKit.glass(Color(c("pond").lightened(0.3), 0.28)), mid)
+	var tube := ArtKit.put_mat(self, ArtKit.cyl(0.78, 9.6, -1.0, 28), ArtKit.glass(Color(c("pond").lightened(0.45), 0.42), 0.15), mid)
 	tube.basis = ArtKit.basis_y(dir)
 	tube.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var floor_mi := box(self, Vector3(9.0, 0.25, 1.5), 0.08, c("metal"), Vector3(35.0, 5.0, 0), Vector3(0, 0, 32))
 	floor_mi.name = "PipeFloorLook"
 	for t in [-4.7, -2.4, 0.0, 2.4, 4.7]:
-		var band := put(self, ArtKit.torus(0.76, 0.88, 28), c("rust").lerp(c("metal"), 0.3), mid + dir * t)
+		var band := put(self, ArtKit.torus(0.74, 0.96, 28), c("metal").darkened(0.1), mid + dir * t)
 		band.basis = ArtKit.basis_y(dir)
 	for t in [-1.8, 2.6]:
 		ArtKit.rod(self, mid + dir * t - n * 0.8, Vector3((mid + dir * t).x, 0.0, -0.6), 0.08, pole)
