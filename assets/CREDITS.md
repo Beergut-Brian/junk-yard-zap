@@ -11,6 +11,7 @@ One line per file. Nothing enters `assets/` without a line here.
 | `characters/jeff/jeff.glb` | openjar-characters `v0.1.0` (commit `6e03db9`), `characters/jeff/refs/jarling/jeff.glb`, built with `avatar/kit/build_jarling.py` (Blender) | Jeff (P1), rigged Jarling with equipment slots; original Open Jar character | Open Jar Games, project's own |
 | `characters/chuck/chuck.glb` | openjar-characters `v0.1.0` (commit `6e03db9`), `characters/chuck/refs/jarling/chuck.glb`, built with `avatar/kit/build_jarling.py` (Blender) | Chuck (P2), rigged Jarling with equipment slots; original Open Jar character | Open Jar Games, project's own |
 | `characters/gear/belt.glb`, `belt.json` | openjar-characters `v0.1.0` (commit `6e03db9`), `avatar/gear/belt.*`, built with `avatar/gear/build_gear.py` | Starter-set belt, worn on `waist` as the gun belt (proof art) | Open Jar Games, project's own |
+| `sprites/goals/*.png` (20 goal-card pictures) | Drawn in code by `scripts/goals/card_art.gd` (Pictos-style flat shapes, ink faces, the gun icons), baked by `scripts/goals/bake_card_art.tscn` | Wordless pictograms of each goal; original designs | Project's own |
 
 ## Art built in code (Golden Afternoon, D44)
 
