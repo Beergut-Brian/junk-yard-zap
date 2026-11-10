@@ -346,3 +346,18 @@ func test_a_whole_session_loops_cleanly_in_the_main_scene() -> void:
 	main.free()
 	Game.quit_exits = true
 	Game._set_state(Game.State.LOBBY)
+
+
+## Holding A for a long grab next to the sign doesn't wipe the yard; letting go clears the ring.
+func test_a_long_grab_hold_by_the_sign_does_not_reset() -> void:
+	var l := level()
+	var z := zapper(P1, l.reset_sign.global_position.x + 1.0)
+	l.register_zapper(z)
+	await step(5)
+	z.input_override = IDLE.merged({"action": true}, true)
+	await step(90)   # 1.5 s
+	assert_int(l.resets).is_equal(0)
+	z.input_override = IDLE.duplicate()
+	await step(3)
+	assert_float(l.reset_progress()).is_equal(0.0)
+	assert_int(l.resets).is_equal(0)

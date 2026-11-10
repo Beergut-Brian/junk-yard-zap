@@ -311,7 +311,7 @@ func test_holding_a_on_the_sign_resets() -> void:
 	await step(30)
 	assert_float(l.reset_progress()).is_greater(0.2)
 	assert_int(l.resets).is_equal(0)
-	await step(50)
+	await step(int(YardLevel.RESET_HOLD * 60) - 30 + 20)
 	assert_int(l.resets).is_equal(1)
 
 

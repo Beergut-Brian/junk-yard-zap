@@ -5,7 +5,7 @@
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
 ## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|zone-<name> (staged
-## shots), --proto.
+## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
 const ZAPPER := preload("res://scenes/players/zapper.tscn")
@@ -184,6 +184,10 @@ func _start_demo() -> void:
 				var b := DemoBot.new(_players[p], 20261109 + p)
 				_bots[p] = b
 				add_child(b)
+			if OS.get_cmdline_user_args().has("--soak"):   # scripts/tools/soak.gd
+				var probe := SoakProbe.new()
+				probe.level = level
+				add_child(probe)
 
 
 func _place(p: int, x: float, face: float) -> void:

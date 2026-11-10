@@ -294,3 +294,10 @@ On top of the template checklist in `docs/kid-design.md`.
 ## Decisions made without Kaden
 
 - 2026-11-09 (Gary): physics bodies use `body_mass = volume_mass ^ 0.5` (`Yard.mass_exponent`); the logical mass by volume still drives cards, impact sounds and juice. Jolt sinks light bodies under heavy ones past ~25:1; this keeps "heavier is heavier" stable. Grow is refused (a "nope" boing) when it would push into static or frozen things; glue pulls the two objects together before locking and lets go after 3 s if they can't meet.
+- 2026-11-10 (playtest #1 polish lane, for Gary/Kaden to confirm):
+  - **Partner aim ring:** when your beam snaps to your partner, your ring circles his whole body at chest height. Before this it sat at his feet and read as a player ring in the wrong colour (the "red ring under Jeff"). A sleeping partner in the tire pile is not a target.
+  - **Mouse pointer:** always hidden in gameplay. Nothing in the game uses a mouse, so it only reappears after the mouse moves while a menu (lobby, pause) is up, and hides again on the next pad or key press.
+  - **Wide view:** the table now has a deep wooden apron with three drawers, and the camera never pitches below the apron's bottom edge (`CameraRig.min_y`). This applies to the lobby/overview shot and the widest play zoom.
+  - **Ten goal cards** (the first-playable count), using the existing condition vocabulary: freeze the cow, ball in the bathtub (band 1), float the car, a cow-car (cow glued to car), a giant chicken (+3) (band 2). Content lane: replace or reorder freely. `b1_big_cow` stays the first card.
+  - **Balloons park 6 m up** (`Effects.Balloon.MAX_RISE`) if nothing stops them first, so a ballooned cow stays on screen and in reach of a zap instead of floating up to the lid. Parked balloons stay parked across a save/reload.
+  - **Reset Yard hold is 2.0 s** (was 1.2). The sign is 3 m from Jeff's spawn, and a kid holding A to grab or grow nearby must not wipe the yard by accident.
