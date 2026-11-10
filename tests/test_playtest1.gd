@@ -140,3 +140,209 @@ func test_camera_never_looks_under_the_table() -> void:
 				.is_greater_equal(YardDressing.APRON_BOTTOM)
 		jeff.free()
 		chuck.free()
+
+
+# ------------------------------------------------------------------------- first-playable audit
+
+func level() -> YardLevel:
+	world.get_child(0).free()   # the strip: the level has its own ground
+	var l := YardLevel.new()
+	l.use_save = false
+	l.layout = load(YardLevel.LAYOUT)
+	world.add_child(l)
+	var players := Node3D.new()
+	players.name = "Players"
+	l.add_child(players)
+	return l
+
+
+func _props(o: PhysicsObject) -> Array:
+	return [snappedf(o.mass, 0.001), o.effective_gravity_scale, o.physics_material_override.bounce,
+			o.physics_material_override.friction, o.freeze, o.target_scale, o.linear_damp, o.angular_damp]
+
+
+## GAME.md first playable: ten objects, every effect stacking and undoing cleanly.
+func test_ten_objects_stack_every_effect_and_undo_cleanly() -> void:
+	var l := level()
+	var hand := zapper(P1, -30.0)
+	await step(30)
+	var keys := [&"cow", &"car", &"bathtub", &"ball", &"duck", &"piano", &"fridge", &"crate", &"tire", &"chicken"]
+	var before := {}
+	for k in keys:
+		var o := l.object(k)
+		assert_object(o).override_failure_message("%s missing" % k).is_not_null()
+		before[k] = _props(o)
+	for k in keys:
+		var o := l.object(k)
+		var mate := l.object(&"crate_2") if k != &"crate_2" else l.object(&"crate")
+		Effects.zap(&"grow", o)
+		await step(30)
+		for e in [&"bouncy", &"balloon", &"magnet", &"freeze"]:
+			assert_bool(Effects.zap(e, o)).override_failure_message("%s %s on" % [k, e]).is_true()
+		var g := Effects.glue(o, mate)
+		var grab := Effects.grab(o, hand, Players.COLOR[P1])
+		await step(5)
+		for e in [&"bouncy", &"balloon", &"magnet", &"freeze"]:
+			assert_bool(o.stack.has(e)).override_failure_message("%s %s stacked" % [k, e]).is_true()
+		# Undo in a different order than applied.
+		if grab:
+			Effects.release(o)
+		if g:
+			g.undo(null)
+		for e in [&"freeze", &"magnet", &"bouncy", &"balloon"]:
+			if o.stack.has(e):
+				Effects.zap(e, o)
+		var sz: Effects.Size = o.stack.get_effect(&"size")
+		if sz:
+			for i in absi(sz.steps):
+				Effects.zap(&"shrink" if sz.steps > 0 else &"grow", o)
+		await step(40)
+		assert_int(o.stack.effects.size()).override_failure_message("%s left %s" % [k, o.stack.effects]).is_equal(0)
+		assert_array(_props(o)).override_failure_message("%s props" % k).is_equal(before[k])
+
+
+func test_balloon_parks_in_reach_and_a_reload_keeps_it_there() -> void:
+	var l := level()
+	var duck := l.object(&"duck")
+	duck.global_position = Vector3(30.0, 1.0, 0)
+	await step(30)
+	var y0 := duck.global_position.y
+	Effects.zap(&"balloon", duck)
+	await step(60 * 8)
+	var b: Effects.Balloon = duck.stack.get_effect(&"balloon")
+	assert_bool(b.parked).is_true()
+	var y1 := duck.global_position.y
+	assert_float(y1 - y0).is_between(Effects.Balloon.MAX_RISE - 0.5, Effects.Balloon.MAX_RISE + 1.5)
+	var saved := l.to_save()
+	l.free()
+	var l2 := YardLevel.new()
+	l2.use_save = false
+	l2.layout = load(YardLevel.LAYOUT)
+	world.add_child(l2)
+	await step(5)
+	l2.from_save(saved)
+	await step(60 * 4)
+	var d2 := l2.object(&"duck")
+	assert_bool(d2.stack.has(&"balloon")).is_true()
+	assert_float(d2.global_position.y).is_between(y1 - 0.5, y1 + 0.5)
+
+
+func test_objects_leaving_the_yard_come_back_at_the_gate() -> void:
+	var l := level()
+	await step(5)
+	var ball := l.object(&"ball")
+	ball.global_position = Vector3(YardLevel.RIGHT + 30.0, 5.0, 0)
+	await step(3)
+	assert_float(ball.global_position.distance_to(Yard.GATE)).is_less(1.5)
+	assert_bool(Yard.in_bounds(ball.global_position)).is_true()
+
+
+func test_giant_and_tiny_caps_hold() -> void:
+	var l := level()
+	var cow := l.object(&"cow")
+	cow.global_position = Vector3(30.0, 2.0, 0)
+	await step(10)
+	for i in 10:
+		Effects.zap(&"grow", cow)
+		await step(45)
+	var s: Effects.Size = cow.stack.get_effect(&"size")
+	assert_int(s.steps).is_less_equal(4)
+	assert_int(s.steps).is_less_equal(cow.data.max_step)
+	for i in 20:
+		Effects.zap(&"shrink", cow)
+		await step(20)
+	s = cow.stack.get_effect(&"size")
+	assert_int(s.steps).is_greater_equal(-4)
+	assert_int(s.steps).is_equal(cow.data.min_step)
+	assert_float(cow.radius()).is_greater(0.1)   # tiny, never vanished
+
+
+func test_both_players_walk_and_jump() -> void:
+	for p in [P1, P2]:
+		var z := zapper(p, 0.0 if p == P1 else 4.0)
+		await step(15)
+		var x0 := z.global_position.x
+		z.input_override = IDLE.merged({"move": Vector2.RIGHT}, true)
+		await step(30)
+		assert_float(z.global_position.x - x0).is_greater(1.0)
+		z.input_override = IDLE.merged({"jump": true}, true)
+		var top := z.global_position.y
+		for i in 30:
+			await step(1)
+			top = maxf(top, z.global_position.y)
+		assert_float(top - 0.05).is_greater(1.0)
+		assert_bool(Audio.played("jump")).is_true()
+		z.free()
+
+
+## A whole evening in the real main scene: hold A to start alone, Chuck drops in, pause, resume,
+## restart to the lobby, both ready, a pad drops out and back in, solo on with the keyboard and a
+## Tab swap, quit. Never two Jeffs, never a stuck pause, the pointer hidden whenever we play.
+func test_a_whole_session_loops_cleanly_in_the_main_scene() -> void:
+	const Lobby := preload("res://scenes/ui/lobby.gd")
+	const PauseMenu := preload("res://scenes/ui/pause_menu.gd")
+	Game.quit_exits = false
+	Game._set_state(Game.State.LOBBY)
+	var main: Node = load("res://scenes/main.tscn").instantiate()
+	add_child(main)
+	await step(2)
+	var lobby: Lobby = main.get_node("UI/Lobby")
+	var finish := func() -> void: lobby.count_step(Lobby.COUNT_STEP * Lobby.COUNT_DOTS + 0.01)
+	var players_root: Node = main.get_node("Arena/Players")
+	Players.join_virtual(P1)
+	assert_bool(lobby.hold_step(P1, true, Lobby.HOLD_TO_START)).is_true()
+	finish.call()
+	await step(2)
+	assert_int(Game.state).is_equal(Game.State.PLAYING)
+	var cursor: Cursor = main.get_node("Cursor")
+	assert_bool(Cursor.should_show(Game.state, cursor.mouse_recent)).is_false()
+	if DisplayServer.get_name() != "headless":   # headless always reports VISIBLE
+		assert_int(Input.mouse_mode).is_equal(Input.MOUSE_MODE_HIDDEN)
+	Players.join_virtual(P2)   # drop-in
+	assert_bool(main.zapper(P2).asleep).is_false()
+	for i in 3:
+		Game.pause()
+		assert_bool(get_tree().paused).is_true()
+		Game.resume()
+		assert_bool(get_tree().paused).is_false()
+		await step(2)
+	Game.pause()
+	(main.get_node("UI/PauseMenu") as PauseMenu).press(PauseMenu.Choice.RESTART)
+	await step(2)
+	assert_int(Game.state).is_equal(Game.State.LOBBY)
+	assert_int(players_root.get_child_count()).is_equal(0)
+	lobby.press_a(P1)
+	lobby.press_a(P2)
+	finish.call()
+	await step(2)
+	assert_int(players_root.get_child_count()).is_equal(2)
+	var seen := {}
+	for z in players_root.get_children():
+		seen[(z as Zapper).player] = true
+	assert_int(seen.size()).is_equal(2)
+	# A pad drops out: Chuck back to sleep; it comes back: awake.
+	Players.player_left.emit(P2)
+	assert_bool(main.zapper(P2).asleep).is_true()
+	Players.player_joined.emit(P2, Players.VIRTUAL)
+	assert_bool(main.zapper(P2).asleep).is_false()
+	# Keyboard solo: both players' keys drive the active one; Tab swaps.
+	Players.reset()
+	Players.set_solo(true)
+	var keys_on := func(p: int) -> int:
+		return InputMap.action_get_events(Players.action(p, "move_right")).filter(
+				func(e: InputEvent) -> bool: return e is InputEventKey).size()
+	assert_int(keys_on.call(P1)).is_greater_equal(2)
+	assert_int(keys_on.call(P2)).is_equal(0)
+	var tab := InputEventKey.new()
+	tab.pressed = true
+	tab.physical_keycode = KEY_TAB
+	main._input(tab)
+	assert_int(Players.solo_focus).is_equal(P2)
+	assert_int(keys_on.call(P2)).is_greater_equal(2)
+	assert_int(keys_on.call(P1)).is_equal(0)
+	Players.set_solo(false)
+	Game.quit()
+	assert_int(Players.active_players().size()).is_greater_equal(1)
+	main.free()
+	Game.quit_exits = true
+	Game._set_state(Game.State.LOBBY)
