@@ -20,6 +20,13 @@ signal scale_refused(obj: PhysicsObject)
 signal object_landed(target: Node3D, impulse: float)
 signal splashed(obj: PhysicsObject)
 
+## Objects whose landing is a gag of its own: id -> cue (played instead of the generic landed voice).
+const LANDING_GAGS := {&"piano": "voice_piano_landed"}
+const GAG_MIN_IMPULSE := 4.0   # a real drop, not a settle
+const CHUTE_MAX := 1.9          # seconds: the parachute never hangs around longer than this
+const CHUTE_SPEED := 2.6        # m/s, the slow fall under the canopy (4 m at the gate in ~1.6 s)
+const CHUTE_COLORS := [Color("#ffb21f"), Color("#f4efe0"), Color("#4aa8e8"), Color("#f4efe0")]
+
 const LAND_DV := 3.5             # m/s of sudden velocity change that counts as a landing
 const LAND_COOLDOWN := 0.25
 
@@ -55,6 +62,9 @@ var _pending_splash := false
 var _clamp_left := 0.0
 var _blocked_time := 0.0
 var _squash_tween: Tween
+## K-08: a recalled object floats down at the gate under a parachute (seconds left; 0 = closed).
+var chute_left := 0.0
+var _chute: Node3D
 
 
 func _init(p_data: ObjectData = null) -> void:
@@ -260,6 +270,8 @@ func _physics_process(delta: float) -> void:
 		Audio.play("splash", global_position)
 		Fx.burst(get_tree(), global_position, Color(0.5, 0.75, 1.0, 0.8), 18, 1.2, 0.7)
 		splashed.emit(self)
+	if chute_left > 0.0:
+		_tick_chute(delta)
 	if not Yard.in_bounds(global_position):
 		recall()
 
@@ -361,6 +373,12 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			v *= 1.0 - minf(1.0, Yard.WATER_DRAG * under * dt)
 			if not was_in and v.length() > 1.5:
 				_pending_splash = true
+	if chute_left > 0.0:
+		var down := -v.dot(up)
+		if down > CHUTE_SPEED:
+			v += up * (down - CHUTE_SPEED)
+		v.x *= 1.0 - minf(1.0, 3.0 * dt)
+		w *= 1.0 - minf(1.0, 6.0 * dt)
 	v.z += Yard.plane_accel(pos.z, v.z) * dt
 	# Friction can hold a resting body off the plane against the spring; creep it back directly.
 	if absf(pos.z) > 0.001:
@@ -386,6 +404,7 @@ func recall() -> void:
 		o.linear_velocity = Vector3.ZERO
 		o.angular_velocity = Vector3.ZERO
 		o._last_v = Vector3.ZERO
+		o.open_chute(o == self)
 		o.recalled.emit(o)
 	Yard.recalls += 1
 	Audio.play("recall", Yard.GATE)
@@ -585,7 +604,116 @@ func _on_landed(impulse: float) -> void:
 	var m := volume_mass()
 	var band := "light" if m < 1.0 else ("medium" if m < 8.0 else ("heavy" if m < 60.0 else "huge"))
 	Audio.play("impact_%s" % band, global_position, 1.0 / sqrt(current_scale))
-	if band != "light":
+	var gag: String = LANDING_GAGS.get(data.id, "")
+	if gag != "" and impulse >= GAG_MIN_IMPULSE:
+		_landing_gag(gag)
+	elif band != "light":
 		speak("landed")
 	Fx.impact(get_tree(), global_position - Yard.up_at(global_position) * _half_along(Yard.up_at(global_position), current_scale), m, impulse / maxf(m, 0.01))
 	object_landed.emit(self, impulse)
+
+
+## A named landing gag (GAME.md "Audio": "Piano plays a chord when it lands"): it always plays,
+## whatever the size and past the object-voice rate cap, with a ring of keys-coloured sparks.
+func _landing_gag(cue: String) -> void:
+	Audio.play(cue, global_position, 1.0 / sqrt(current_scale))
+	var top := global_position + Yard.up_at(global_position) * _half_along(Yard.up_at(global_position), current_scale)
+	Fx.ring(get_tree(), global_position, Color(1.0, 0.85, 0.35), radius() * 1.2)
+	Fx.burst(get_tree(), top, Color(1, 1, 0.95, 0.9), 10, 0.7, 0.7)
+	Fx.burst(get_tree(), top, Color(0.12, 0.1, 0.12, 0.9), 6, 0.6, 0.6)
+	if face:
+		face.react(ObjectFace.Mood.SMUG, 1.0)
+
+
+## K-08 (GAME.md "Kid-design checks": "recall to the gate with a parachute"): the object floats
+## down slowly under a striped canopy, which folds away when it touches down (or after CHUTE_MAX).
+## show_canopy: false for the rest of a glued island, so one canopy carries the lot.
+func open_chute(show_canopy := true) -> void:
+	chute_left = CHUTE_MAX
+	if freeze:
+		chute_left = 0.0   # a frozen thing hangs where it is: no chute to fall under
+		return
+	if show_canopy and not is_instance_valid(_chute):
+		_chute = _make_chute()
+		add_child(_chute)
+		_chute.global_position = _chute_point()
+		_chute.scale = Vector3.ONE * 0.2
+		_chute.create_tween().tween_property(_chute, "scale", Vector3.ONE, 0.25) \
+				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _tick_chute(delta: float) -> void:
+	var up := Yard.up_at(global_position)
+	var age := CHUTE_MAX - chute_left
+	chute_left -= delta
+	if stack.has(&"grab") or freeze or (age > 0.2 and _supported(up)):
+		chute_left = 0.0
+	if is_instance_valid(_chute):
+		_chute.global_position = _chute_point()
+		_chute.global_rotation = Vector3(0, 0, sin(age * 4.0) * 0.12)   # a gentle sway, always upright
+	if chute_left <= 0.0:
+		chute_left = 0.0
+		_close_chute()
+
+
+func _chute_point() -> Vector3:
+	var up := Yard.up_at(global_position)
+	return global_position + up * (_half_along(up, current_scale) + 0.15)
+
+
+func _close_chute() -> void:
+	if not is_instance_valid(_chute):
+		return
+	var c := _chute
+	_chute = null
+	Fx.burst(get_tree(), c.global_position + Vector3(0, 1.2, 0), CHUTE_COLORS[0], 8, 0.6, 0.4)
+	var tw := c.create_tween()
+	tw.tween_property(c, "scale", Vector3(1.3, 0.05, 1.3), 0.18)
+	tw.tween_callback(c.queue_free)
+
+
+## A striped canopy on four cords, big enough to read at TV distance, sized to the object.
+func _make_chute() -> Node3D:
+	var root := Node3D.new()
+	root.name = "Parachute"
+	root.top_level = true
+	var r := clampf(radius() * 1.3, 0.9, 3.0)
+	var lift := r * 1.1
+	var dome := MeshInstance3D.new()
+	dome.name = "Canopy"
+	var m := SphereMesh.new()
+	m.radius = r
+	m.height = r * 1.1
+	m.is_hemisphere = true
+	m.radial_segments = 32
+	m.rings = 8
+	dome.mesh = m
+	var img := Image.create(CHUTE_COLORS.size() * 2, 1, false, Image.FORMAT_RGB8)
+	for x in img.get_width():
+		img.set_pixel(x, 0, CHUTE_COLORS[x % CHUTE_COLORS.size()])   # gores round the dome
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = ImageTexture.create_from_image(img)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.roughness = 0.8
+	dome.material_override = mat
+	dome.position.y = lift
+	dome.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(dome)
+	var km := StandardMaterial3D.new()
+	km.albedo_color = Color("#3a2a22")
+	for side in [-1.0, -0.35, 0.35, 1.0]:
+		var cord := MeshInstance3D.new()
+		var cm := CylinderMesh.new()
+		cm.top_radius = 0.03
+		cm.bottom_radius = 0.03
+		var top := Vector3(side * r * 0.97, lift, 0.0)
+		var bottom := Vector3(side * 0.2, 0.0, 0.0)
+		var d := top - bottom
+		cm.height = d.length()
+		cord.mesh = cm
+		cord.material_override = km
+		cord.position = (top + bottom) * 0.5
+		cord.rotation.z = -atan2(d.x, d.y)
+		root.add_child(cord)
+	return root

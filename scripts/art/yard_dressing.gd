@@ -382,20 +382,7 @@ func _build_scrap_heap() -> void:
 		ArtKit.rod(cr, Vector3(-0.28, y, 0.28), Vector3(0.28, y + 0.6, 0.28), 0.035, paint.darkened(0.1))
 	box(cr, Vector3(6.6, 0.45, 0.5), 0.12, paint, Vector3(-2.3, 9.1, 0))
 	box(cr, Vector3(1.2, 0.9, 0.8), 0.15, c("metal").darkened(0.2), Vector3(1.2, 8.75, 0))
-	ArtKit.rod(cr, Vector3(-4.8, 8.9, 0), Vector3(-4.8, 5.6, 0), 0.025, c("ink"))
-	var hook := group(Vector3(-4.8, 5.4, 0), Vector3.ZERO, cr)
-	box(hook, Vector3(0.45, 0.4, 0.3), 0.1, c("metal"), Vector3(0, 0.1, 0))
-	put(hook, ArtKit.torus(0.16, 0.26, 20), c("metal").darkened(0.15), Vector3(0, -0.3, 0), Vector3(90, 0, 0))
-	# The conveyor belt by the car (looks only for now: no gameplay node yet).
-	var cv := group(Vector3(-25.0, 0, -3.1))
-	box(cv, Vector3(4.4, 0.18, 1.1), 0.06, c("rubber"), Vector3(0, 1.15, 0), Vector3(0, 0, -6))
-	for x in [-2.2, 2.2]:
-		put(cv, ArtKit.cyl(0.18, 1.2, -1.0, 14), c("metal"), Vector3(x, 1.15 - x * 0.105, 0), Vector3(90, 0, 0))
-	for x in [-1.8, 0.0, 1.8]:
-		for z in [-0.45, 0.45]:
-			box(cv, Vector3(0.12, 1.1 - x * 0.1, 0.12), 0.04, c("rust_dark"), Vector3(x, (1.1 - x * 0.1) * 0.5, z))
-	box(cv, Vector3(0.35, 0.9, 0.35), 0.06, c("metal").darkened(0.2), Vector3(2.8, 0.45, 0.4))
-	put(cv, ArtKit.cyl(0.2, 0.12, -1.0, 16), c("teal"), Vector3(2.8, 0.95, 0.4))
+	# The hook, its rope and the conveyor belt work now: scripts/gameplay/contraptions.gd draws them.
 
 
 func _build_pond_props() -> void:
@@ -475,13 +462,7 @@ func _build_barn() -> void:
 			box(plank, Vector3(0.6, 0.24, 1.22), 0.08, c("teal"), Vector3(s * 2.2, 0, 0))
 			ArtKit.rod(plank, Vector3(s * 1.7, 0.1, -0.4), Vector3(s * 1.7, 0.45, -0.4), 0.04, c("metal"))
 			ArtKit.rod(plank, Vector3(s * 1.7, 0.45, -0.55), Vector3(s * 1.7, 0.45, -0.25), 0.04, c("metal"))
-	# Trampoline by the barn wall (scenery for now: no gameplay node yet).
-	var t := group(Vector3(11.5, 0, -3.4))
-	put(t, ArtKit.torus(1.15, 1.3, 32), c("teal"), Vector3(0, 0.75, 0))
-	put(t, ArtKit.cyl(1.15, 0.04, -1.0, 28), c("rubber"), Vector3(0, 0.74, 0))
-	for k in 6:
-		var a := TAU * k / 6.0
-		ArtKit.rod(t, Vector3(cos(a) * 1.2, 0.75, sin(a) * 1.2), Vector3(cos(a) * 1.25, 0.0, sin(a) * 1.25), 0.05, c("metal"))
+	# The trampoline bounces now: scripts/gameplay/contraptions.gd builds it on the play plane.
 	# Hay bales stacked by the barn door.
 	for p in [Vector3(16.6, 0.4, -4.0), Vector3(17.9, 0.4, -4.1), Vector3(17.2, 1.2, -4.05)]:
 		box(self, Vector3(1.2, 0.8, 0.8), 0.15, c("hay"), p)
@@ -513,14 +494,7 @@ func _build_tower() -> void:
 		add("tower_junk", ArtKit.rbox(Vector3(1, 1, 1), 0.15, 3), xf(Vector3(41.5 + _rng.randf_range(-0.8, 0.8), y + h * 0.5, -3.6), Vector3(0, 0, _rng.randf_range(-4, 4)), Vector3(w, h, 1.4)), cols[k % cols.size()])
 		y += h
 		k += 1
-	# The fan on top (looks only for now: zap-on wind needs a gameplay node).
-	var f := group(Vector3(41.5, 13.4, -3.1))
-	put(f, ArtKit.torus(1.1, 1.25, 32), c("metal"), Vector3.ZERO, Vector3(90, 0, 0))
-	put(f, ArtKit.cyl(0.25, 0.4, -1.0, 16), c("metal").darkened(0.2), Vector3.ZERO, Vector3(90, 0, 0))
-	fan = group(Vector3(0, 0, 0.12), Vector3.ZERO, f)
-	for a in 4:
-		box(fan, Vector3(0.38, 1.0, 0.06), 0.15, c("teal"), Vector3(0, 0.55, 0).rotated(Vector3.BACK, a * PI * 0.5), Vector3(0, 0, a * 90))
-	box(f, Vector3(0.3, 1.4, 0.3), 0.06, pole, Vector3(0, -1.3, -0.2))
+	# The fan on top works now (zap it on): scripts/gameplay/contraptions.gd.
 	# The pipe: a see-through tube along the pipe's floor and roof, with metal bands.
 	var dir := Vector3(cos(deg_to_rad(32.0)), sin(deg_to_rad(32.0)), 0)
 	var n := Vector3(-dir.y, dir.x, 0)

@@ -1,6 +1,6 @@
 # Plan status: Junk Yard Zap
 
-Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Format: `~/openjar/lanes/plan-status-format.md`.
+Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Format: `~/openjar/lanes/plan-status-format.md`.
 Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
 
 Sources (newest last):
@@ -92,14 +92,14 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | Y-01 | S1 Yard | One wide yard, about six screens, a fence at each end | built | frame wide | |
 | Y-02 | S1 Yard | Five zones: front gate, scrap heap, pond, barn, tower | built | frame wide, test_goal_deck.gd::test_every_gun_and_zone_has_a_card | |
 | Y-03 | S1 Yard | Front gate: fence with the card stack, Reset Yard sign, tire pile | built | frame goal (card board, yellow sign, tires) | |
-| Y-04 | S1 Yard | Scrap heap: crane with a hanging hook (grab-able) | partial | yard_dressing.gd:371-388 | The crane and hook are there to look at, not to grab |
-| Y-05 | S1 Yard | Scrap heap: conveyor belt that runs when you zap its button | missing | yard_dressing.gd:389 "looks only for now: no gameplay node yet" | |
+| Y-04 | S1 Yard | Scrap heap: crane with a hanging hook (grab-able) | built | test_polish.gd::test_the_crane_hook_can_be_grabbed_and_carries_what_it_catches, contraptions.gd `CraneHook`, frames handoff/frames/y04_hook_grabbed.png, y04_hook_carries.png | The gravity gun takes the hook; it catches the first thing it touches (a glue joint: the glue gun's blob lets go) and the winch lifts it to dangle under the jib. No face (a machine part). Not saved: it hangs empty after a reload |
+| Y-05 | S1 Yard | Scrap heap: conveyor belt that runs when you zap its button | built | test_polish.gd::test_the_belt_button_runs_the_conveyor_and_carries_the_car, contraptions.gd `Conveyor`, `BeltButton`, frame handoff/frames/y05_belt_runs.png | The belt is let into the ground under the car and runs **toward the gate** (the heap's ramp blocks the other way); the button is on a post where the belt meets the heap. Carries objects and players |
 | Y-06 | S1 Yard | Pond: water floats light things and splashes everything; a dock | built | test_greybox.gd::test_water_floats_light_things_and_sinks_heavy_ones, frame apart (dock, glass cut-away) | |
 | Y-07 | S1 Yard | Barn: hayloft with a drop, see-saw | built | yard_level.gd:329-361, frame combo (loft, see-saw), test_goal_deck.gd::test_b2_tub_from_loft | |
-| Y-08 | S1 Yard | Barn: trampoline landmark | partial | yard_dressing.gd:478 "scenery for now"; data/objects/trampoline.tres is a loose bouncy object | The landmark doesn't bounce, but the trampoline object does |
+| Y-08 | S1 Yard | Barn: trampoline landmark | built | test_polish.gd::test_the_trampoline_bounces_a_launched_object_and_a_player, contraptions.gd `Trampoline`, frame handoff/frames/y08_trampoline.png | On the play plane at the pond end of the barn (x 10.4, next to the cow). Objects bounce back at 86% (they settle); players pop to hayloft height. The scenery trampoline behind the plane is gone (yard_dressing.gd). Moving the cow instead broke test_goal_deck.gd::test_b2_egg_off_loft, so the cow stays put |
 | Y-09 | S1 Yard | Tower: platforms and a pipe you can send things down | built | test_goal_deck.gd::test_b3_piano_pipe_pond, ::test_b2_duck_on_tower | |
-| Y-10 | S1 Yard | Tower: a wind fan you can zap on | missing | yard_dressing.gd:516 "looks only for now: zap-on wind needs a gameplay node" | The fan spins but makes no wind |
-| Y-11 | S1 Yard | Loose objects per zone (tires, crates, car, bathtub, fridge, pipes, duck, boat, logs, chickens, cow, hay, tractor, piano, kite, cannon, cannonball, balloons…) | partial | data/yard_layout.tres, test_art.gd::test_layout_uses_every_object_type | Everything is placed except loose **balloons**: there's no balloon object. One pipe, not "a pile of pipes". The cow lives in the barn, not the pond |
+| Y-10 | S1 Yard | Tower: a wind fan you can zap on | built | test_polish.gd::test_zapping_the_fan_blows_the_kite_off_the_tower, scripts/gameplay/contraptions.gd `YardFan`, frame handoff/frames/y10_fan_on.png | Any gun toggles it. Blows light things (volume mass < 4) left off the top deck; wind streaks and a yellow lamp while on. Off after Reset Yard |
+| Y-11 | S1 Yard | Loose objects per zone (tires, crates, car, bathtub, fridge, pipes, duck, boat, logs, chickens, cow, hay, tractor, piano, kite, cannon, cannonball, balloons…) | partial | data/yard_layout.tres, test_art.gd::test_layout_uses_every_object_type | Pipe pile done: two pipes stacked by the plank (pipe, pipe_2). A third would break the 6-11 per zone cap (test_more_objects.gd). Still no loose **balloon** object (needs an ObjectData that floats and art: Content + Art, **S**). The cow lives in the barn, not the pond |
 | Y-12 | S1 Yard | Objects react to every gun with a sound and a face | partial | test_art.gd::test_about_forty_object_types_all_with_art_and_faces, frames | Faces react on all 48. Only 8 have recorded voices (A-06) |
 | Y-13 | S1 Yard | Survives any effect combination: capped scale and velocity, sleeps when still | built | test_more_objects.gd::test_stress_whole_yard_stays_clean, ::test_new_types_every_pair_composes_and_caps_hold, physics_object.gd:72 | |
 | Y-14 | S1 Yard | About 40 object types as `ObjectData`; Content adds more without code | built | data/objects/ (48 types), test_art.gd::test_about_forty_object_types_all_with_art_and_faces | |
@@ -122,7 +122,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | G-10 | S1 Goal cards | Ordered easy to hard; skip a card by zapping it (to the back, with a raspberry) | built | test_goal_deck.gd::test_thirty_cards_in_three_bands_easy_first, ::test_all_thirty_skip_through_and_wrap | Raspberry is a placeholder (A-07) |
 | G-11 | S1 Goal cards, S7 | 30 cards at launch as `.tres` (12 / 10 / 8; the first five are one zap or one carry) | built | data/goals/ (30), test_goal_deck.gd::test_thirty_cards_in_three_bands_easy_first | |
 | G-12 | S1 Goal cards | New decks in updates (holiday deck, animals deck) | later | | Update decks |
-| G-13 | S1 Goal cards | Done cards stay in a pile he can **flip through**: his trophy shelf | partial | fence_card.gd:38 (a stack grows beside the card) | Nothing lets him browse the pile |
+| G-13 | S1 Goal cards | Done cards stay in a pile he can **flip through**: his trophy shelf | partial | fence_card.gd:38 (a stack grows beside the card) | Nothing lets him browse the pile. Not started by the polish lane (jyz-polish-1, out of time): **M** |
 | G-14 | S1 Goal cards | Kaden can author cards by hand in minutes | built | data/goals/*.tres, docs/contracts.md "Goal conditions" | |
 | G-15 | S4 | Ten cards for first playable | superseded | S7 30-card deck (G-11) | |
 | G-16 | S7 | Every card has a test that completes it in a real yard through the guns | built | test_goal_deck.gd (one test per new card), test_greybox.gd::test_the_five_playtest_cards_complete | |
@@ -148,7 +148,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | S-13 | S1 Tech | Jolt physics | built | test_physics_proto.gd::test_jolt_is_the_3d_physics_engine | |
 | S-14 | S1 Tech | Contracts: zapped, effect_changed, object_landed, goal_completed, goal_skipped, yard_reset, Goals.check, Yard.objects_in_zone | built | docs/contracts.md:267-327; yard_level.gd:8-11, physics_object.gd:20, effect_stack.gd:7, goals.gd:22, yard.gd:91 | |
 | S-15 | S1 Tech | Save: every object's transform, scale and effects; deck position and done pile | built | yard_level.gd:225-244, test_greybox.gd::test_save_load_round_trip | |
-| S-16 | S1 Tech | Save: **last gun per player** | missing | yard_level.gd:244 (no gun field); zapper.gd:44 `gun_index` isn't persisted | Both players start on the size gun every time |
+| S-16 | S1 Tech | Save: **last gun per player** | built | test_polish.gd::test_each_player_keeps_their_last_gun_after_the_lobby_and_a_reload, scenes/main.gd:106-108, :121-125 | Was already built: main.gd keeps `guns` in the yard save (user://saves/<profile>.json, the game-save pattern, not settings) and restores it on spawn. This row misread it (it looked only at yard_level.gd and zapper.gd). Now under test: through the lobby, and through quit + boot with a change made just before quitting |
 | S-17 | S1 Tech | Autosave every 30 s and on pause | built | yard_level.gd:23, :95-102, :206-207 | |
 | S-18 | S1 Tech | 60 fps on a GTX 1060; sleep when still | partial | physics_object.gd:72 (`can_sleep`), test_more_objects.gd::test_stress_whole_yard_stays_clean | Never measured on the 1060. The queue log notes 6-8 ms headless frame time after 51 bodies: check with F3 on the TV box |
 | S-19 | S2 | Template features: lobby + door, pause, solo (Select+Start 2 s, LB+RB+Select swaps), `--demo`, `--shots=`, smoke boot, `store/jar.glb` | built | test_lobby.gd::test_select_start_hold_toggles_solo, ::test_lobby_door_asks_then_quits, ::test_demo_skips_lobby; test_greybox.gd::test_solo_swap_moves_the_pad_to_the_other_player; test_store_jar.gd; .github/workflows/release.yml | |
@@ -166,7 +166,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | --- | --- | --- | --- | --- | --- |
 | M-01 | S5 | Showtime kit skinned by `data/menu_skin.tres` (accent #ffb21f, title "Junk Yard Zap") | built | test_jyz_menus.gd::test_skin_loads_with_the_game_look, frame lobby | |
 | M-02 | S5 | Backdrop `SCREEN`: blurs the yard already drawn | built | test_showtime.gd::test_backdrop_modes, frame lobby | |
-| M-03 | S5 | Podiums: the picked Jarlings hold the size gun in their tape, three-quarter view | partial | test_jyz_chooser.gd::test_lobby_podiums_and_plates_follow_the_pick, frame lobby | In the frame the dish still covers both characters' legs and hips: worth another angle |
+| M-03 | S5 | Podiums: the picked Jarlings hold the size gun in their tape, three-quarter view | built | test_polish.gd::test_the_podium_gun_points_up_not_over_the_legs, scenes/ui/lobby_jarling.gd `raise_gun()`, frames handoff/frames/m03_lobby_before.png, m03_lobby_after.png | The gun is held up and out by the shoulder ("guns up!"), so legs and hips show; it stays up after a chooser swap |
 | M-04 | S5 | Round card "ZAP TIME!" with a "THE YARD IS OPEN" strip | built | test_jyz_menus.gd::test_round_card_says_the_yard_is_open | |
 | M-05 | S6 | Lobby character chooser | built | test_chooser.gd, test_jyz_chooser.gd::test_lobby_swap_rebuilds_the_podium_rig_with_the_gun | |
 
@@ -202,7 +202,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | A-10 | S1 Audio | Music: a lazy junk-yard loop (washboard, banjo, kazoo), quiet under the chaos | missing | assets/audio/music/ is empty; nothing calls music | Gary is generating it with ElevenLabs (QUEUE 2026-11-10) |
 | A-11 | S1 Audio | Music brightens for ten seconds after a finished card | missing | | Needs A-10 first |
 | A-12 | S1 Audio | Barks: Jeff delights at big impacts; Chuck narrates his zaps and blames Jeff; at most one bark per zap | partial | zapper.gd:557, :590, :596-599 (`bark()`: only on partner freeze and card cheer) | The voice plumbing is built (P-12), but the impact and zap triggers aren't |
-| A-13 | S1 Audio | Piano plays a chord when it lands | missing | none (only the generic impact cue) | |
+| A-13 | S1 Audio | Piano plays a chord when it lands | built | test_polish.gd::test_the_piano_plays_its_chord_when_it_lands_even_tiny, physics_object.gd `LANDING_GAGS` / `_landing_gag()`, frame handoff/frames/a13_piano_lands.png | The chord file (voice_piano_landed.ogg) existed but only played for medium+ landings and could be held back by the voice rate cap. Now it always plays on a real drop, any size, with a gold ring and black-and-white sparks |
 | A-14 | S1 Audio, K | No scary sounds; even the biggest crash is a cartoon crash | partial | | Placeholder beeps aren't scary, but this can't be judged until real SFX land |
 
 ## Kid-design checks (S1 "Kid-design checks specific to this game")
@@ -216,13 +216,13 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | K-05 | S1 Kid | Goal cards never nag, never time out, skip with one zap | built | test_goal_deck.gd::test_all_thirty_skip_through_and_wrap | |
 | K-06 | S1 Kid | Reset Yard reachable in-world without a menu | built | test_greybox.gd::test_holding_a_on_the_sign_resets | |
 | K-07 | S1 Kid | Camera never splits and never loses a player | built | frame apart (arrows), test_playtest1.gd::test_camera_never_looks_under_the_table | |
-| K-08 | S1 Kid | Nothing launched off the map or stuck; recall to the gate **with a parachute** | partial | test_playtest1.gd::test_objects_leaving_the_yard_come_back_at_the_gate, test_physics_proto.gd::test_recall_when_out_of_bounds | The recall works; there's no parachute (it just reappears) |
+| K-08 | S1 Kid | Nothing launched off the map or stuck; recall to the gate **with a parachute** | built | test_polish.gd::test_a_recalled_object_floats_down_at_the_gate_under_a_parachute, test_playtest1.gd::test_objects_leaving_the_yard_come_back_at_the_gate, physics_object.gd `open_chute()`, frame handoff/frames/k08_parachute.png | A striped canopy on four cords; falls at 2.6 m/s, folds away on touchdown or after 1.9 s at most. One canopy per glued island |
 | K-09 | S1 Kid | Giant and tiny extremes capped | built | test_playtest1.gd::test_giant_and_tiny_caps_hold | |
 | K-10 | S1 Kid | Every object has a face **and a voice**; nothing is mute | partial | test_art.gd::test_about_forty_object_types_all_with_art_and_faces | Faces 48/48; recorded voices 8/48 (A-06) |
 
 ## Totals
 
-152 rows: **built 105 · partial 25 · missing 11 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
+152 rows: **built 113 · partial 21 · missing 7 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
 
 ## Next up
 
@@ -231,14 +231,14 @@ Missing and partial rows, ranked by how much Kaden (and his son) will notice the
 1. **A-01, A-06, A-02..A-05, A-07..A-09, K-10, U-15: real SFX and object voices**. Every zap, impact and animal is a beep today, and "sound on every action" is the whole toy. Start with the 7 zaps, grow/shrink, and the voices of the 6 card-star objects (cow, car, piano, fridge, chicken, duck). **L**
 2. **A-10, A-11: music loop, brightening after a card**. The yard is silent between beeps. Gary is already generating the music. **M**
 3. **P-05, P-06, A-12: Jeff/Chuck reactions and barks** (delight at big impacts, Chuck narrating and blaming, one bark per zap). This is the comedy layer, and the bark plumbing exists. **M**
-4. **S-16: remember each player's last gun**. Both players are back on the size gun after every reload. **S**
-5. **Y-10, Y-05, Y-04: zap-on fan, conveyor button, grab-able crane hook**. These are landmarks the plan promised as contraption parts; today they only look the part. **M** (fan S, conveyor M, hook S)
-6. **A-13: piano chord on landing**. A named gag, cheap once A-06 exists. **S**
-7. **K-08: parachute on recall**. Recalled objects just pop back at the gate. **S**
+4. ~~S-16~~ built (it already worked; now under test).
+5. ~~Y-10, Y-05, Y-04~~ built (scripts/gameplay/contraptions.gd).
+6. ~~A-13~~ built.
+7. ~~K-08~~ built.
 8. **G-13: trophy shelf you can flip through**. The done pile is only a growing stack. **M**
 9. **P-07: character idles** (poke and hum, kick a tire and check his hat), working for any picked Jarling. **M**
-10. **M-03: podium gun angle**. The dish covers the characters' legs in the lobby. **S**
-11. **Y-08, Y-11: barn trampoline landmark that bounces; loose balloon objects; a pile of pipes**. **S**
+10. ~~M-03~~ built.
+11. ~~Y-08~~ built; **Y-11: loose balloon objects** still missing (an ObjectData that floats, plus art: Content + Art). **S**
 12. **C-13: playtest #1 (Kaden and his son), then tag `v0.1.0`**. Add a "Playtest 2026-11-10 changes" section and new rows here from the notes. **S** (Gary)
 13. **S-18: measure 60 fps on the GTX 1060** with 51 bodies (F3). **S**
 14. **V-11: store hero at golden hour, tower in frame**. **S**
