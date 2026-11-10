@@ -147,6 +147,46 @@ A stack of picture-cards clipped to the front fence. The top card is the current
 - Done cards stay in a pile he can flip through: his trophy shelf.
 - Kaden can author cards by hand in minutes; the condition vocabulary is the whole puzzle language.
 
+**The launch deck (30 cards, 2026-11-10).** 12 band 1, 10 band 2, 8 band 3, ordered by band, then
+`rank`, then id; `b1_big_cow` stays first and the first five are all one-zap or one-carry. Every card
+has `hint_objects` and a test that completes it in a real yard through the guns
+(`tests/test_goal_deck.gd`). Condition vocabulary: `docs/contracts.md` "Goal conditions". The new
+cards' pictures are baked from code (`scripts/goals/card_art.gd`); the first ten still use the
+pictogram `Pictos` draws from the condition.
+
+| Band | Card (id) | Condition |
+| --- | --- | --- |
+| 1 | Make the cow big `b1_big_cow` | scale_at_least(cow, +2) |
+| 1 | Float a chicken `b1_float_chicken` | has_effect(chicken, balloon) |
+| 1 | Make anything bouncy `b1_bouncy_any` | has_effect(any, bouncy) |
+| 1 | Make the car tiny `b1_tiny_car` | scale_at_most(car, -1) |
+| 1 | Freeze the cow `b1_freeze_cow` | has_effect(cow, freeze) |
+| 1 | Magnet on the fridge `b1_magnet_fridge` | has_effect(fridge, magnet) |
+| 1 | Ball in the bathtub `b1_tub_ball` | in_zone(ball, bathtub) |
+| 1 | Duck in the bathtub `b1_duck_in_tub` | in_zone(duck, bathtub) |
+| 1 | Glue two things `b1_glue_two` | glued_pair(any, any) |
+| 1 | Sheep to the front gate `b1_sheep_to_gate` | in_zone(sheep, front_gate) |
+| 1 | Pig in the pond `b1_pig_in_pond` | in_zone(pig, pond) |
+| 1 | Make the tractor tiny `b1_tiny_tractor` | scale_at_most(tractor, -1) |
+| 2 | Float the car `b2_float_car` | has_effect(car, balloon) |
+| 2 | Cow-car `b2_cow_car` | glued_pair(cow, car) |
+| 2 | Giant chicken `b2_giant_chicken` | scale_at_least(chicken, +3) |
+| 2 | Three things in the tub `b2_three_in_tub` | in_zone(any, bathtub) x3 |
+| 2 | Chicken stairs `b2_chicken_stairs` | all_of(has_effect freeze, height > 1 m) x3 chickens |
+| 2 | Duck on top of the tower `b2_duck_on_tower` | in_zone(duck, tower_top) |
+| 2 | Ball into the tub from the barn loft `b2_tub_from_loft` | in_zone(ball, bathtub), last touched in barn_loft |
+| 2 | Knock the egg off the loft `b2_egg_off_loft` | sequence: resting in barn_loft, then below 1.5 m with no gun touch |
+| 2 | Car over the fence `b2_car_over_fence` | all_of(height > 4.5 m, speed > 8) |
+| 2 | Stack three taller than the barn walls `b2_stack_three` | stack_height(3, top above 7 m) |
+| 3 | Really fast duck `b3_fast_duck` | speed_over(duck, 15) |
+| 3 | Tractor in the loft `b3_tractor_loft` | all_of(in barn_loft, resting) |
+| 3 | Cow higher than the tower `b3_cow_over_tower` | height_above(cow, 13 m) |
+| 3 | Stack five `b3_stack_five` | stack_height(5) |
+| 3 | Cannonball from the tower into the pond `b3_cannonball_pond` | in_zone(cannonball, pond), last touched in tower |
+| 3 | Cow-car-balloon raft over the pond `b3_raft` | all_of(glued to car, balloon on the pair, over_pond) |
+| 3 | Chain reaction off the loft `b3_chain_ball` | sequence: ball resting in barn_loft, then below 1.5 m with no gun touch |
+| 3 | Piano down the tower pipe into the pond `b3_piano_pipe_pond` | sequence: pipe_top, pipe_bottom, pond |
+
 ## Camera and controls
 
 2.5D: a 3D scene with real tumbling physics, viewed from the side by an orthographic-ish camera, with both players and all aiming locked to one plane. Depth is for looks only, so anything above a thing lands on that thing and the stick aims exactly where it points.
@@ -307,3 +347,9 @@ On top of the template checklist in `docs/kid-design.md`.
   - **Podiums:** Jeff (P1, green) and Chuck (P2, red) are the game's own Jarling rigs holding the size gun taped in their colour, turned three-quarters toward the menu so the gun points across the stage. Facing the camera, its dish read as a frisbee covering the body.
   - **Round card:** "ZAP TIME!" with a "THE YARD IS OPEN" strip under it. The kit draws the card title at a fixed size, and "THE YARD IS OPEN" as the title ran off both edges of the screen.
   - **Solo is never restored at boot.** The settings row still mirrors solo while it is on, but a saved "on" no longer turns it on next launch. Solo is `--solo` or Select+Start for 2 s only.
+- 2026-11-10 (goal deck lane, for Gary/Kaden to confirm):
+  - **"Taller than the barn" means the barn walls (7 m)**, not the ridge (about 10 m): three crates and a fridge on the loft get there; the ridge needed giant things stacked, a dad card at band 2.
+  - **A "gun touch"** (for "from the loft" and the chain-reaction cards) is any zap on the object or holding it with gravity grab. Throws, magnets on *other* things, the see-saw and shoving with a held object are not touches, so bulldozing the egg off with a held hay bale counts as knocking it off.
+  - **The piano card does not require the piano to slide down the pipe on its own.** Shrunk to fit, it slides part way and can wedge; a shove inside the pipe is fine. It must pass the pipe's top and bottom and then reach the pond.
+  - **The deck checks the top card every 0.1 s** (was 0.25 s) so a car flying over the fence is not missed mid-arc. One card, at most 40 objects, no allocation beyond the group list.
+  - **The first two "anything" cards now hint** (bouncy: ball and tire; glue: the two crates) so every card glows something.
