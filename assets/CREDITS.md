@@ -18,7 +18,7 @@ original designs (no brands, characters, real places or artists' styles imitated
 
 | File | Source / tool | Prompt or notes | License |
 | --- | --- | --- | --- |
-| `scripts/art/` (yard dressing, sky shader, 40 object models, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
+| `scripts/art/` (yard dressing, sky shader, 48 object models, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
 | `store/jar.glb` | `art/tools/make_jar.py` (Blender 5.2.3, background) | Launcher jar world: a giant cow on a balloon over a scrap pile | Project's own |
 | `store/grid.png`, `store/hero.png` | `art/tools/render_store.sh` (Godot renders of `art/preview/store.tscn`) | Grid: Jeff grows the cow, Chuck in a ballooned bathtub. Hero: the whole yard | Project's own |
 
@@ -38,7 +38,6 @@ per-file list and what each sounds like is in `assets/audio/CUES.md`.
 | `audio/sfx/bark_*.ogg` (13 files) | `scripts/audio/make_cues.py` | Generic wordless cartoon voices (formant synth), the fallback when a character has no own voice; not any character's voice | Project's own |
 | `audio/sfx/voice_<object>_<kind>.ogg` (192 files, 48 objects x react / grabbed / thrown / landed) | `scripts/audio/make_cues.py` | Object voices: synth moo, oink, baa, bawk, squeak, honk, piano chords, fridge rattle, clanks, knocks ... | Project's own |
 | `audio/music/music_yard.ogg`, `music_yard_bright.ogg` | `scripts/audio/make_cues.py` | PLACEHOLDER loops (washboard, Karplus-Strong banjo, oom-pah bass, kazoo; 16 bars, 100 BPM); to be replaced by ElevenLabs files with the same names (spec in CUES.md) | Project's own |
-
 <!-- characters:begin (scripts/tools/sync_characters.sh writes this block) -->
 
 ## Characters (synced from openjar-characters v0.3.0)

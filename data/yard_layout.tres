@@ -42,6 +42,14 @@
 [ext_resource type="Resource" path="res://data/objects/cannon.tres" id="40_art22"]
 [ext_resource type="Resource" path="res://data/objects/mattress.tres" id="41_art23"]
 [ext_resource type="Resource" path="res://data/objects/armchair.tres" id="42_art24"]
+[ext_resource type="Resource" path="res://data/objects/garden_gnome.tres" id="43_more0"]
+[ext_resource type="Resource" path="res://data/objects/trampoline.tres" id="44_more1"]
+[ext_resource type="Resource" path="res://data/objects/surfboard.tres" id="45_more2"]
+[ext_resource type="Resource" path="res://data/objects/lawn_flamingo.tres" id="46_more3"]
+[ext_resource type="Resource" path="res://data/objects/rubber_chicken.tres" id="47_more4"]
+[ext_resource type="Resource" path="res://data/objects/kiddie_pool.tres" id="48_more5"]
+[ext_resource type="Resource" path="res://data/objects/swim_ring.tres" id="49_more6"]
+[ext_resource type="Resource" path="res://data/objects/tire_swing.tres" id="50_more7"]
 
 [sub_resource type="Resource" id="Resource_w3nnk"]
 script = ExtResource("1_g6uod")
@@ -301,6 +309,54 @@ key = &"armchair"
 object = ExtResource("42_art24")
 position = Vector3(46.8, 0.5, 0)
 
+[sub_resource type="Resource" id="Resource_more0"]
+script = ExtResource("1_g6uod")
+key = &"garden_gnome"
+object = ExtResource("43_more0")
+position = Vector3(-42.9, 0.53, 0)
+
+[sub_resource type="Resource" id="Resource_more1"]
+script = ExtResource("1_g6uod")
+key = &"trampoline"
+object = ExtResource("44_more1")
+position = Vector3(-14.65, 0.22, 0)
+
+[sub_resource type="Resource" id="Resource_more2"]
+script = ExtResource("1_g6uod")
+key = &"surfboard"
+object = ExtResource("45_more2")
+position = Vector3(-6.6, 0.45, 0)
+
+[sub_resource type="Resource" id="Resource_more3"]
+script = ExtResource("1_g6uod")
+key = &"lawn_flamingo"
+object = ExtResource("46_more3")
+position = Vector3(-8.3, 0.82, 0)
+
+[sub_resource type="Resource" id="Resource_more4"]
+script = ExtResource("1_g6uod")
+key = &"rubber_chicken"
+object = ExtResource("47_more4")
+position = Vector3(-3.3, 0.0, 0)
+
+[sub_resource type="Resource" id="Resource_more5"]
+script = ExtResource("1_g6uod")
+key = &"kiddie_pool"
+object = ExtResource("48_more5")
+position = Vector3(0.2, 0.0, 0)
+
+[sub_resource type="Resource" id="Resource_more6"]
+script = ExtResource("1_g6uod")
+key = &"swim_ring"
+object = ExtResource("49_more6")
+position = Vector3(6.6, 0.0, 0)
+
+[sub_resource type="Resource" id="Resource_more7"]
+script = ExtResource("1_g6uod")
+key = &"tire_swing"
+object = ExtResource("50_more7")
+position = Vector3(23.0, 0.5, 0)
+
 [resource]
 script = ExtResource("17_qbqh1")
-entries = Array[ExtResource("1_g6uod")]([SubResource("Resource_w3nnk"), SubResource("Resource_v55ex"), SubResource("Resource_6smxs"), SubResource("Resource_iu525"), SubResource("Resource_y2564"), SubResource("Resource_c5uol"), SubResource("Resource_ucyoq"), SubResource("Resource_kvvnk"), SubResource("Resource_74iti"), SubResource("Resource_vw582"), SubResource("Resource_m1cjv"), SubResource("Resource_1d712"), SubResource("Resource_k0cwc"), SubResource("Resource_3sg1j"), SubResource("Resource_bhtao"), SubResource("Resource_b2u2k"), SubResource("Resource_adryi"), SubResource("Resource_qd8u1"), SubResource("Resource_art00"), SubResource("Resource_art01"), SubResource("Resource_art02"), SubResource("Resource_art03"), SubResource("Resource_art04"), SubResource("Resource_art05"), SubResource("Resource_art06"), SubResource("Resource_art07"), SubResource("Resource_art08"), SubResource("Resource_art09"), SubResource("Resource_art10"), SubResource("Resource_art11"), SubResource("Resource_art12"), SubResource("Resource_art13"), SubResource("Resource_art14"), SubResource("Resource_art15"), SubResource("Resource_art16"), SubResource("Resource_art17"), SubResource("Resource_art18"), SubResource("Resource_art19"), SubResource("Resource_art20"), SubResource("Resource_art21"), SubResource("Resource_art22"), SubResource("Resource_art23"), SubResource("Resource_art24")])
+entries = Array[ExtResource("1_g6uod")]([SubResource("Resource_w3nnk"), SubResource("Resource_v55ex"), SubResource("Resource_6smxs"), SubResource("Resource_iu525"), SubResource("Resource_y2564"), SubResource("Resource_c5uol"), SubResource("Resource_ucyoq"), SubResource("Resource_kvvnk"), SubResource("Resource_74iti"), SubResource("Resource_vw582"), SubResource("Resource_m1cjv"), SubResource("Resource_1d712"), SubResource("Resource_k0cwc"), SubResource("Resource_3sg1j"), SubResource("Resource_bhtao"), SubResource("Resource_b2u2k"), SubResource("Resource_adryi"), SubResource("Resource_qd8u1"), SubResource("Resource_art00"), SubResource("Resource_art01"), SubResource("Resource_art02"), SubResource("Resource_art03"), SubResource("Resource_art04"), SubResource("Resource_art05"), SubResource("Resource_art06"), SubResource("Resource_art07"), SubResource("Resource_art08"), SubResource("Resource_art09"), SubResource("Resource_art10"), SubResource("Resource_art11"), SubResource("Resource_art12"), SubResource("Resource_art13"), SubResource("Resource_art14"), SubResource("Resource_art15"), SubResource("Resource_art16"), SubResource("Resource_art17"), SubResource("Resource_art18"), SubResource("Resource_art19"), SubResource("Resource_art20"), SubResource("Resource_art21"), SubResource("Resource_art22"), SubResource("Resource_art23"), SubResource("Resource_art24"), SubResource("Resource_more0"), SubResource("Resource_more1"), SubResource("Resource_more2"), SubResource("Resource_more3"), SubResource("Resource_more4"), SubResource("Resource_more5"), SubResource("Resource_more6"), SubResource("Resource_more7")])
