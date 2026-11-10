@@ -1,0 +1,22 @@
+{
+  "id": "belt",
+  "name": "Belt",
+  "slots": [
+    "waist"
+  ],
+  "scene": "belt.glb",
+  "replaces_body_part": [],
+  "fit": {
+    "boxy": {
+      "scale": [
+        1.03,
+        1.0,
+        1.05
+      ]
+    }
+  },
+  "level_up": {
+    "max": 3,
+    "scale_step": 0.06
+  }
+}
