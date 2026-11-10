@@ -1,6 +1,6 @@
 # Plan status: Junk Yard Zap
 
-Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Updated 2026-11-10 by the comedy lane (jyz-comedy-1, branch `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Format: `~/openjar/lanes/plan-status-format.md`.
+Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Updated 2026-11-10 by the comedy lane (jyz-comedy-1, branch `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Updated 2026-11-10 by the trophy lane (jyz-trophy-1, branch `feature/yard-trophy`): G-13 to built. Format: `~/openjar/lanes/plan-status-format.md`.
 Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
 
 Sources (newest last):
@@ -122,7 +122,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | G-10 | S1 Goal cards | Ordered easy to hard; skip a card by zapping it (to the back, with a raspberry) | built | test_goal_deck.gd::test_thirty_cards_in_three_bands_easy_first, ::test_all_thirty_skip_through_and_wrap | Raspberry is a placeholder (A-07) |
 | G-11 | S1 Goal cards, S7 | 30 cards at launch as `.tres` (12 / 10 / 8; the first five are one zap or one carry) | built | data/goals/ (30), test_goal_deck.gd::test_thirty_cards_in_three_bands_easy_first | |
 | G-12 | S1 Goal cards | New decks in updates (holiday deck, animals deck) | later | | Update decks |
-| G-13 | S1 Goal cards | Done cards stay in a pile he can **flip through**: his trophy shelf | partial | fence_card.gd:38 (a stack grows beside the card) | Nothing lets him browse the pile. Not started by the polish lane (jyz-polish-1, out of time): **M** |
+| G-13 | S1 Goal cards | Done cards stay in a pile he can **flip through**: his trophy shelf | built | trophy_pile.gd (the done pile, a gold-star box by the easel: zap it), trophy_shelf.gd (finished cards in order with a star stamp, the rest as silhouettes; stick flips, stops at the ends; A up close; B back), test_trophy.gd | Trophy lane (jyz-trophy-1). Frames: handoff/frames/shelf_*.png |
 | G-14 | S1 Goal cards | Kaden can author cards by hand in minutes | built | data/goals/*.tres, docs/contracts.md "Goal conditions" | |
 | G-15 | S4 | Ten cards for first playable | superseded | S7 30-card deck (G-11) | |
 | G-16 | S7 | Every card has a test that completes it in a real yard through the guns | built | test_goal_deck.gd (one test per new card), test_greybox.gd::test_the_five_playtest_cards_complete | |
