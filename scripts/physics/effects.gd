@@ -118,6 +118,7 @@ class Bouncy extends Effect:
 class Balloon extends Effect:
 	const LIFT := -0.5
 	const PARK_AFTER := 0.3   # metres risen before a stall counts as hitting something
+	const MAX_RISE := 6.0     # metres: parks here if nothing stops it first
 	var start_h := 0.0
 	var stall := 0.0
 	var parked := false
@@ -144,7 +145,9 @@ class Balloon extends Effect:
 		var up := Yard.up_at(t.global_position)
 		var risen := t.global_position.dot(up) - start_h
 		stall = stall + delta if risen > PARK_AFTER and t.linear_velocity.dot(up) < 0.05 else 0.0
-		if stall > 0.25:
+		# Open sky: park MAX_RISE up, so a ballooned cow stays in view and in reach of a zap instead
+		# of floating off to the lid (playtest #1).
+		if stall > 0.25 or risen > MAX_RISE:
 			parked = true
 			t.stack.recompute()
 

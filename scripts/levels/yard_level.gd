@@ -18,7 +18,7 @@ const LID_Y := 22.0
 const POND := Vector2(-9.0, 9.0)       # x range of the pond basin
 const POND_FLOOR := -2.4
 const WATER_Y := -0.35
-const RESET_HOLD := 1.2
+const RESET_HOLD := 2.0       # seconds; long enough that holding A to grab near the sign never wipes the yard
 const RESET_REACH := 1.6
 const AUTOSAVE := 30.0
 const SAVE_KEY := "yard"
@@ -229,7 +229,10 @@ func to_save() -> Dictionary:
 		var p := o.global_position
 		var fx := []
 		var size := 0
+		var parked := false
 		for e in o.stack.effects:
+			if e is Effects.Balloon:
+				parked = e.parked
 			if e is Effects.Size:
 				size = e.steps
 			elif e is Effects.Glue:
@@ -237,7 +240,7 @@ func to_save() -> Dictionary:
 					glue.append([String(o.key), String(e.b.key)])
 			elif e.id != &"grab":
 				fx.append(String(e.id))
-		objs[String(key)] = {"p": [p.x, p.y, p.z], "r": [q.x, q.y, q.z, q.w], "size": size, "fx": fx}
+		objs[String(key)] = {"p": [p.x, p.y, p.z], "r": [q.x, q.y, q.z, q.w], "size": size, "fx": fx, "parked": parked}
 	return {"version": 1, "objects": objs, "glue": glue, "deck": deck.to_save()}
 
 
@@ -258,6 +261,10 @@ func from_save(d: Dictionary) -> void:
 		for id in s.get("fx", []):
 			if not o.stack.has(StringName(id)):
 				Effects.zap(StringName(id), o)
+		var balloon: Effects.Balloon = o.stack.get_effect(&"balloon")
+		if balloon and s.get("parked", false):   # stays where it floated to, no second climb
+			balloon.parked = true
+			o.stack.recompute()
 	for pair in d.get("glue", []):
 		var a := object(StringName(pair[0]))
 		var b := object(StringName(pair[1]))

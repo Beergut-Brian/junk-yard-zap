@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="GoalData" format=3]
+
+[ext_resource type="Script" path="res://scripts/goals/goal_data.gd" id="1_hur1l"]
+
+[resource]
+script = ExtResource("1_hur1l")
+id = &"b1_freeze_cow"
+description = "Freeze the cow"
+band = 1
+condition = 1
+subject = &"cow"
+other = &""
+effect = &"freeze"
+amount = 0.0
+hint_objects = Array[StringName]([&"cow"])

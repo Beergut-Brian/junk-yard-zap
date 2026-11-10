@@ -10,6 +10,11 @@ extends Node3D
 const FENCE_Z := -4.75
 const SOIL := 3.4         # depth of the cut-away dirt under the yard surface
 const TABLE_Y := -3.75
+## The table's front edge (z) and the bottom of its apron board: the camera never looks below it
+## (CameraRig.min_y), so the zoomed-out view never shows the dark room under the table.
+const TABLE_FRONT_Z := 9.0
+const APRON := 5.0
+const APRON_BOTTOM := TABLE_Y - 1.4 - APRON
 
 var level: YardLevel
 var fan: Node3D
@@ -173,6 +178,16 @@ func _build_ground() -> void:
 	# The plinth trim and the table it all stands on.
 	box(self, Vector3(YardLevel.RIGHT - YardLevel.LEFT + 12.4, 0.3, depth + 0.4), 0.08, c("fence_dark"), Vector3(0, -SOIL - 0.15, zc))
 	box(self, Vector3(YardLevel.RIGHT - YardLevel.LEFT + 120.0, 1.4, 40.0), 0.2, c("table"), Vector3(0, TABLE_Y - 0.7, -11.0))
+	# The table's apron: a deep wooden board under the top edge with a drawer, so the wide view ends in
+	# warm wood, not the dark room. The camera stops at its bottom edge.
+	var apron_w := YardLevel.RIGHT - YardLevel.LEFT + 120.0
+	var ay := TABLE_Y - 1.4 - APRON * 0.5
+	var az := TABLE_FRONT_Z - 0.6
+	box(self, Vector3(apron_w, APRON, 0.8), 0.15, c("table").darkened(0.18), Vector3(0, ay, az))
+	box(self, Vector3(apron_w, 0.35, 0.9), 0.1, c("table").lightened(0.08), Vector3(0, TABLE_Y - 1.4 - 0.2, az + 0.05))
+	for dx in [-27.0, 0.0, 27.0]:
+		box(self, Vector3(14.0, APRON * 0.55, 0.3), 0.2, c("table").darkened(0.05), Vector3(dx, ay - 0.2, az + 0.45))
+		box(self, Vector3(2.4, 0.5, 0.5), 0.2, c("wood_light"), Vector3(dx, ay - 0.2, az + 0.65))
 	# Below the table edge: the dim room the diorama sits in (only the yard-wide shot sees it).
 	var room := put(self, ArtKit.quad(Vector2(600, 120)), c("room"), Vector3(0, TABLE_Y - 61.0, 8.0))
 	room.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

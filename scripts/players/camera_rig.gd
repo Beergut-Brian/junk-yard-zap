@@ -72,7 +72,7 @@ func _aspect() -> float:
 func goal_position() -> Vector3:
 	if overview:
 		var oz := ((right - left) * 0.5 + 1.0) / (tan(deg_to_rad(fov * 0.5)) * _aspect())
-		return Vector3((left + right) * 0.5, 6.0 + oz * tan(deg_to_rad(LOOK_DOWN)), oz)
+		return Vector3((left + right) * 0.5, maxf(6.0 + oz * tan(deg_to_rad(LOOK_DOWN)), min_y(oz)), oz)
 	var ts := targets()
 	if ts.is_empty():
 		return position
@@ -91,7 +91,14 @@ func goal_position() -> Vector3:
 	var x := clampf(c.x, left + hw - 2.0, right - hw + 2.0) if right - left > hw * 2.0 else (left + right) * 0.5
 	# Keep the ground near the bottom of the frame; look a little above the players.
 	var y := maxf(c.y + 1.5, half_height(z) * 0.7 - 2.5)
-	return Vector3(x, y + z * tan(deg_to_rad(LOOK_DOWN)), z)
+	return Vector3(x, maxf(y + z * tan(deg_to_rad(LOOK_DOWN)), min_y(z)), z)
+
+
+## The lowest camera height at distance z whose bottom frame edge still lands on the table's apron
+## (never the dark room under the table). fov is vertical (keep height), the camera only pitches.
+func min_y(z: float) -> float:
+	var d := maxf(z - YardDressing.TABLE_FRONT_Z, 0.0)
+	return YardDressing.APRON_BOTTOM + 0.6 + d * tan(deg_to_rad(LOOK_DOWN + fov * 0.5))
 
 
 ## A world point is on screen (with a small margin).

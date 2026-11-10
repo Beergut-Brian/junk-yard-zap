@@ -311,7 +311,7 @@ func test_holding_a_on_the_sign_resets() -> void:
 	await step(30)
 	assert_float(l.reset_progress()).is_greater(0.2)
 	assert_int(l.resets).is_equal(0)
-	await step(50)
+	await step(int(YardLevel.RESET_HOLD * 60) - 30 + 20)
 	assert_int(l.resets).is_equal(1)
 
 
@@ -334,9 +334,12 @@ func test_goal_checker_knows_all_five_band_one_cards() -> void:
 	var l := level()
 	await step(5)
 	var cards: Dictionary = l.deck.cards
-	assert_int(cards.size()).is_equal(5)
+	assert_int(cards.size()).is_greater_equal(10)   # first playable: ten cards
 	for id in cards:
 		assert_bool(Goals.check(cards[id])).override_failure_message("%s before" % id).is_false()
+	cards = {}
+	for id in [&"b1_big_cow", &"b1_float_chicken", &"b1_duck_in_tub", &"b1_glue_two", &"b1_bouncy_any"]:
+		cards[id] = l.deck.cards[id]
 	Effects.zap(&"grow", l.object(&"cow"))
 	Effects.zap(&"grow", l.object(&"cow"))
 	Effects.zap(&"balloon", l.object(&"chicken_2"))
@@ -347,6 +350,49 @@ func test_goal_checker_knows_all_five_band_one_cards() -> void:
 	await step(60)
 	for id in cards:
 		assert_bool(Goals.check(cards[id])).override_failure_message("%s after" % id).is_true()
+
+
+## The five cards added for playtest #1 (first playable needs ten): each false, then true.
+func test_the_five_playtest_cards_complete() -> void:
+	var l := level()
+	await step(5)
+	var cards: Dictionary = l.deck.cards
+	var ids := [&"b1_freeze_cow", &"b1_tub_ball", &"b2_float_car", &"b2_cow_car", &"b2_giant_chicken"]
+	for id in ids:
+		assert_bool(cards.has(id)).override_failure_message("%s missing" % id).is_true()
+	var cow := l.object(&"cow")
+	var car := l.object(&"car")
+	car.global_position = cow.global_position + Vector3(cow.radius() + car.radius() + 0.3, 0.5, 0)
+	await step(20)
+	Effects.glue(cow, car)
+	Effects.zap(&"freeze", l.object(&"cow"))
+	Effects.zap(&"balloon", l.object(&"car"))
+	var hen := l.object(&"chicken_3")
+	hen.global_position = Vector3(30.0, 1.0, 0)   # open ground, room to grow
+	await step(30)
+	for i in 3:
+		Effects.zap(&"grow", hen)
+		await step(40)
+	var tub := l.object(&"bathtub")
+	l.object(&"ball").global_position = tub.global_position + Vector3(0, 0.2, 0)
+	await step(90)
+	for id in ids:
+		assert_bool(Goals.check(cards[id])).override_failure_message("%s after" % id).is_true()
+
+
+## The deck plays all ten through: complete or skip each, nothing left over, no card lost.
+func test_ten_cards_all_skip_through_and_come_back() -> void:
+	var l := level()
+	var z := zapper(P1, -40.0, l.get_node("Players"))
+	await step(3)
+	var n := l.deck.order.size()
+	assert_int(n).is_greater_equal(10)
+	var seen := {}
+	for i in n:
+		seen[l.deck.current().id] = true
+		l.card.zapped_by(z, z.gun())
+	assert_int(seen.size()).is_equal(n)   # one zap per card, every card came up once
+	assert_int(l.deck.order.size()).is_equal(n)
 
 
 func test_deck_completes_skips_and_cheers() -> void:
