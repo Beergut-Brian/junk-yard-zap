@@ -18,12 +18,12 @@ func _ready() -> void:
 			var g := GunArt.build(GunArt.KINDS[i], tape)
 			g.scale = Vector3.ONE * 3.2
 			g.rotation_degrees.y = 90
-			g.position = Vector3(-9.2 + i * 2.3, 4.2 - row * 1.9, 0)
+			g.position = Vector3(-8.4 + i * 2.05, 4.2 - row * 1.9, 0)
 			add_child(g)
 	for p in 2:
 		var rig := JarlingRig.new()
 		rig.character = [&"jeff", &"chuck"][p]
-		rig.position = Vector3(8.0 + p * 2.2, 0, 0.5)
+		rig.position = Vector3(5.0 + p * 2.4, 0, 2.5)
 		add_child(rig)
 		rig.equip_gun(Players.COLOR[p], [&"size", &"magnet"][p])
 		rig.face_dir(1.0 if p == 0 else -1.0)
