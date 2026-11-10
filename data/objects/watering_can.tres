@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_obj"]
+
+[resource]
+script = ExtResource("1_obj")
+id = &"watering_can"
+shape = 0
+size = Vector3(0.95, 0.6, 0.5)
+mass = 1.2
+color = Color(0.25, 0.62, 0.6, 1)
+bounce = 0.2
+face_at = Vector3(-0.08, -0.02, 0.5)
+face_size = 0.3

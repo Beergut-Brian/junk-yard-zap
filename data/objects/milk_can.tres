@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_od"]
+
+[resource]
+script = ExtResource("1_od")
+id = &"milk_can"
+shape = 0
+size = Vector3(0.6, 1.0, 0.6)
+mass = 3.0
+color = Color(0.59, 0.64, 0.67, 1)
+bounce = 0.15
+face_at = Vector3(0, 0.1, 0.5)
+face_size = 0.35

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_obj"]
+
+[resource]
+script = ExtResource("1_obj")
+id = &"tv"
+shape = 0
+size = Vector3(0.9, 0.75, 0.8)
+mass = 4.0
+color = Color(0.55, 0.42, 0.32, 1)
+bounce = 0.15
+face_at = Vector3(0, 0.03, 0.5)
+face_size = 0.4
