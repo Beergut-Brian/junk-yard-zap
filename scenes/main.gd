@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
@@ -168,6 +168,9 @@ func _start_demo() -> void:
 		"belt": _beat_belt()
 		"hook": _beat_hook()
 		"trampoline": _beat_trampoline()
+		"delight": _beat_delight()
+		"blame": _beat_blame()
+		"idles": _beat_idles()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -334,3 +337,66 @@ func _beat_trampoline() -> void:
 	var ball := level.object(&"ball")
 	ball.global_position = t.global_position + Vector3(-0.5, 5.0, 0)
 	camera.focus = [t, ball]
+
+
+## Space between the two players by the gate: everything else in x0..x1 moves off a little.
+func _clear(x0: float, x1: float) -> void:
+	for o in level.objects.values():
+		var po := o as PhysicsObject
+		if po and po.global_position.x > x0 and po.global_position.x < x1:
+			po.global_position.x = x1 + 2.0 + randf() * 3.0
+
+
+## P-05 / A-12: a big anvil lands between them. Jeff claps and hops (delight); Chuck wobbles.
+func _beat_delight() -> void:
+	_clear(-39.0, -31.0)
+	_place(Players.P1, -37.2, 1.0)
+	_place(Players.P2, -32.8, -1.0)
+	var anvil := level.object(&"anvil")
+	Effects.zap(&"grow", anvil)
+	anvil.global_position = Vector3(-35.0, 11.0, 0)
+	anvil.linear_velocity = Vector3.ZERO
+	camera.focus = [anvil]
+	(func() -> void:   # aim up, so no aim ring sits over the landing
+		for p in _players:
+			(_players[p] as Zapper).input_override = {"aim": Vector2.UP}).call_deferred()
+
+
+## P-06: Chuck zaps the crate bouncy and takes the credit (puffs up); then his size zap on a giant
+## crate is refused and he turns on Jeff (a ring in Jeff's green round him).
+func _beat_blame() -> void:
+	_clear(-41.0, -29.0)
+	_place(Players.P1, -41.0, 1.0)
+	_place(Players.P2, -30.2, -1.0)
+	var crate := level.object(&"crate")
+	crate.global_position = Vector3(-35.6, 0.6, 0)
+	var chuck: Zapper = _players[Players.P2]
+	var press := func(gun: StringName) -> void:
+		for i in chuck.guns.size():
+			if chuck.guns[i].id == gun:
+				chuck.set_gun(i, false)
+		chuck.input_override = {"action": true, "aim": Vector2.LEFT}
+		get_tree().create_timer(0.1).timeout.connect(func() -> void: chuck.input_override = {"aim": Vector2.LEFT})
+	(func() -> void: chuck.input_override = {"aim": Vector2.LEFT}).call_deferred()
+	get_tree().create_timer(0.5).timeout.connect(press.bind(&"bouncy"))
+	get_tree().create_timer(2.6).timeout.connect(func() -> void:
+		for i in 4:
+			Effects.zap(&"grow", crate))   # as big as it goes: the next grow is a "nope"
+	get_tree().create_timer(3.4).timeout.connect(press.bind(&"size"))
+
+
+## P-07: Jeff pokes the crate and hums; Chuck kicks the tire and checks his hat.
+func _beat_idles() -> void:
+	_clear(-40.0, -30.0)
+	_place(Players.P1, -38.0, 1.0)
+	_place(Players.P2, -32.0, -1.0)
+	level.object(&"crate").global_position = Vector3(-36.7, 0.6, 0)
+	level.object(&"tire").global_position = Vector3(-30.8, 0.5, 0)
+	var jeff: Zapper = _players[Players.P1]
+	var chuck: Zapper = _players[Players.P2]
+	get_tree().create_timer(0.6).timeout.connect(func() -> void:
+		jeff.reactions.do_bit("poke")
+		chuck.reactions.do_bit("kick_tire"))
+	get_tree().create_timer(2.6).timeout.connect(func() -> void:
+		jeff.reactions.do_bit("hum")
+		chuck.reactions.do_bit("check_hat"))

@@ -92,14 +92,41 @@ func _grid(cam: Camera3D) -> void:
 
 
 func _hero(cam: Camera3D) -> void:
-	# The whole yard, a little closer than the wide shot, so the barn and heap fill the frame.
+	# The whole yard, front gate (x -48) to the junk tower (x 48), at golden hour (V-11).
 	_rig(&"jeff", Players.P1, Vector3(-6.4, 0.45, 0.3), 1.0, &"size")
 	_rig(&"chuck", Players.P2, Vector3(11.0, 0.0, 0.4), -1.0, &"bouncy")
 	Effects.zap(&"balloon", level.object(&"cow"))
 	Effects.zap(&"bouncy", level.object(&"tire"))
-	cam.position = Vector3(2.0, 9.5, 64.0)
-	cam.look_at(Vector3(2.0, 4.6, 0))
+	_golden_hour()
+	cam.position = Vector3(0.0, 12.0, 106.0)
+	cam.look_at(Vector3(0.0, 9.4, 0))
 	cam.fov = 30.0
+
+
+## Store shot only: re-grade this instance's own light, environment and sky card (all built fresh per
+## level by YardDressing/YardLight) to a low warm sun. The playable yard's lighting is untouched.
+func _golden_hour() -> void:
+	var sun := level.find_child("KeyLight", true, false) as DirectionalLight3D
+	if sun:
+		sun.rotation_degrees = Vector3(-17.0, 32.0, 0)
+		sun.light_color = Color("#ffb46a")
+		sun.light_energy = 1.75
+		sun.directional_shadow_max_distance = 240.0
+	var we := level.find_child("Environment", true, false) as WorldEnvironment
+	if we:
+		var env := we.environment
+		env.background_color = Color("#ffc58a")
+		env.ambient_light_color = Color("#c7a9c4")
+		env.ambient_light_energy = 0.5
+		env.adjustment_saturation = 1.15
+	var sky := level.find_child("Sky", true, false) as MeshInstance3D
+	if sky and sky.material_override is ShaderMaterial:
+		var sm := sky.material_override as ShaderMaterial
+		sm.set_shader_parameter("top", Color("#6488c4"))
+		sm.set_shader_parameter("horizon", Color("#ffb877"))
+		sm.set_shader_parameter("cloud", Color("#ffd9b8"))
+		sm.set_shader_parameter("sun", Color("#ffd889"))
+		sm.set_shader_parameter("sun_at", Vector2(0.63, 0.34))
 
 
 ## The grow gun's beam: a glowing core with rings along it and sparkles at the end.
