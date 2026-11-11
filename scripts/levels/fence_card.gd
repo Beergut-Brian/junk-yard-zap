@@ -13,7 +13,8 @@ var _vp: SubViewport
 var _face: Control
 var _sprite: Sprite3D
 var _viewed := false
-var _pile: Node3D
+## G-13: the done pile, a shelf you can flip through (scripts/levels/trophy_shelf.gd).
+var shelf: TrophyShelf
 var _hint_t := 0.0
 
 
@@ -35,15 +36,16 @@ func _ready() -> void:
 	_sprite.shaded = false
 	_sprite.position.z = 0.05
 	add_child(_sprite)
-	# The done pile: a little stack that grows beside the card.
-	_pile = Node3D.new()
-	_pile.position = Vector3(1.4, -0.7, 0.05)
-	add_child(_pile)
+	# The done pile: the trophy shelf under the card's right corner. Zap it to flip through.
+	shelf = TrophyShelf.new()
+	shelf.name = "TrophyShelf"
+	shelf.deck = deck
+	shelf.guns_by_effect = guns_by_effect
+	shelf.position = Vector3(1.55, -1.0, 0.15)
+	add_child(shelf)
 	if deck:
 		deck.card_changed.connect(func(_g: GoalData) -> void:
-			_face.queue_redraw()
-			_refresh_pile())
-	_refresh_pile()
+			_face.queue_redraw())
 
 
 func radius() -> float:
@@ -82,20 +84,3 @@ func _process(delta: float) -> void:
 
 func viewed() -> bool:
 	return _viewed
-
-
-func _refresh_pile() -> void:
-	for c in _pile.get_children():
-		c.queue_free()
-	var n := deck.done.size() if deck else 0
-	for i in n:
-		var mi := MeshInstance3D.new()
-		var bm := BoxMesh.new()
-		bm.size = Vector3(0.5, 0.06, 0.4)
-		mi.mesh = bm
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = Color(0.98, 0.95, 0.86)
-		mi.material_override = mat
-		mi.position = Vector3(0, i * 0.07, 0)
-		mi.rotation.y = randf_range(-0.2, 0.2)
-		_pile.add_child(mi)

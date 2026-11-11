@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_od")
 id = &"cannon"
+has_face = false
 shape = 0
 size = Vector3(1.6, 1.0, 0.56)
 mass = 8.0

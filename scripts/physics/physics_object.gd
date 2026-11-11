@@ -22,6 +22,15 @@ signal splashed(obj: PhysicsObject)
 
 ## Objects whose landing is a gag of its own: id -> cue (played instead of the generic landed voice).
 const LANDING_GAGS := {&"piano": "voice_piano_landed"}
+const RATTLE_MIN := 0.35   # seconds: the shortest rattle a faceless object does
+const RATTLE_MAX := 0.9
+const RATTLE_TILT := 0.12  # radians at the start of a rattle
+const RATTLE_HOP := 0.12   # of the object's height
+const HOVER_PROBE := 30.0  # metres: how far down a hovering object looks for something to float over
+const HOVER_K := 9.0       # spring towards the hover height
+const HOVER_D := 3.5       # damping on the spring
+const HOVER_BOB := 0.12    # metres of slow bob
+const HOVER_DRAG := 0.9    # sideways air drag per second
 const GAG_MIN_IMPULSE := 4.0   # a real drop, not a settle
 const CHUTE_MAX := 1.9          # seconds: the parachute never hangs around longer than this
 const CHUTE_SPEED := 2.6        # m/s, the slow fall under the canopy (4 m at the gate in ~1.6 s)
@@ -62,6 +71,8 @@ var _pending_splash := false
 var _clamp_left := 0.0
 var _blocked_time := 0.0
 var _squash_tween: Tween
+var _rattle_left := 0.0
+var _rattle_len := 1.0
 ## K-08: a recalled object floats down at the gate under a parachute (seconds left; 0 = closed).
 var chute_left := 0.0
 var _chute: Node3D
@@ -79,7 +90,7 @@ func _ready() -> void:
 		key = data.id
 	add_to_group(GROUP)
 	gravity_scale = 0.0
-	can_sleep = true
+	can_sleep = data.hover_height <= 0.0   # a hovering bunch of balloons keeps bobbing
 	continuous_cd = true
 	# No contact_monitor: turning on contact reporting changes how Godot-Jolt solves contacts (the
 	# Phase 1 stress numbers drift). Landings are read from sudden velocity changes instead.
@@ -257,6 +268,7 @@ func _physics_process(delta: float) -> void:
 	elif _clamp_left > 0.0:
 		_clamp_left -= delta
 	_visual.scale = squash * current_scale * _wobble()
+	_rattle(delta)
 	if sleeping and absf(global_position.z) > 0.02:
 		sleeping = false   # don't let a body fall asleep off the plane
 	stack.tick(delta)
@@ -335,6 +347,28 @@ func _blocked(s: float, offset: Vector3) -> bool:
 	return false
 
 
+## Hovering (ObjectData.hover_height): a soft spring towards hover_height above whatever is under
+## it, with a slow bob, and air drag so a thrown bunch of balloons drifts to a stop. Nothing under
+## it (off the edge): it sinks gently and the recall brings it back like anything else.
+func _hover_accel(state: PhysicsDirectBodyState3D, pos: Vector3, up: Vector3, v: Vector3) -> Vector3:
+	var g := Yard.gravity_at(pos)
+	var q := PhysicsRayQueryParameters3D.create(pos, pos - up * HOVER_PROBE, collision_mask, _island_rids())
+	var hit := state.get_space_state().intersect_ray(q)
+	if hit.is_empty():
+		return g * 0.25
+	var h := _half_along(up, current_scale)
+	var target := (hit.position as Vector3).dot(up) + data.hover_height + h
+	var bob := sin(Time.get_ticks_msec() * 0.0017 + float(get_instance_id() % 89)) * HOVER_BOB
+	var err := target + bob - pos.dot(up)
+	var vu := v.dot(up)
+	var a := up * clampf(err * HOVER_K - vu * HOVER_D, -g.length(), g.length() * 0.6)
+	return a - (v - up * vu) * HOVER_DRAG
+
+
+func hovering() -> bool:
+	return data.hover_height > 0.0 and effective_gravity_scale == 1.0 and not freeze
+
+
 func _island_rids() -> Array[RID]:
 	var out: Array[RID] = []
 	for o in stack.glued_group():
@@ -360,7 +394,10 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			_pending_land = volume_mass() * dv
 			_land_cool = LAND_COOLDOWN
 	var up := Yard.up_at(pos)
-	v += Yard.gravity_at(pos) * effective_gravity_scale * dt
+	if data.hover_height > 0.0 and effective_gravity_scale == 1.0:
+		v += _hover_accel(state, pos, up, v) * dt
+	else:
+		v += Yard.gravity_at(pos) * effective_gravity_scale * dt
 	var surface := Yard.water_level_at(pos)
 	var was_in := in_water
 	in_water = false
@@ -584,8 +621,34 @@ func _mood_for_stack() -> ObjectFace.Mood:
 
 
 func _on_effect_changed(_t: Node3D, _effect: StringName, on: bool) -> void:
+	react_look(ObjectFace.Mood.WIDE if on else ObjectFace.Mood.HAPPY, 0.6)
+
+
+## Show a reaction. Objects with a face pull the mood. Vehicles and machines have no face
+## (producer rule: no faces on vehicles or machines), so they rattle on their wheels or feet instead:
+## a quick shake and a hop that dies away, read from the sofa as clearly as a face.
+func react_look(mood: ObjectFace.Mood, seconds: float) -> void:
 	if face:
-		face.react(ObjectFace.Mood.WIDE if on else ObjectFace.Mood.HAPPY, 0.6)
+		face.react(mood, seconds)
+		return
+	_rattle_len = clampf(seconds, RATTLE_MIN, RATTLE_MAX)
+	_rattle_left = _rattle_len
+
+
+func rattling() -> bool:
+	return _rattle_left > 0.0
+
+
+func _rattle(delta: float) -> void:
+	if _rattle_left <= 0.0:
+		return
+	_rattle_left = maxf(0.0, _rattle_left - delta)
+	var k := _rattle_left / _rattle_len
+	_visual.rotation.z = sin(_rattle_left * 48.0) * RATTLE_TILT * k
+	_visual.position.y = absf(sin(_rattle_left * 22.0)) * RATTLE_HOP * k * size_now().y
+	if _rattle_left == 0.0:
+		_visual.rotation.z = 0.0
+		_visual.position.y = 0.0
 
 
 ## The object's voice, pitched by size: a giant cow moos low, a tiny car beeps high.
@@ -596,8 +659,7 @@ func speak(kind := "react") -> void:
 
 ## Thrown or launched: dizzy for a moment.
 func dizzy(seconds := 1.5) -> void:
-	if face:
-		face.react(ObjectFace.Mood.DIZZY, seconds)
+	react_look(ObjectFace.Mood.DIZZY, seconds)
 
 
 func _on_landed(impulse: float) -> void:
@@ -621,8 +683,7 @@ func _landing_gag(cue: String) -> void:
 	Fx.ring(get_tree(), global_position, Color(1.0, 0.85, 0.35), radius() * 1.2)
 	Fx.burst(get_tree(), top, Color(1, 1, 0.95, 0.9), 10, 0.7, 0.7)
 	Fx.burst(get_tree(), top, Color(0.12, 0.1, 0.12, 0.9), 6, 0.6, 0.6)
-	if face:
-		face.react(ObjectFace.Mood.SMUG, 1.0)
+	react_look(ObjectFace.Mood.SMUG, 1.0)
 
 
 ## K-08 (GAME.md "Kid-design checks": "recall to the gate with a parachute"): the object floats
