@@ -1,5 +1,5 @@
 ## Gap-close lane (jyz-gap-close-1): every gun sounds like itself (U-15), vehicles and machines
-## react without a face (Y-12, K-10), loose balloons (Y-11), the trophy shelf (G-13).
+## react without a face (Y-12, K-10), the trophy shelf (G-13). Loose balloons (Y-11): test_balloons.gd.
 ## Own settings file, own save profile and the fixture roster: never the family's or the real roster.
 class_name TestGapClose
 extends GdUnitTestSuite
@@ -154,60 +154,6 @@ func test_a_cow_still_pulls_a_face_and_does_not_rattle() -> void:
 	assert_object(cow.face).is_not_null()
 	Effects.zap(&"bouncy", cow)
 	assert_bool(cow.rattling()).is_false()
-
-
-# ------------------------------------------------------------------------------------- Y-11 balloons
-
-func test_the_loose_balloons_hover_bob_and_come_back_up() -> void:
-	world.add_child(YardStrip.new())
-	var d: ObjectData = load("res://data/objects/balloons.tres")
-	assert_float(d.hover_height).is_greater(0.0)
-	assert_bool(ObjectArt.has_art(&"balloons")).is_true()
-	assert_bool(Audio.has_cue(d.voice_cue() + "_react")).is_true()
-	var b := PhysicsObject.new(d)
-	b.position = Vector3(0, d.size.y * 0.5 + 0.05, 0)
-	world.add_child(b)
-	assert_object(b.face).is_not_null()
-	await step(180)
-	var bottom := b.global_position.y - d.size.y * 0.5
-	assert_float(bottom).override_failure_message("bottom %.2f" % bottom).is_between(d.hover_height - 0.35, d.hover_height + 0.35)
-	assert_bool(b.hovering()).is_true()
-	# Pushed down hard, it floats back up; it never sleeps mid-air.
-	b.linear_velocity = Vector3(3, -8, 0)
-	await step(150)
-	bottom = b.global_position.y - d.size.y * 0.5
-	assert_float(bottom).is_between(d.hover_height - 0.35, d.hover_height + 0.35)
-	assert_bool(b.sleeping).is_false()
-	assert_float(absf(b.linear_velocity.x)).is_less(0.6)   # air drag: it drifts to a stop
-
-
-func test_balloon_gun_freeze_and_undo_take_over_then_hand_back() -> void:
-	world.add_child(YardStrip.new())
-	var d: ObjectData = load("res://data/objects/balloons.tres")
-	var b := PhysicsObject.new(d)
-	b.position = Vector3(0, 2.5, 0)
-	world.add_child(b)
-	await step(120)
-	var rest := b.global_position.y
-	assert_bool(Effects.zap(&"freeze", b)).is_true()
-	assert_bool(b.hovering()).is_false()
-	assert_bool(Effects.zap(&"freeze", b)).is_true()   # unfreeze
-	assert_bool(Effects.zap(&"balloon", b)).is_true()
-	await step(120)
-	assert_float(b.global_position.y).is_greater(rest + 1.0)   # the balloon gun lifts it higher
-	assert_bool(Effects.zap(&"balloon", b)).is_true()           # undo: back down to its own hover
-	await step(240)
-	assert_float(b.global_position.y).is_between(rest - 0.4, rest + 0.4)
-
-
-func test_the_balloons_are_placed_at_the_front_gate() -> void:
-	var layout: YardLayout = load(YardLevel.LAYOUT)
-	var found := false
-	for e in layout.entries:
-		if e.key == &"balloons":
-			found = true
-			assert_float(e.position.x).is_between(-48.0, -29.0)
-	assert_bool(found).is_true()
 
 
 # --------------------------------------------------------------------------------- G-13 trophy shelf
