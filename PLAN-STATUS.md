@@ -222,9 +222,18 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | K-09 | S1 Kid | Giant and tiny extremes capped | built | test_playtest1.gd::test_giant_and_tiny_caps_hold | |
 | K-10 | S1 Kid | Every object has a face **and a voice**; nothing is mute | built | test_gap_close.gd::test_vehicles_and_machines_have_no_face_everything_else_does, test_audio.gd::test_every_object_has_a_voice_set | Nothing is mute: 48/48 voice sets. Faces on 39 types; the 9 vehicles and machines rattle instead of pulling a face (see Y-12) |
 
+## Playtest 2026-11-10 changes
+
+Source S9: GAME.md "Playtest 2026-11-10 changes" (Kaden, `playtests/2026-11-10.md`). Row numbers follow the GAME.md list.
+
+| ID | Source | Item | Status | Proof | Notes |
+| --- | --- | --- | --- | --- | --- |
+| PT10-4 | S9 item 4 | Reset the yard with a button: hold Select 1.5 s with a ring by the player (a tap does nothing), Reset Yard in the pause menu, the sign far more visible; whoosh and bell every reset; Select + Start solo and reset never trigger each other | built | test_controls.gd::test_a_select_tap_does_nothing, ::test_holding_select_resets_once_with_whoosh_and_bell, ::test_select_then_start_toggles_solo_and_never_resets, ::test_start_then_select_toggles_solo_and_never_resets, ::test_a_reset_never_turns_into_solo, ::test_solo_swap_combo_never_resets, ::test_pause_menu_has_a_reset_yard_entry_that_resets_at_once, ::test_the_sign_is_big_lit_and_by_the_start; frames handoff/frames/pt10_4_* | jyz-controls-1. Sign hold stays 2.0 s (S4). The pause-menu entry does not ask first (kid-design: one press, no question) |
+| PT10-5 | S9 item 5 | Variable jump: tap B = short hop, hold = higher up to a cap; floaty, forgiving; both characters; works on objects | built | test_controls.gd::test_tap_is_a_short_hop_and_hold_goes_higher, ::test_letting_go_halfway_is_in_between, ::test_hold_is_capped_and_both_characters_match, ::test_buffered_tap_before_landing_still_hops, ::test_variable_jump_works_on_objects, ::test_jump_numbers_live_in_data; frames handoff/frames/pt10_5_jump_strip_*.png | jyz-controls-1. data/players/jump.tres: hop about 1.0 m, cap about 3.6 m (was 4.8 m on every press) |
+
 ## Totals
 
-153 rows: **built 137 · partial 3 · missing 2 · superseded 8 · later 3 · dropped 0**. Counted from the Status column (recounted by the balloons-reconcile lane, 2026-11-10).
+155 rows: **built 139 · partial 3 · missing 2 · superseded 8 · later 3 · dropped 0**. Counted from the Status column (balloons-reconcile lane recount, plus PT10-4 and PT10-5 from jyz-controls-1, 2026-11-10).
 
 ## Next up
 
