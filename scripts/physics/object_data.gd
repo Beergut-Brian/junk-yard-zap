@@ -18,10 +18,6 @@ enum Shape { BOX, SPHERE, CYLINDER, TUB }
 @export var min_step := -4
 @export var max_step := 4
 @export var step_factor := 1.3
-## Floats this far (metres, bottom edge) above whatever is under it, bobbing gently: a bunch of
-## balloons on a sandbag. 0 = an ordinary object that falls. Any effect that touches gravity
-## (balloon, grab, freeze) takes over while it is on.
-@export var hover_height := 0.0
 ## Voice cue played when a gun touches it (pitch follows size). Empty: "voice_<id>".
 @export var voice: StringName = &""
 ## Two dots and a mouth on the front. face_at is the face centre relative to the object's centre,
