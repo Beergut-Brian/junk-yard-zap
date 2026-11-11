@@ -177,7 +177,7 @@ func test_chuck_blames_the_partner_when_a_zap_is_refused() -> void:
 		await step(30)
 	assert_bool(refused).override_failure_message("the size gun never said nope").is_true()
 	assert_str(chuck.reactions.last_reaction).is_equal("blame")
-	assert_array(Array(barks())).is_equal(["bark"])          # the plain "hey!" (no blame cue)
+	assert_array(Array(barks())).is_equal(["roster:chuck"])  # his own plain "hey!" from his voice pack (no blame cue; voiced since characters v0.5.3)
 	assert_float(chuck.reactions.facing(chuck.facing)).is_equal(-1.0)   # turned round on Jeff
 	assert_float(chuck.facing).is_equal(1.0)                 # but his aim is still his own
 	assert_object(b).is_not_null()
