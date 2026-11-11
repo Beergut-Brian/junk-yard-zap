@@ -331,6 +331,16 @@ On top of the template checklist in `docs/kid-design.md`.
 - [ ] Palette: pick one of three.
 - [ ] Should the cow be a library character (a name, a personality, appears in other games) or stay a yard object? Recommendation: library character; a recurring cow is a gift that keeps giving.
 
+## Playtest 2026-11-10 changes (Kaden; these supersede the sections above)
+
+Notes quoted in `playtests/2026-11-10.md`. The yard and objects are right ("beautiful"); the UI and controls felt unpolished.
+
+1. **Gun icons redesigned** (Kaden: "The gun icons, cards were very confusing and unpolished"). Each gun gets one bold, readable icon that shows *what it does* (the effect, not the gadget): grow = a small thing becoming big, shrink the reverse, grab = a hand lifting, glue = two things stuck, and so on. Same colour as its beam. The gun wheel on RB/LB shows big icons with the current one clearly selected, with weight (scale punch, sound). The held gun's model and beam match the icon's colour and shape.
+2. **Every gun teaches itself** (Kaden: "It was hard to know what gun did what"). Switching to a gun plays a 1-2 s picture-only preview by the player (the icon animates its effect on a tiny object). The first time a gun is fired in a session, its effect gets a beat (a brief camera emphasis and a distinct sound). Each gun's beam, hit effect and sound are unmistakably different.
+3. **Goal cards redesigned** (supersedes the current card art): a card shows the goal as a clear picture (the objects involved and the result, for example cow + car = joined), big and readable from the couch, consistent layout, done/skip states obvious. Card view, done and skip feel like events (flip, fireworks, raspberry). The trophy shelf uses the same card art.
+4. **Reset the yard with a button** (Kaden: "There definitely needs to be a reset zone button"; supersedes "Select: not used in play; the Reset Yard sign is in-world, hold A on it"). Gary's pick: **hold Select for 1.5 s** with a filling ring by the player (a tap does nothing, so it's never an accident), plus a **Reset yard** entry in the pause menu. The in-world sign stays but becomes far more visible (big, lit, near the start). Every reset plays the whoosh and bell. Select + Start held for 2 s still toggles solo mode; the two never trigger each other.
+5. **Variable jump** (Kaden: "tapping is short jump, holding is long jump"): a tap of B is a short hop; holding B goes higher, up to a cap. Still floaty and forgiving.
+
 ## Decisions made without Kaden
 
 - 2026-11-09 (Gary): physics bodies use `body_mass = volume_mass ^ 0.5` (`Yard.mass_exponent`); the logical mass by volume still drives cards, impact sounds and juice. Jolt sinks light bodies under heavy ones past ~25:1; this keeps "heavier is heavier" stable. Grow is refused (a "nope" boing) when it would push into static or frozen things; glue pulls the two objects together before locking and lets go after 3 s if they can't meet.
