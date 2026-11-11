@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
@@ -172,6 +172,7 @@ func _start_demo() -> void:
 		"blame": _beat_blame()
 		"idles": _beat_idles()
 		"rattle": _beat_rattle()
+		"trophy": _beat_trophy()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -223,6 +224,18 @@ func _beat_rattle() -> void:
 			if o:
 				o.react_look(ObjectFace.Mood.WIDE, 0.9)
 				o.speak())
+
+
+## G-13: three cards done, then Jeff zaps the trophy shelf and the newest one flips up.
+func _beat_trophy() -> void:
+	_place(Players.P1, -42.5, -1.0)
+	_place(Players.P2, -38.0, -1.0)
+	camera.focus = [level.card.shelf]
+	for i in 3:
+		level.deck.complete()
+	get_tree().create_timer(1.2).timeout.connect(func() -> void:
+		level.card.shelf.zapped_by(_players[Players.P1], null)
+		_players[Players.P1]._flash())
 
 
 ## Art check: Jeff and Chuck standing in one zone (front_gate, scrap_heap, pond, barn, tower), guns up.

@@ -26,6 +26,11 @@ const RATTLE_MIN := 0.35   # seconds: the shortest rattle a faceless object does
 const RATTLE_MAX := 0.9
 const RATTLE_TILT := 0.12  # radians at the start of a rattle
 const RATTLE_HOP := 0.12   # of the object's height
+const HOVER_PROBE := 30.0  # metres: how far down a hovering object looks for something to float over
+const HOVER_K := 9.0       # spring towards the hover height
+const HOVER_D := 3.5       # damping on the spring
+const HOVER_BOB := 0.12    # metres of slow bob
+const HOVER_DRAG := 0.9    # sideways air drag per second
 const GAG_MIN_IMPULSE := 4.0   # a real drop, not a settle
 const CHUTE_MAX := 1.9          # seconds: the parachute never hangs around longer than this
 const CHUTE_SPEED := 2.6        # m/s, the slow fall under the canopy (4 m at the gate in ~1.6 s)
@@ -85,7 +90,7 @@ func _ready() -> void:
 		key = data.id
 	add_to_group(GROUP)
 	gravity_scale = 0.0
-	can_sleep = true
+	can_sleep = data.hover_height <= 0.0   # a hovering bunch of balloons keeps bobbing
 	continuous_cd = true
 	# No contact_monitor: turning on contact reporting changes how Godot-Jolt solves contacts (the
 	# Phase 1 stress numbers drift). Landings are read from sudden velocity changes instead.
@@ -342,6 +347,28 @@ func _blocked(s: float, offset: Vector3) -> bool:
 	return false
 
 
+## Hovering (ObjectData.hover_height): a soft spring towards hover_height above whatever is under
+## it, with a slow bob, and air drag so a thrown bunch of balloons drifts to a stop. Nothing under
+## it (off the edge): it sinks gently and the recall brings it back like anything else.
+func _hover_accel(state: PhysicsDirectBodyState3D, pos: Vector3, up: Vector3, v: Vector3) -> Vector3:
+	var g := Yard.gravity_at(pos)
+	var q := PhysicsRayQueryParameters3D.create(pos, pos - up * HOVER_PROBE, collision_mask, _island_rids())
+	var hit := state.get_space_state().intersect_ray(q)
+	if hit.is_empty():
+		return g * 0.25
+	var h := _half_along(up, current_scale)
+	var target := (hit.position as Vector3).dot(up) + data.hover_height + h
+	var bob := sin(Time.get_ticks_msec() * 0.0017 + float(get_instance_id() % 89)) * HOVER_BOB
+	var err := target + bob - pos.dot(up)
+	var vu := v.dot(up)
+	var a := up * clampf(err * HOVER_K - vu * HOVER_D, -g.length(), g.length() * 0.6)
+	return a - (v - up * vu) * HOVER_DRAG
+
+
+func hovering() -> bool:
+	return data.hover_height > 0.0 and effective_gravity_scale == 1.0 and not freeze
+
+
 func _island_rids() -> Array[RID]:
 	var out: Array[RID] = []
 	for o in stack.glued_group():
@@ -367,7 +394,10 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			_pending_land = volume_mass() * dv
 			_land_cool = LAND_COOLDOWN
 	var up := Yard.up_at(pos)
-	v += Yard.gravity_at(pos) * effective_gravity_scale * dt
+	if data.hover_height > 0.0 and effective_gravity_scale == 1.0:
+		v += _hover_accel(state, pos, up, v) * dt
+	else:
+		v += Yard.gravity_at(pos) * effective_gravity_scale * dt
 	var surface := Yard.water_level_at(pos)
 	var was_in := in_water
 	in_water = false

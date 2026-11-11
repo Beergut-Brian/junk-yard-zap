@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3]
+
+[ext_resource type="Script" path="res://scripts/physics/object_data.gd" id="1_od"]
+
+[resource]
+script = ExtResource("1_od")
+id = &"balloons"
+size = Vector3(1.1, 1.8, 0.72)
+mass = 0.2
+color = Color(0.88, 0.65, 0.23, 1)
+bounce = 0.5
+voice = &"voice_beach_ball"
+hover_height = 1.2
+face_at = Vector3(0, 0.26, 0.5)
+face_size = 0.26

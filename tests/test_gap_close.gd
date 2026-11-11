@@ -154,3 +154,136 @@ func test_a_cow_still_pulls_a_face_and_does_not_rattle() -> void:
 	assert_object(cow.face).is_not_null()
 	Effects.zap(&"bouncy", cow)
 	assert_bool(cow.rattling()).is_false()
+
+
+# ------------------------------------------------------------------------------------- Y-11 balloons
+
+func test_the_loose_balloons_hover_bob_and_come_back_up() -> void:
+	world.add_child(YardStrip.new())
+	var d: ObjectData = load("res://data/objects/balloons.tres")
+	assert_float(d.hover_height).is_greater(0.0)
+	assert_bool(ObjectArt.has_art(&"balloons")).is_true()
+	assert_bool(Audio.has_cue(d.voice_cue() + "_react")).is_true()
+	var b := PhysicsObject.new(d)
+	b.position = Vector3(0, d.size.y * 0.5 + 0.05, 0)
+	world.add_child(b)
+	assert_object(b.face).is_not_null()
+	await step(180)
+	var bottom := b.global_position.y - d.size.y * 0.5
+	assert_float(bottom).override_failure_message("bottom %.2f" % bottom).is_between(d.hover_height - 0.35, d.hover_height + 0.35)
+	assert_bool(b.hovering()).is_true()
+	# Pushed down hard, it floats back up; it never sleeps mid-air.
+	b.linear_velocity = Vector3(3, -8, 0)
+	await step(150)
+	bottom = b.global_position.y - d.size.y * 0.5
+	assert_float(bottom).is_between(d.hover_height - 0.35, d.hover_height + 0.35)
+	assert_bool(b.sleeping).is_false()
+	assert_float(absf(b.linear_velocity.x)).is_less(0.6)   # air drag: it drifts to a stop
+
+
+func test_balloon_gun_freeze_and_undo_take_over_then_hand_back() -> void:
+	world.add_child(YardStrip.new())
+	var d: ObjectData = load("res://data/objects/balloons.tres")
+	var b := PhysicsObject.new(d)
+	b.position = Vector3(0, 2.5, 0)
+	world.add_child(b)
+	await step(120)
+	var rest := b.global_position.y
+	assert_bool(Effects.zap(&"freeze", b)).is_true()
+	assert_bool(b.hovering()).is_false()
+	assert_bool(Effects.zap(&"freeze", b)).is_true()   # unfreeze
+	assert_bool(Effects.zap(&"balloon", b)).is_true()
+	await step(120)
+	assert_float(b.global_position.y).is_greater(rest + 1.0)   # the balloon gun lifts it higher
+	assert_bool(Effects.zap(&"balloon", b)).is_true()           # undo: back down to its own hover
+	await step(240)
+	assert_float(b.global_position.y).is_between(rest - 0.4, rest + 0.4)
+
+
+func test_the_balloons_are_placed_at_the_front_gate() -> void:
+	var layout: YardLayout = load(YardLevel.LAYOUT)
+	var found := false
+	for e in layout.entries:
+		if e.key == &"balloons":
+			found = true
+			assert_float(e.position.x).is_between(-48.0, -29.0)
+	assert_bool(found).is_true()
+
+
+# --------------------------------------------------------------------------------- G-13 trophy shelf
+
+func _deck_with_done(n: int) -> GoalDeck:
+	var deck := GoalDeck.new()
+	deck.load_dir(GoalDeck.DIR)
+	world.add_child(deck)
+	deck.checking = false
+	for i in n:
+		deck.complete()
+	return deck
+
+
+func test_the_trophy_shelf_flips_through_done_cards_and_wraps() -> void:
+	var deck := _deck_with_done(3)
+	var card := FenceCard.new()
+	card.deck = deck
+	world.add_child(card)
+	await step(2)
+	var shelf := card.shelf
+	assert_object(shelf).is_not_null()
+	assert_bool(shelf.is_in_group(&"zap_targets")).is_true()
+	assert_int(shelf.count()).is_equal(3)
+	assert_str(String(shelf.showing())).is_equal("")
+	Audio.history.clear()
+	shelf.zapped_by(null, null)   # newest first
+	assert_str(String(shelf.showing())).is_equal(String(deck.done[2]))
+	assert_bool(Audio.played("card_view")).is_true()
+	shelf.zapped_by(null, null)
+	assert_str(String(shelf.showing())).is_equal(String(deck.done[1]))
+	shelf.zapped_by(null, null)
+	shelf.zapped_by(null, null)   # wraps back round to the newest
+	assert_str(String(shelf.showing())).is_equal(String(deck.done[2]))
+	await step(20)
+	var sprite := shelf.get_child(shelf.get_child_count() - 1) as Sprite3D
+	assert_bool(sprite.visible).is_true()
+	assert_float(sprite.scale.x).is_greater(0.5)
+	# Left alone, it folds itself away; the pile and the deck are untouched.
+	shelf.fold()
+	await step(30)
+	assert_str(String(shelf.showing())).is_equal("")
+	assert_bool(sprite.visible).is_false()
+	assert_int(deck.done.size()).is_equal(3)
+
+
+func test_an_empty_shelf_still_answers_a_zap() -> void:
+	var deck := _deck_with_done(0)
+	var card := FenceCard.new()
+	card.deck = deck
+	world.add_child(card)
+	await step(2)
+	Audio.history.clear()
+	card.shelf.zapped_by(null, null)
+	assert_bool(Audio.played("sparkle")).is_true()
+	assert_str(String(card.shelf.showing())).is_equal("")
+
+
+func test_a_zapper_aimed_at_the_shelf_flips_it_not_the_card() -> void:
+	world.add_child(YardStrip.new())
+	var deck := _deck_with_done(2)
+	var card := FenceCard.new()
+	card.deck = deck
+	card.position = Vector3(0, 2.6, -0.9)
+	world.add_child(card)
+	var z: Zapper = load("res://scenes/players/zapper.tscn").instantiate()
+	z.player = P1
+	z.position = Vector3(-1.5, 0.05, 0)
+	world.add_child(z)
+	z.input_override = IDLE.duplicate()
+	await step(5)
+	var top := deck.current().id
+	var aim := Vector2(card.shelf.global_position.x - z.aim_origin().x, card.shelf.global_position.y - z.aim_origin().y).normalized()
+	z.input_override = IDLE.merged({"action": true, "aim": aim}, true)
+	await step(1)
+	z.input_override = IDLE.merged({"aim": aim}, true)
+	await step(3)
+	assert_str(String(card.shelf.showing())).is_equal(String(deck.done[1]))
+	assert_str(String(deck.current().id)).is_equal(String(top))   # the card was not skipped
