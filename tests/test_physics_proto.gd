@@ -2,20 +2,34 @@
 class_name TestPhysicsProto
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const KINDS: Array[StringName] = [&"grow", &"shrink", &"bouncy", &"balloon", &"freeze", &"magnet", &"glue"]
 
 var world: Node3D
 
 
+func before() -> void:
+	_clock.pin()
+
+
 func before_test() -> void:
+	Yard.reset_world()   # default bounds, gate and no water: never the pond a yard suite left behind
+	Yard.reset_stats()
 	world = Node3D.new()
 	add_child(world)
 	world.add_child(YardStrip.new())
-	Yard.reset_stats()
+
+
+func after() -> void:
+	_clock.restore()
 
 
 func after_test() -> void:
 	world.free()
+	Yard.reset_world()
+	Yard.reset_stats()
 
 
 func box(pos: Vector3, size := Vector3.ONE, mass := 1.0) -> PhysicsObject:

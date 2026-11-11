@@ -5,6 +5,9 @@
 ## Own settings file and picks file, fixture roster (Jeff and Chuck only).
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const P1 := Players.P1
 const P2 := Players.P2
 const IDLE := {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false,
@@ -21,6 +24,7 @@ var _real_data := ""
 
 
 func before() -> void:
+	_clock.pin()
 	Save.profile = "gdunit"
 	_real_settings = Save.settings_path
 	Save.settings_path = "user://test_settings_controls.json"
@@ -34,6 +38,7 @@ func before() -> void:
 
 
 func after() -> void:
+	_clock.restore()
 	Save.wipe_settings()
 	Save.settings_path = _real_settings
 	Save.reload_settings()

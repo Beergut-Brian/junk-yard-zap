@@ -4,6 +4,9 @@
 class_name TestGapClose
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const P1 := Players.P1
 const IDLE := {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
 const FIXTURE := "res://tests/fixtures/roster_two.json"
@@ -17,6 +20,7 @@ var _real_picks := ""
 
 
 func before() -> void:
+	_clock.pin()
 	_real_profile = Save.profile
 	Save.profile = "gdunit_gap_close"
 	Save.wipe()
@@ -32,6 +36,7 @@ func before() -> void:
 
 
 func after() -> void:
+	_clock.restore()
 	Save.wipe()
 	Save.profile = _real_profile
 	Save.wipe_settings()

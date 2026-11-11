@@ -4,6 +4,10 @@
 class_name TestPolish
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+const Stage := preload("res://tests/fixtures/stage.gd")   # bench the bodies a test is not about
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const P1 := Players.P1
 const P2 := Players.P2
 const Lobby := preload("res://scenes/ui/lobby.gd")
@@ -15,6 +19,7 @@ var _real_profile := ""
 
 
 func before() -> void:
+	_clock.pin()
 	_real_profile = Save.profile
 	Save.profile = "gdunit_polish"   # main.tscn saves the yard: never touch the family's profile
 	Save.wipe()
@@ -29,6 +34,7 @@ func before() -> void:
 
 
 func after() -> void:
+	_clock.restore()
 	Game.quit_exits = true
 	Save.wipe()
 	Save.profile = _real_profile
@@ -249,6 +255,8 @@ func test_the_belt_button_runs_the_conveyor_and_carries_the_car() -> void:
 	Game.start_round()
 	await step(30)
 	var car := l.object(&"car")
+	Stage.clear_around(l, car.global_position.x, 4.0, [car])   # the oil drum and crates sat 0.6 m ahead on the belt
+	await step(2)
 	var x0 := car.global_position.x
 	var z := _zapper(P1, Vector3(-24.6, 0.1, 0))
 	await _zap_with(z, l.contraptions.button, 4)
@@ -307,11 +315,9 @@ func test_the_trampoline_bounces_a_launched_object_and_a_player() -> void:
 	Game.start_round()
 	await step(10)
 	var t := l.contraptions.trampoline
-	for o in l.objects.values():   # a clear mat (the cow likes to stand next to it)
-		if absf(o.global_position.x - t.global_position.x) < 2.5:
-			o.global_position.x += 6.0
-	await step(5)
 	var ball := l.object(&"ball")
+	Stage.clear_around(l, t.global_position.x, 2.5, [ball])   # a clear mat (the cow likes to stand next to it)
+	await step(5)
 	ball.global_position = t.global_position + Vector3(0, 4.0, 0)
 	ball.linear_velocity = Vector3(0, -6, 0)
 	var peak := -INF

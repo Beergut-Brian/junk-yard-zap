@@ -17,6 +17,7 @@ func before() -> void:
 
 
 func after() -> void:
+	Yard.reset_world()   # main.tscn set the yard's bounds, gate and pond water: don't hand them on
 	Save.wipe_settings()
 	Save.settings_path = _real_settings
 	Save.reload_settings()
