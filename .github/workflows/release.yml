@@ -52,6 +52,12 @@ jobs:
         run: |
           mkdir -p ~/.local/share/godot/export_templates
           mv /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/ 2>/dev/null || true
+      - name: Stamp the version from the tag
+        shell: bash   # the lobby footer shows application/config/version: v1.0.0, v1.0.0-dev.3
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          sed -i "s|^config/version=.*|config/version=\"$V\"|" project.godot
+          grep -n '^config/version=' project.godot
       - name: Export Linux
         run: |
           mkdir -p build
