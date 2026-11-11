@@ -5,6 +5,7 @@ class_name TestPlaytest1
 extends GdUnitTestSuite
 
 const Clock := preload("res://tests/fixtures/physics_clock.gd")
+const Stage := preload("res://tests/fixtures/stage.gd")   # bench the bodies a test is not about
 var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
 
 const P1 := Players.P1
@@ -227,6 +228,7 @@ func test_ten_objects_stack_every_effect_and_undo_cleanly() -> void:
 func test_balloon_parks_in_reach_and_a_reload_keeps_it_there() -> void:
 	var l := level()
 	var duck := l.object(&"duck")
+	Stage.clear_around(l, 30.0, 2.5, [duck])   # the tractor stands at x = 30: the duck lands on the ground
 	duck.global_position = Vector3(30.0, 1.0, 0)
 	await step(30)
 	var y0 := duck.global_position.y

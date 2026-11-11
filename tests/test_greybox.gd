@@ -4,6 +4,7 @@ class_name TestGreybox
 extends GdUnitTestSuite
 
 const Clock := preload("res://tests/fixtures/physics_clock.gd")
+const Stage := preload("res://tests/fixtures/stage.gd")   # bench the bodies a test is not about
 var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
 
 const P1 := Players.P1
@@ -328,6 +329,7 @@ func test_water_floats_light_things_and_sinks_heavy_ones() -> void:
 	await step(2)
 	var duck := l.object(&"duck")
 	var cannon := l.object(&"cannonball")
+	Stage.clear_around(l, 0.0, 9.0, [duck, cannon])   # an empty pond: the boat and fish were in both drop spots
 	duck.global_position = Vector3(-1, 1.5, 0)
 	cannon.global_position = Vector3(3, 1.5, 0)
 	await step(180)
@@ -370,12 +372,15 @@ func test_the_five_playtest_cards_complete() -> void:
 		assert_bool(cards.has(id)).override_failure_message("%s missing" % id).is_true()
 	var cow := l.object(&"cow")
 	var car := l.object(&"car")
-	car.global_position = cow.global_position + Vector3(cow.radius() + car.radius() + 0.3, 0.5, 0)
+	var beside := cow.global_position + Vector3(cow.radius() + car.radius() + 0.3, 0.5, 0)
+	Stage.clear_around(l, beside.x, car.radius() + 0.5, [cow, car])   # the hay and pumpkin sat in that spot
+	car.global_position = beside
 	await step(20)
 	Effects.glue(cow, car)
 	Effects.zap(&"freeze", l.object(&"cow"))
 	Effects.zap(&"balloon", l.object(&"car"))
 	var hen := l.object(&"chicken_3")
+	Stage.clear_around(l, 30.0, 2.5, [hen])   # the tractor stands at x = 30: make it open ground
 	hen.global_position = Vector3(30.0, 1.0, 0)   # open ground, room to grow
 	await step(30)
 	for i in 3:

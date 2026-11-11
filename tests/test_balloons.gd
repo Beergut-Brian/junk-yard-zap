@@ -5,6 +5,7 @@ class_name TestBalloons
 extends GdUnitTestSuite
 
 const Clock := preload("res://tests/fixtures/physics_clock.gd")
+const Stage := preload("res://tests/fixtures/stage.gd")   # bench the bodies a test is not about
 var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
 
 const KEYS := [&"balloon", &"balloon_2", &"balloon_3"]
@@ -93,6 +94,8 @@ func test_balloons_placed_and_zones_stay_six_to_eleven() -> void:
 
 func test_balloon_floats_within_its_zone() -> void:
 	var l := level()
+	# Only the balloons: launched at 9 m/s they used to meet the crates, the kettle or the piano.
+	Stage.clear_all(l, KEYS.map(func(k: StringName) -> PhysicsObject: return l.object(k)))
 	await step(30)
 	for k in KEYS:
 		var o := l.object(k) as LooseBalloon
@@ -160,6 +163,7 @@ func test_hard_hit_pops_into_a_puff_then_respawns() -> void:
 	box.size = Vector3(0.4, 6, 4)
 	cs.shape = box
 	wall.add_child(cs)
+	Stage.clear_around(l, o.global_position.x + 1.6, 2.0, [o])   # the bucket and crates stood where the wall goes
 	world.add_child(wall)
 	wall.global_position = o.global_position + Vector3(1.6, 0, 0)
 	await step(2)
