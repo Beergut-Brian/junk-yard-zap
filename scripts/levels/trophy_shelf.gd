@@ -141,18 +141,14 @@ func _draw_card() -> void:
 	var g: GoalData = deck.cards.get(showing()) if deck and shown >= 0 else null
 	if g == null:
 		return
-	var r := Rect2(Vector2.ZERO, Vector2(PX, PX))
-	Pictos.card(_face, g, r.grow(-14), guns_by_effect)
-	# A gold frame and a star badge: a trophy, not the card to do next.
-	_face.draw_rect(r.grow(-6), GOLD, false, 12.0)
-	var c := Vector2(PX - 46, 46)
-	var pts := PackedVector2Array()
-	for i in 10:
-		var a := -PI * 0.5 + i * PI / 5.0
-		pts.append(c + Vector2(cos(a), sin(a)) * (34.0 if i % 2 == 0 else 15.0))
-	_face.draw_colored_polygon(pts, GOLD)
-	pts.append(pts[0])
-	_face.draw_polyline(pts, Pictos.INK, 3.0, true)
+	# PT10-3: the same card art as the fence and the HUD, a gold rim and the done rosette in the
+	# corner: a trophy, not the card to do next.
+	var r := Rect2(Vector2.ZERO, Vector2(PX, PX)).grow(-18)
+	Pictos._rrect(_face, r.grow(10), Pictos.GOLD, PX * 0.12)
+	Pictos.card(_face, g, r, guns_by_effect)
+	var badge := Rect2(r.end - Vector2(PX, PX) * 0.42, Vector2(PX, PX) * 0.5)
+	_face.draw_set_transform(Vector2.ZERO)
+	Pictos.card_stamp(_face, Rect2(badge.position - Vector2(0, badge.size.y * 0.25), badge.size), true, 1.0)
 
 
 static func _mat(col: Color, emit := 0.0) -> StandardMaterial3D:

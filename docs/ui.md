@@ -304,3 +304,24 @@ into the game). Add `--ui-pixel` for a `pixel_art` skin (pixel forms on the podi
 
 Performance: the sunburst is one full-screen shader; the `SCENE` backdrop renders at 1/16 of the
 pixels; 3D characters render in two small SubViewports. All of it is gone once the round starts.
+
+## In-game HUD and cards (jyz-ui-1, playtest 2026-11-10 items 1-3)
+
+Gameplay screens stay picture-only. Everything below is drawn in code (no textures to credit) and
+previewed with `godot-render --path . --resolution 1920x1080 res://scripts/tools/ui_sheet.tscn --
+--sheet=<png> [--part=icons|cards]`, or in the game with `--demo --demo-beat=wheel|beams|goal|trophy`.
+
+| Piece | Where | What it does |
+| --- | --- | --- |
+| Gun token | `scenes/ui/hud/gun_icons.gd` (`GunIcons.token`, `Pictos.gun_icon`) | A disc in the beam colour, ink rim, lit edge; a cream crate with eyes going through the gun's effect (`GunIcons.STORY`). `motif(t)`: t = 1 is the icon, 0..1 is the switch preview. A `GunData.icon` texture still wins. |
+| Belt wheel | `scenes/ui/hud/gun_wheel.gd` (`GunWheel.draw`) | Pops round the head on RB/LB: dark ring, the chosen gun big at the top in the player's colour under a pointer, the ring spins from the old gun, scale punch. Shown `RING_TIME` 0.95 s. |
+| Switch preview | `GunWheel.draw` (middle of the wheel) | The chosen token plays its story for `PREVIEW_TIME` 1.8 s, then pops away. |
+| Corner badge | `GunWheel.badge` | The held gun's token in a ring of the player's colour, bottom corners; punches on a change. |
+| First-fire beat | `Hud.on_zapped` (connected in `main.gd`) | First hit of each gun, per player, per session: the token stamps over the player with rays, the screen edge flashes the gun colour, camera fov punch, `card_view` + `sparkle`. |
+| Beam | `scripts/fx/beam.gdshader` on the Zapper's aim cone | One moving pattern per `GunData.Kind`; `flash` brightens it on a zap. |
+| Hit | `scripts/fx/gun_hits.gd` (`GunHits.play`) | A hit per kind (rings out / in, bouncing balls, rising bubbles, ice shards, goo drips, sparks). |
+| Goal card | `Pictos.card` (frame), `CardArt.draw_goal` (picture), `CardArt.gun_for` (header token) | Rounded cream card, dark header with 1-3 gold stars (band) and the gun token, a sky-over-sand window with the picture. One layout everywhere: HUD corner (220 px), fence (512 px), trophy shelf. |
+| Card states | `Pictos.card_stamp`, `Hud._draw_card_event`, `FenceCard._stamp_on` | Done: gold rosette + tick slams on, glow, confetti, flip to the next. Skip: skip stamp, spins off with raspberry puffs, the next drops in. View: the fence card spins round to face you. |
+
+New cards: a condition card (grow, shrink, effect, into, glued) draws itself. A card whose idea
+needs a scene goes in `CardArt.draw` + `CardArt.CARDS`, and its gun in `CardArt.GUN_FOR`.
