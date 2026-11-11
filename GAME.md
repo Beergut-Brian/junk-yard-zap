@@ -377,3 +377,4 @@ Notes quoted in `playtests/2026-11-10.md`. The yard and objects are right ("beau
   - **First-fire beat:** once per player per gun per session (not saved), and only when the zap hits something: a zap at nothing doesn't use it up.
   - **The wheel ring shows 0.95 s** (was 0.6) and its middle plays the 1.8 s preview, which stays by the player after the ring folds.
   - **Each card's header shows the token of the gun that does it** (the chain-reaction card shows none: no zaps allowed). Cards are drawn live in code at every size; the 20 baked PNGs are no longer shown for those cards.
+- 2026-11-10 (vehicle faces lane): no faces on vehicles or machines (Kaden, 2026-11-10), JYZ applies it to all vehicles. Car, tractor, boat, wheelbarrow, washing machine, TV, toaster, fridge, cannon and the crane hook read as friendly through shape and colour; headlights stay lights. The live goal-card pictograms (Pictos) follow `ObjectData.has_face` too.
