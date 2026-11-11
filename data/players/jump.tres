@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="JumpTuning" format=3]
+
+[ext_resource type="Script" path="res://scripts/players/jump_tuning.gd" id="1_jump"]
+
+[resource]
+script = ExtResource("1_jump")
+takeoff_speed = 6.5
+cut_speed = 4.0
+rise_gravity = 0.6
+released_rise_gravity = 0.85
+fall_gravity = 0.9
+coyote = 0.15
+buffer = 0.15

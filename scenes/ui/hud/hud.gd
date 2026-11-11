@@ -1,7 +1,7 @@
 ## The in-game HUD, pictures only (no reading in gameplay): the current goal card small in the top
 ## corner, the gun wheel that pops for half a second around a player who cycles guns, each player's
 ## current gun in their colour in the bottom corners, arrows to off-screen players, the Reset Yard
-## hold ring, and who the pad drives in solo mode. Systems owns the structure, Art the look.
+## hold rings (by a player holding Select, and on the sign), and who the pad drives in solo mode. Systems owns the structure, Art the look.
 class_name Hud
 extends Control
 
@@ -79,11 +79,25 @@ func _draw() -> void:
 			draw_colored_polygon(PackedVector2Array([at + Vector2(-16, -30), at + Vector2(16, -30), at + Vector2(0, -6)]), col)
 		if _wheel.has(z.player):
 			_draw_wheel(z, at + Vector2(0, -120), col)
-	# Reset Yard hold ring.
+		elif z.reset_progress() > 0.0:
+			draw_reset_ring(at + Vector2(0, -78), z.reset_progress(), col)
+	# Reset Yard hold ring on the sign (hold A on it).
 	var prog := level.reset_progress()
 	if prog > 0.0:
-		var c := camera.unproject_position(level.reset_sign.global_position + Vector3(0, 1.75, 0))
-		draw_arc(c, 70, -PI / 2, -PI / 2 + TAU * prog, 48, Color(1, 0.95, 0.6), 14, true)
+		var c := camera.unproject_position(level.reset_sign.global_position + Vector3(0, YardLevel.SIGN_Y, 0))
+		draw_reset_ring(c, prog, Color(1, 0.86, 0.3), 1.5)
+
+
+## The Select-hold ring by a player: a dark badge with the "start again" swirl that winds up as a
+## ring in the player's colour fills; it swells as it nears full so the last moment feels big.
+func draw_reset_ring(c: Vector2, prog: float, col: Color, size := 1.0) -> void:
+	var k := size * (1.0 + 0.22 * prog * prog)
+	var r := 54.0 * k
+	draw_circle(c, r + 12.0 * k, Color(0.13, 0.08, 0.06, 0.82))
+	draw_arc(c, r, 0, TAU, 48, Color(UiStyle.CREAM, 0.35), 13.0 * k, true)
+	draw_arc(c, r, -PI / 2, -PI / 2 + TAU * prog, 48, col, 15.0 * k, true)
+	draw_circle(c + Vector2.from_angle(-PI / 2 + TAU * prog) * r, 10.0 * k, Color.WHITE)
+	UiGlyphs.reset_swirl(self, c, r * 0.72, UiStyle.CREAM.lerp(col, prog * 0.5), prog * TAU * 0.5)
 
 
 func _draw_wheel(z: Zapper, at: Vector2, col: Color) -> void:

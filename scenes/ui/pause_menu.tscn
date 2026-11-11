@@ -79,11 +79,11 @@ mouse_filter = 2
 [node name="Buttons" type="VBoxContainer" parent="Card"]
 layout_mode = 0
 offset_left = 60.0
-offset_top = 420.0
+offset_top = 392.0
 offset_right = 860.0
-offset_bottom = 960.0
+offset_bottom = 976.0
 mouse_filter = 2
-theme_override_constants/separation = 26
+theme_override_constants/separation = 20
 
 [node name="Resume" type="Control" parent="Card/Buttons"]
 layout_mode = 2
@@ -91,10 +91,21 @@ mouse_filter = 2
 script = ExtResource("2_item")
 text = "Resume"
 bleed = 1
-height = 96.0
-height_focused = 140.0
-text_size = 62
-text_size_focused = 108
+height = 86.0
+height_focused = 132.0
+text_size = 58
+text_size_focused = 100
+
+[node name="ResetYard" type="Control" parent="Card/Buttons"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_item")
+text = "Reset Yard"
+bleed = 1
+height = 86.0
+height_focused = 132.0
+text_size = 58
+text_size_focused = 100
 
 [node name="Restart" type="Control" parent="Card/Buttons"]
 layout_mode = 2
@@ -102,10 +113,10 @@ mouse_filter = 2
 script = ExtResource("2_item")
 text = "Restart"
 bleed = 1
-height = 96.0
-height_focused = 140.0
-text_size = 62
-text_size_focused = 108
+height = 86.0
+height_focused = 132.0
+text_size = 58
+text_size_focused = 100
 
 [node name="Settings" type="Control" parent="Card/Buttons"]
 layout_mode = 2
@@ -113,10 +124,10 @@ mouse_filter = 2
 script = ExtResource("2_item")
 text = "Settings"
 bleed = 1
-height = 96.0
-height_focused = 140.0
-text_size = 62
-text_size_focused = 108
+height = 86.0
+height_focused = 132.0
+text_size = 58
+text_size_focused = 100
 
 [node name="Door" type="Control" parent="Card/Buttons"]
 layout_mode = 2
@@ -124,10 +135,10 @@ mouse_filter = 2
 script = ExtResource("2_item")
 text = "Back to Open Jar"
 bleed = 1
-height = 96.0
-height_focused = 140.0
-text_size = 62
-text_size_focused = 108
+height = 86.0
+height_focused = 132.0
+text_size = 58
+text_size_focused = 100
 
 [node name="Hint" type="Control" parent="Card"]
 layout_mode = 0
