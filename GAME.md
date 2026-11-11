@@ -368,6 +368,9 @@ Notes quoted in `playtests/2026-11-10.md`. The yard and objects are right ("beau
   - **The deck checks the top card every 0.1 s** (was 0.25 s) so a car flying over the fence is not missed mid-arc. One card, at most 40 objects, no allocation beyond the group list.
   - **Chain-reaction card is forgiving about where the ball lands:** it counts once the untouched ball rests below 2.5 m (the loft floor is about 4.7 m), so a ball that lands on a hay bale still counts (Gary, after a CI run where it did).
   - **The first two "anything" cards now hint** (bouncy: ball and tire; glue: the two crates) so every card glows something.
+- 2026-11-10 (plan-status lane, recording answers Kaden already gave; both "Open questions for Kaden" above are settled):
+  - **Palette: D44 a, Golden Afternoon (smooth shading).** `~/openjar/HANDOFF-2026-11-10-morning.md`; built as the yard look (art_kit.gd). It also supersedes "flat-shaded with thick outlines" in Art direction.
+  - **The cow is a library character: D53 a, named Patience** (the quadruped Jarling; openjar-characters `main`, `proposals/cow/bible.md`, PR 15). She is a resident, so never playable. The barn cow in this game is still a plain yard object; swapping in Patience is PLAN-STATUS row Y-17.
 - 2026-11-10 (UI clarity lane, jyz-ui-1, for Gary/Kaden to confirm):
   - **Gun icons show the effect on a little cream crate with eyes** (the yard's own look), on a disc in the gun's beam colour: grow = small crate and big crate, grab = an open hand lifting it, bouncy = a ball on a dotted bounce trail, balloon = a balloon carrying it up, freeze = in an ice block, glue = two crates and a glue blob, magnet = a horseshoe pulling it in. The same drawing animates as the switch preview.
   - **The held gun keeps its junk-built nozzle** (dish, cone, bellows, ...) in the beam colour; it matches the icon through colour plus its beam pattern and hit, not a sticker (a sticker on a 30 px gun can't be read from the sofa).
