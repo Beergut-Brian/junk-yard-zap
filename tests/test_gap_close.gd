@@ -287,3 +287,46 @@ func test_a_zapper_aimed_at_the_shelf_flips_it_not_the_card() -> void:
 	await step(3)
 	assert_str(String(card.shelf.showing())).is_equal(String(deck.done[1]))
 	assert_str(String(deck.current().id)).is_equal(String(top))   # the card was not skipped
+
+
+func test_the_first_glue_pick_gets_a_voice_and_a_face() -> void:
+	world.add_child(YardStrip.new())
+	var cow := PhysicsObject.new(load("res://data/objects/cow.tres"))
+	cow.position = Vector3(2.5, 1.0, 0)
+	world.add_child(cow)
+	var z: Zapper = load("res://scenes/players/zapper.tscn").instantiate()
+	z.player = P1
+	z.position = Vector3(0, 0.05, 0)
+	world.add_child(z)
+	z.input_override = IDLE.duplicate()
+	await step(40)
+	for i in z.guns.size():
+		if z.guns[i].id == &"glue":
+			z.set_gun(i)
+	Audio.history.clear()
+	Audio.stop_all()
+	Audio.clock = 6000.0
+	z.input_override = IDLE.merged({"action": true, "aim": Vector2.RIGHT}, true)
+	await step(1)
+	Audio.clock = -1.0
+	z.input_override = IDLE.merged({"aim": Vector2.RIGHT}, true)
+	await step(2)
+	assert_object(z.glue_first).is_same(cow)
+	assert_bool(Audio.played("glue_pick")).is_true()
+	assert_bool(Audio.played("voice_cow_react")).is_true()
+
+
+# ------------------------------------------------------------------------------------------ A-14
+
+## No scary sounds: nothing long enough to be a rumble or a drone, and every file mastered under
+## full scale (the Master limiter catches stacks). The cartoon recipes are in make_cues.py.
+func test_no_sound_effect_is_a_long_rumble() -> void:
+	var n := 0
+	for f in DirAccess.get_files_at(SFX):
+		if not f.ends_with(".ogg"):
+			continue
+		var s: AudioStream = load(SFX + f)
+		n += 1
+		assert_float(s.get_length()).override_failure_message("%s is %.1f s" % [f, s.get_length()]).is_less_equal(4.0)
+	assert_int(n).is_greater(250)
+	assert_bool(AudioServer.get_bus_effect_count(AudioServer.get_bus_index("Master")) > 0).is_true()

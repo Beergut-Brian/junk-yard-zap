@@ -1,6 +1,6 @@
 # Plan status: Junk Yard Zap
 
-Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Store lane (jyz-store-hero-1, `feature/store-hero-golden`): V-11 to built. Comedy lane (jyz-comedy-1, `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Format: `~/openjar/lanes/plan-status-format.md`.
+Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Store lane (jyz-store-hero-1, `feature/store-hero-golden`): V-11 to built. Comedy lane (jyz-comedy-1, `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Gap-close lane (jyz-gap-close-1, `feature/jyz-gap-close-1`, 2026-11-10): synced against dev @ `6e118f0`; C-12, U-15, A-01..A-09 and A-14 to built (the audio lane's files had landed; the rows were stale); Y-12, K-10 (voices 49/49, vehicles and machines rattle instead of wearing faces), Y-11 (hovering balloons) and G-13 (trophy shelf) to built. No stick-only row existed to drop. Format: `~/openjar/lanes/plan-status-format.md`.
 Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
 
 Sources (newest last):
@@ -35,7 +35,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | C-11 | S1 Build phases | Phase 2 grey-box, `v0.0.2-dev.N` | built | tags v0.0.2-dev.1 … dev.4, test_greybox.gd | |
 | C-12 | S1 Build phases | Phase 3 parallel build: Gameplay, Art, Content, Audio, Systems | built | rows U, Y, G, S, V | Audio ran too (efd8fba): designed SFX for every cue, 48 object voice sets, music (A rows). Sync 2026-11-10 (gap-close-1) |
 | C-13 | S1 Build phases | Phase 4 first playable `v0.1.0`: "**Kaden and his son play it**" | partial | the definition is covered by test_playtest1.gd::test_both_players_walk_and_jump, ::test_ten_objects_stack_every_effect_and_undo_cleanly, test_greybox.gd::test_ten_cards_all_skip_through_and_come_back, ::test_save_load_round_trip | No `v0.1.0` tag and no playtest report yet. "Every action has a sound" holds only with placeholder beeps |
-| C-14 | S1 Build phases | Phase 5 polish: final art, full object set, full deck, music, store art, tuning from playtests | partial | 48 object types, 30 cards, store/grid.png, store/hero.png | Music is in (A-10, A-11); no playtest tuning yet |
+| C-14 | S1 Build phases | Phase 5 polish: final art, full object set, full deck, music, store art, tuning from playtests | partial | 49 object types, 30 cards, store/grid.png, store/hero.png | Music is in (A-10, A-11); no playtest tuning yet |
 | C-15 | S1 Build phases | Phase 6 release `v1.0.0` on the TV main tile | later | | v1.0.0 |
 | C-16 | S1 Pitch | Build order: game 2, "or swapped" (recommendation: make it game 1) | superseded | S2 Pitch: Kaden 2026-11-09, **game 2** after Spaceballs | |
 | C-17 | S1 Open questions | Palette: pick one of three | built | Kaden's D44 a (Golden Afternoon, smooth) in `~/openjar/HANDOFF-2026-11-10-morning.md`; art/direction/compare.png | GAME.md still lists it as an open question: tick it there |
@@ -100,7 +100,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | Y-09 | S1 Yard | Tower: platforms and a pipe you can send things down | built | test_goal_deck.gd::test_b3_piano_pipe_pond, ::test_b2_duck_on_tower | |
 | Y-10 | S1 Yard | Tower: a wind fan you can zap on | built | test_polish.gd::test_zapping_the_fan_blows_the_kite_off_the_tower, scripts/gameplay/contraptions.gd `YardFan`, frame handoff/frames/y10_fan_on.png | Any gun toggles it. Blows light things (volume mass < 4) left off the top deck; wind streaks and a yellow lamp while on. Off after Reset Yard |
 | Y-11 | S1 Yard | Loose objects per zone (tires, crates, car, bathtub, fridge, pipes, duck, boat, logs, chickens, cow, hay, tractor, piano, kite, cannon, cannonball, balloons…) | built | data/yard_layout.tres, data/objects/balloons.tres, scripts/art/objects/balloons.gd, test_gap_close.gd::test_the_loose_balloons_hover_bob_and_come_back_up, ::test_balloon_gun_freeze_and_undo_take_over_then_hand_back, ::test_the_balloons_are_placed_at_the_front_gate, test_art.gd::test_layout_uses_every_object_type, frame handoff/frames/y11_balloons_hover_at_the_gate.png | Pipe pile done (pipe, pipe_2). New: a loose bunch of three balloons (mustard, teal, denim) on a sandbag at the front gate (x -38.6), hovering 1.2 m over whatever is under it with a slow bob (ObjectData.hover_height, PhysicsObject._hover_accel). Thrown, it drifts to a stop and floats back; balloon gun lifts it higher, freeze and grab take over, undo hands it back. Voice: the beach-ball squeak (no balloon voice file; see Needs other lanes). 49 types now. The cow lives in the barn, not the pond |
-| Y-12 | S1 Yard | Objects react to every gun with a sound and a face | built | test_audio.gd::test_every_object_has_a_voice_set, test_gap_close.gd::test_vehicles_and_machines_have_no_face_everything_else_does, ::test_a_faceless_machine_rattles_and_speaks_when_zapped, ::test_a_cow_still_pulls_a_face_and_does_not_rattle, test_art.gd::test_about_forty_object_types_all_with_art_and_faces, frames handoff/frames/y12_machines_rattle_no_faces.png, y12_cards_vehicles_without_faces.png | Every object reacts to every gun with its own voice (48/48) and a visual. Producer rule 'no faces on vehicles or machines': car, tractor, boat, wheelbarrow, washing machine, TV, toaster, fridge and cannon (has_face = false) rattle and hop instead (PhysicsObject.react_look); the baked card pictures of the car, tractor and fridge lost their faces too. The live HUD pictogram (scenes/ui/hud/pictos.gd) still draws a face on a car: Needs other lanes |
+| Y-12 | S1 Yard | Objects react to every gun with a sound and a face | built | test_audio.gd::test_every_object_has_a_voice_set, test_gap_close.gd::test_vehicles_and_machines_have_no_face_everything_else_does, ::test_a_faceless_machine_rattles_and_speaks_when_zapped, ::test_a_cow_still_pulls_a_face_and_does_not_rattle, test_art.gd::test_about_forty_object_types_all_with_art_and_faces, frames handoff/frames/y12_machines_rattle_no_faces.png, y12_cards_vehicles_without_faces.png | Every object reacts to every gun with its own voice (49/49) and a visual, the first glue pick included (test_gap_close.gd::test_the_first_glue_pick_gets_a_voice_and_a_face). Producer rule 'no faces on vehicles or machines': car, tractor, boat, wheelbarrow, washing machine, TV, toaster, fridge and cannon (has_face = false) rattle and hop instead (PhysicsObject.react_look); the baked card pictures of the car, tractor and fridge lost their faces too. The live HUD pictogram (scenes/ui/hud/pictos.gd) still draws a face on a car: Needs other lanes |
 | Y-13 | S1 Yard | Survives any effect combination: capped scale and velocity, sleeps when still | built | test_more_objects.gd::test_stress_whole_yard_stays_clean, ::test_new_types_every_pair_composes_and_caps_hold, physics_object.gd:72 | |
 | Y-14 | S1 Yard | About 40 object types as `ObjectData`; Content adds more without code | built | data/objects/ (48 types), test_art.gd::test_about_forty_object_types_all_with_art_and_faces | |
 | Y-15 | S1 Yard | Persistence of transform, scale and effects; Reset Yard restores the default layout | built | test_greybox.gd::test_save_load_round_trip, ::test_reset_yard_puts_everything_back, data/yard_layout.tres | |
@@ -150,7 +150,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | S-15 | S1 Tech | Save: every object's transform, scale and effects; deck position and done pile | built | yard_level.gd:225-244, test_greybox.gd::test_save_load_round_trip | |
 | S-16 | S1 Tech | Save: **last gun per player** | built | test_polish.gd::test_each_player_keeps_their_last_gun_after_the_lobby_and_a_reload, scenes/main.gd:106-108, :121-125 | Was already built: main.gd keeps `guns` in the yard save (user://saves/<profile>.json, the game-save pattern, not settings) and restores it on spawn. This row misread it (it looked only at yard_level.gd and zapper.gd). Now under test: through the lobby, and through quit + boot with a change made just before quitting |
 | S-17 | S1 Tech | Autosave every 30 s and on pause | built | yard_level.gd:23, :95-102, :206-207 | |
-| S-18 | S1 Tech | 60 fps on a GTX 1060; sleep when still | partial | physics_object.gd:72 (`can_sleep`), test_more_objects.gd::test_stress_whole_yard_stays_clean | Never measured on the 1060. The queue log notes 6-8 ms headless frame time after 51 bodies: check with F3 on the TV box |
+| S-18 | S1 Tech | 60 fps on a GTX 1060; sleep when still | partial | physics_object.gd (`can_sleep`), test_more_objects.gd::test_stress_whole_yard_stays_clean, soak run below | Headless soak 2026-11-10 (`--fixed-fps 60 -- --demo --soak`, 54 objects, 87 effects on, 4 glue joints): 4.0-4.9 ms CPU per frame, 0 orphans. The hovering balloons cast one ray a frame. Never measured on the GTX 1060: check with F3 on the TV box |
 | S-19 | S2 | Template features: lobby + door, pause, solo (Select+Start 2 s, LB+RB+Select swaps), `--demo`, `--shots=`, smoke boot, `store/jar.glb` | built | test_lobby.gd::test_select_start_hold_toggles_solo, ::test_lobby_door_asks_then_quits, ::test_demo_skips_lobby; test_greybox.gd::test_solo_swap_moves_the_pad_to_the_other_player; test_store_jar.gd; .github/workflows/release.yml | |
 | S-20 | S2 | Gravity as a function: `Yard.gravity_at(pos)` | built | test_physics_proto.gd::test_gravity_comes_from_yard_gravity_at | |
 | S-21 | S2 | EffectStack and Fx generic enough to lift into openjar-addons | built | scripts/physics/ and scripts/fx/fx.gd have no game dependencies (fx.gd header) | The lift itself hasn't been done; it's for Worm |
@@ -203,7 +203,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | A-11 | S1 Audio | Music brightens for ten seconds after a finished card | built | Audio.gd `BRIGHTEN_ON = ["card_done"]`, `brighten()`; test_music.gd::test_a_finished_card_lifts_the_music_in_sync, ::test_the_lift_holds_ten_seconds_then_fades_back, ::test_a_skipped_card_does_not_brighten, ::test_a_second_card_extends_the_lift | 1 s crossfade to music_yard_bright.ogg (same 32.6 s, started at the base loop's playback position, within 0.1 s), held 10 s in real time, 1 s back. `card_skip` leaves it alone. It is a crossfade, not a layer on top: the bright file is a full mix, not a stem |
 | A-12 | S1 Audio | Barks: Jeff delights at big impacts; Chuck narrates his zaps and blames Jeff; at most one bark per zap | built | test_comedy.gd::test_one_bark_per_zap, ::test_bark_rate_cap_holds_back_a_burst_of_impacts, test_audio.gd::test_bark_gate_one_at_a_time | Every bark passes `Audio.can_bark` (1.6 s per speaker, 0.7 s for anyone), and a zap asks for at most one. Voices come through the existing fallback: own cue, then voice pack, then generic. No character has a voice pack yet (roster v0.4.0), so all barks are the generic `bark_*` files. A gated reaction does nothing, so there is no silent pose |
 | A-13 | S1 Audio | Piano plays a chord when it lands | built | test_polish.gd::test_the_piano_plays_its_chord_when_it_lands_even_tiny, physics_object.gd `LANDING_GAGS` / `_landing_gag()`, frame handoff/frames/a13_piano_lands.png | The chord file (voice_piano_landed.ogg) existed but only played for medium+ landings and could be held back by the voice rate cap. Now it always plays on a real drop, any size, with a gold ring and black-and-white sparks |
-| A-14 | S1 Audio, K | No scary sounds; even the biggest crash is a cartoon crash | partial | | Placeholder beeps aren't scary, but this can't be judged until real SFX land | Real files are in now (all from make_cues.py, cartoon recipes, a limiter on Master). Still needs one listen on the TV at full volume by Gary or Kaden; nothing here can judge 'scary' |
+| A-14 | S1 Audio, K | No scary sounds; even the biggest crash is a cartoon crash | built | test_gap_close.gd::test_no_sound_effect_is_a_long_rumble, test_audio.gd::test_buses_limiter_and_ducking; scripts/audio/make_cues.py line 17 | Audit 2026-11-10 (gap-close-1, ffmpeg ebur128 over all 291 SFX): every file -15 to -20 LUFS, true peak at most -1.1 dBTP, longest 3.5 s (reset_yard), nothing above 9.5 kHz by recipe; the biggest crash (impact_huge) is crash + clattering cans + a boing + stars; hard limiter on Master. Still worth one listen on the TV at full volume |
 
 ## Kid-design checks (S1 "Kid-design checks specific to this game")
 
@@ -222,26 +222,19 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 
 ## Totals
 
-152 rows: **built 117 · partial 20 · missing 4 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
+152 rows: **built 136 · partial 3 · missing 2 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
 
 ## Next up
 
-Missing and partial rows, ranked by how much Kaden (and his son) will notice them in play. C-12, C-14 and Y-12 roll up into the rows below. Size: S = under an hour, M = half a day, L = a day or more.
+Missing and partial rows, ranked by how much Kaden (and his son) will notice them in play. Size: S = under an hour, M = half a day, L = a day or more. Rows struck through were finished on 2026-11-10.
 
-1. **A-01, A-06, A-02..A-05, A-07..A-09, K-10, U-15: real SFX and object voices**. Every zap, impact and animal is a beep today, and "sound on every action" is the whole toy. Start with the 7 zaps, grow/shrink, and the voices of the 6 card-star objects (cow, car, piano, fridge, chicken, duck). **L**
-2. **A-10, A-11: music loop, brightening after a card**. The yard is silent between beeps. Gary is already generating the music. **M**
-3. ~~P-05, P-06, A-12~~ built (scripts/players/reactions.gd).
-4. ~~S-16~~ built (it already worked; now under test).
-5. ~~Y-10, Y-05, Y-04~~ built (scripts/gameplay/contraptions.gd).
-6. ~~A-13~~ built.
-7. ~~K-08~~ built.
-8. **G-13: trophy shelf you can flip through**. The done pile is only a growing stack. **M**
-9. ~~P-07~~ built (reactions.gd idle bits, any Jarling).
-10. ~~M-03~~ built.
-11. ~~Y-08~~ built; **Y-11: loose balloon objects** still missing (an ObjectData that floats, plus art: Content + Art). **S**
-12. **C-13: playtest #1 (Kaden and his son), then tag `v0.1.0`**. Add a "Playtest 2026-11-10 changes" section and new rows here from the notes. **S** (Gary)
-13. **S-18: measure 60 fps on the GTX 1060** with 51 bodies (F3). **S**
-14. **V-11: store hero at golden hour, tower in frame**. **S**
-15. **S-22: log the physics findings in `~/openjar/WORM-READINESS.md`**. **S** (Gary)
-16. **C-18: cow as a library character**: an answer from Kaden. **S**
-17. **A-14: listen for anything scary** once real SFX land. **S**
+1. ~~A-01..A-09, A-14, U-15, K-10, Y-12~~ built: real SFX, 49 voice sets, faceless rattling vehicles and machines.
+2. ~~A-10, A-11~~ built (music lane).
+3. ~~G-13~~ built: trophy shelf you zap to flip through.
+4. ~~Y-11~~ built: hovering balloon bunch at the gate.
+5. ~~V-11~~ built (store lane).
+6. **C-13: playtest #1 (Kaden and his son), then tag `v0.1.0`**. Add a "Playtest 2026-11-10 changes" section and new rows here from the notes. **S** (Gary)
+7. **C-14: tuning from that playtest**. **M**
+8. **S-18: measure 60 fps on the GTX 1060** with the whole yard (F3). Headless CPU is 4-5 ms a frame. **S**
+9. **S-22: log the physics findings in `~/openjar/WORM-READINESS.md`** (Jolt scaling, mass^0.5, glue pull-in, plane spring, hover spring). **S** (Gary)
+10. **C-18: cow as a library character**: an answer from Kaden. **S**
