@@ -40,7 +40,7 @@ func _ready() -> void:
 	_vp.add_child(_face)
 	_sprite = Sprite3D.new()
 	_sprite.texture = _vp.get_texture()
-	_sprite.pixel_size = 1.8 / PX
+	_sprite.pixel_size = 2.0 / PX   # PT10-3: the framed card reads as big as the old bare picture
 	_sprite.shaded = false
 	_sprite.position.z = 0.05
 	add_child(_sprite)
