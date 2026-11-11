@@ -34,6 +34,7 @@ const GENERIC_BARK := "bark"
 ## Variable jump numbers (data/players/jump.tres when empty).
 @export var jump_tuning: JumpTuning
 ## Joined mid-session or not joined yet: asleep in the tire pile until his pad presses something.
+const BEAM_SHADER := preload("res://scripts/fx/beam.gdshader")
 var asleep := false
 ## Template name for the same thing (tests/test_lobby.gd, main.gd).
 var waiting: bool:
@@ -58,7 +59,7 @@ var rig: JarlingRig
 ## Barks, reaction poses and idle bits (scripts/players/reactions.gd).
 var reactions: Reactions
 var _beam: MeshInstance3D
-var _beam_mat: StandardMaterial3D
+var _beam_mat: ShaderMaterial   # scripts/fx/beam.gdshader: a pattern per gun (PT10-2)
 var _marker: MeshInstance3D
 var _zzz: CPUParticles3D
 var _partner_look: EffectLook
@@ -171,7 +172,8 @@ func set_gun(i: int, sound := true) -> void:
 	_size_latched = null
 	glue_first = null
 	gun_index = posmod(i, guns.size())
-	_beam_mat.albedo_color = Color(gun().beam_color, 0.07)
+	_beam_mat.set_shader_parameter(&"color", gun().beam_color)
+	_beam_mat.set_shader_parameter(&"pattern", int(gun().kind))
 	rig.show_gun(gun().effect_id())
 	if sound:
 		Audio.play("wheel_move")
@@ -479,7 +481,7 @@ func _press() -> void:
 				o.speak()
 				o.last_touch = &"gun"
 	if changed:
-		Fx.ring(get_tree(), target.global_position, g.beam_color, (target as PhysicsObject).radius() if target is PhysicsObject else 1.0)
+		GunHits.play(get_tree(), g.kind, target.global_position, g.beam_color, (target as PhysicsObject).radius() if target is PhysicsObject else 1.0)
 	# Chuck narrates his own zaps and blames the partner when one is refused (GAME.md "Audio");
 	# at most one bark per zap, through the gate.
 	reactions.own_zap(changed, _refused)
@@ -707,12 +709,8 @@ func _on_big_impact(at: Vector3, band: String) -> void:
 func _build_beam() -> void:
 	_beam = MeshInstance3D.new()
 	_beam.mesh = _cone_mesh()
-	_beam_mat = StandardMaterial3D.new()
-	_beam_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_beam_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_beam_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_beam_mat.no_depth_test = true
-	_beam_mat.albedo_color = Color(1, 1, 1, 0.1)
+	_beam_mat = ShaderMaterial.new()
+	_beam_mat.shader = BEAM_SHADER
 	_beam.material_override = _beam_mat
 	_beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_beam.position = Vector3(0, HEIGHT * 0.6, 0.2)
@@ -753,7 +751,7 @@ static func marker_point(t: Node3D) -> Vector3:
 
 func _flash() -> void:
 	var tw := create_tween()
-	tw.tween_property(_beam_mat, "albedo_color:a", 0.07, 0.3).from(0.3)
+	tw.tween_method(func(v: float) -> void: _beam_mat.set_shader_parameter(&"flash", v), 1.0, 0.0, 0.35)
 
 
 ## A flat wedge on the play plane showing the aim cone.
@@ -765,7 +763,10 @@ func _cone_mesh() -> ArrayMesh:
 	for i in n:
 		var a0 := -HALF + 2.0 * HALF * i / n
 		var a1 := -HALF + 2.0 * HALF * (i + 1) / n
+		st.set_uv(Vector2(0.0, (i + 0.5) / n))
 		st.add_vertex(Vector3.ZERO)
+		st.set_uv(Vector2(1.0, float(i) / n))
 		st.add_vertex(Vector3(cos(a0), sin(a0), 0) * BEAM_LEN)
+		st.set_uv(Vector2(1.0, float(i + 1) / n))
 		st.add_vertex(Vector3(cos(a1), sin(a1), 0) * BEAM_LEN)
 	return st.commit()
