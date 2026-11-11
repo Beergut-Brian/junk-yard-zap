@@ -21,6 +21,7 @@ original designs (no brands, characters, real places or artists' styles imitated
 | --- | --- | --- | --- |
 | `scripts/art/` (yard dressing, sky shader, 49 object models incl. the loose balloon, effect looks, 7 guns) | Procedural meshes in GDScript (`ArtKit`), palette A from `art/direction/palettes.json` | Toy-diorama junk yard; objects with googly faces | Project's own |
 | `store/jar.glb` | `art/tools/make_jar.py` (Blender 5.2.3, background) | Launcher jar world: a giant cow on a balloon over a scrap pile | Project's own |
+| `store/clip.mp4` | `art/tools/make_clip.sh` (Godot Movie Maker on godot-render, a `--demo` run at a fixed 30 fps; ffmpeg libx264 + AAC, same recipe as Spaceballs) | The launcher's 12 s gameplay clip, 1280x720: the demo bots zapping the yard. The game's own scenes and sounds (credited here), no text, no third-party material | Project's own |
 | `store/grid.png`, `store/hero.png` | `art/tools/render_store.sh` (Godot renders of `art/preview/store.tscn`) | Grid: Jeff grows the cow, Chuck in a ballooned bathtub. Hero: the whole yard | Project's own |
 
 ## Audio (Audio lane, synthesised)

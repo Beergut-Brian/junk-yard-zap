@@ -2,7 +2,7 @@
 
 Kaden, 2026-11-10: "I would like to have Spaceballs, Junk Yard Zap, and the Launcher done besides
 running it on the TV hardware." Checked by the launch-readiness lane (launch-ready-1) on
-2026-11-11; details and numbers in `handoff/REPORT.md` of that lane, rows L-01..L-11 in
+2026-11-11; details and numbers in `handoff/REPORT.md` of that lane, rows L-01..L-13 in
 `PLAN-STATUS.md`.
 
 ## Verified (on the producer box)
@@ -23,7 +23,7 @@ running it on the TV hardware." Checked by the launch-readiness lane (launch-rea
       menu cues were added).
 - [x] Version label: the lobby footer shows `application/config/version`, which the release
       workflow now stamps from the tag.
-- [x] Store art: `store/grid.png`, `store/hero.png`, `store/jar.glb`.
+- [x] Store art: `store/grid.png`, `store/hero.png`, `store/jar.glb`, `store/clip.mp4` (the clip was missing; rendered from the demo).
 - [x] Credits: every file in `assets/` has a line in `assets/CREDITS.md`; the ElevenLabs music is
       cleared for release (Kaden confirmed his plan covers it).
 - [x] README has this game's play instructions.
