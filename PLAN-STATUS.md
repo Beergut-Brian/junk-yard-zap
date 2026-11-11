@@ -1,6 +1,6 @@
 # Plan status: Junk Yard Zap
 
-Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Store lane (jyz-store-hero-1, `feature/store-hero-golden`): V-11 to built. Comedy lane (jyz-comedy-1, `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Format: `~/openjar/lanes/plan-status-format.md`.
+Checked 2026-11-10 against `dev` @ `dac1ce6` (tag `v0.0.2-dev.4`). Updated 2026-11-10 by the polish lane (jyz-polish-1, branch `feature/yard-polish`): S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03 to built; Y-11 and G-13 notes. Store lane (jyz-store-hero-1, `feature/store-hero-golden`): V-11 to built. Comedy lane (jyz-comedy-1, `feature/yard-comedy`): P-05, P-06, P-07, A-12 to built. Chooser catchphrase lane (`feature/chooser-catchphrase`): M-06 added as built; P-11 note. Format: `~/openjar/lanes/plan-status-format.md`.
 Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
 
 Sources (newest last):
@@ -11,6 +11,7 @@ Sources (newest last):
 - S5 GAME.md "Decisions": 2026-11-10, Showtime menus lane.
 - S6 GAME.md "Decisions": 2026-11-10, Systems character-chooser adoption.
 - S7 GAME.md "The launch deck (30 cards, 2026-11-10)" and "Decisions": 2026-11-10, goal deck lane.
+- S8 Kaden 2026-11-10 (chooser-catchphrase brief, verbatim): "on the character selector, whenever choosing a new character or scrolling through the list of characters, when a character is up on the screen, I'd like it to say it's catchphrase once. Give a little audio queue of who they are if that makes sense."
 
 GAME.md has no "Playtest ... changes" section yet: `playtests/` holds only `_TEMPLATE.md`, so Kaden hasn't played a build. Playtest #1 is tonight.
 
@@ -57,7 +58,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | P-08 | S1 Players | Co-op: no one owns an object; both players' effects apply | built | test_physics_proto.gd::test_every_pair_of_effects_composes, frame combo (Jeff grows, Chuck bounces, the same cow) | |
 | P-09 | S1 Players | Zapping your partner: harmless and funny for each gun (huge, floats, a statue that keeps talking) | built | test_greybox.gd::test_partner_zaps_are_funny_and_last_at_most_a_second, ::test_frozen_partner_is_a_statue_then_moves_again | |
 | P-10 | S1 Players | Drop-in: second player asleep in the tire pile, a button press wakes him with a snort | built | test_greybox.gd::test_chuck_sleeps_in_the_tire_pile_and_wakes_with_a_snort, test_lobby.gd::test_late_joiner_wakes_up_in_the_tire_pile | S2: works from the lobby too |
-| P-11 | S2 | Same Jarlings as Spaceballs, from openjar-characters | built | test_roster.gd, test_jyz_chooser.gd::test_main_spawns_the_picks_and_drop_in_sleeps_the_pick, frame goal | Roster synced to v0.4.0 |
+| P-11 | S2 | Same Jarlings as Spaceballs, from openjar-characters | built | test_roster.gd, test_jyz_chooser.gd::test_main_spawns_the_picks_and_drop_in_sleeps_the_pick, frame goal | Roster synced to v0.5.0, with catchphrases (17 of 21; not Jeff, Chuck, Bloom, Old Reel) |
 | P-12 | S6 | Barks follow the character: own cue, else their voice pack, else a generic beep, never another character's voice | built | test_jyz_chooser.gd::test_barks_fall_back_to_generic_never_another_voice, ::test_a_character_with_own_cue_uses_it | |
 | P-13 | S4 | Partner aim ring circles the partner at chest height; a sleeping partner is not a target | built | test_playtest1.gd::test_partner_aim_ring_circles_the_partner_not_his_feet, ::test_a_sleeping_partner_is_not_a_target | |
 
@@ -169,6 +170,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | M-03 | S5 | Podiums: the picked Jarlings hold the size gun in their tape, three-quarter view | built | test_polish.gd::test_the_podium_gun_points_up_not_over_the_legs, scenes/ui/lobby_jarling.gd `raise_gun()`, frames handoff/frames/m03_lobby_before.png, m03_lobby_after.png | The gun is held up and out by the shoulder ("guns up!"), so legs and hips show; it stays up after a chooser swap |
 | M-04 | S5 | Round card "ZAP TIME!" with a "THE YARD IS OPEN" strip | built | test_jyz_menus.gd::test_round_card_says_the_yard_is_open | |
 | M-05 | S6 | Lobby character chooser | built | test_chooser.gd, test_jyz_chooser.gd::test_lobby_swap_rebuilds_the_podium_rig_with_the_gun | |
+| M-06 | S8 | Chooser says the character's catchphrase once (Kaden 2026-11-10) | built | test_chooser_voice.gd (12 tests: ::test_three_fast_steps_say_only_the_last_after_the_settle, ::test_standing_still_never_repeats, ::test_scrolling_back_says_it_again, ::test_joining_says_the_pick_once, ::test_two_players_each_on_their_own_voice, ::test_leaving_cancels_a_pending_line, ::test_catchphrase_falls_back_to_bark, ...), test_sync_characters.gd::test_vendors_the_catchphrase, real run handoff/chooser-run.log | Ported from openjar-template. Each step plays `char_swap` at once; 0.3 s (`SAY_SETTLE`) after the last step or a join, the podium's character says `voice/catchphrase.ogg` once, on that player's own panned voice. No catchphrase: a random bark; neither (Jeff, Chuck, Bloom, Old Reel in v0.5.0): just the swap sound |
 
 ## Visuals
 
@@ -199,8 +201,8 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | A-07 | S1 Audio | `card_view` page flip, `card_done` fireworks + cheer, `card_skip` raspberry | partial | synth.gd:28-29, fence_card.gd:78 | Placeholder |
 | A-08 | S1 Audio | `reset_yard`: big whoosh and a bell | partial | synth.gd:27 | Placeholder noise sweep, no bell |
 | A-09 | S1 Audio | `wheel_move` click | partial | synth.gd:31 | Placeholder, though it already reads as a click |
-| A-10 | S1 Audio | Music: a lazy junk-yard loop (washboard, banjo, kazoo), quiet under the chaos | missing | assets/audio/music/ is empty; nothing calls music | Gary is generating it with ElevenLabs (QUEUE 2026-11-10) |
-| A-11 | S1 Audio | Music brightens for ten seconds after a finished card | missing | | Needs A-10 first |
+| A-10 | S1 Audio | Music: a lazy junk-yard loop (washboard, banjo, kazoo), quiet under the chaos | built | assets/audio/music/music_yard.ogg (32.6 s, ElevenLabs, CREDITS.md line 40); yard_level.gd:86 `Audio.music("music_yard")`; test_music.gd::test_the_yard_starts_the_looping_music, ::test_the_music_ducks_under_a_bark; test_audio.gd::test_buses_limiter_and_ducking | Audit 2026-11-10 (music-gaps lane): built and played. The yard starts it, both streams loop, Music bus at -2 dB under -20 LUFS files, ducks under barks (-5 dB) and big impacts (-8 dB), hard limiter on Master. Yard only; menus have no music (not this lane) |
+| A-11 | S1 Audio | Music brightens for ten seconds after a finished card | built | Audio.gd `BRIGHTEN_ON = ["card_done"]`, `brighten()`; test_music.gd::test_a_finished_card_lifts_the_music_in_sync, ::test_the_lift_holds_ten_seconds_then_fades_back, ::test_a_skipped_card_does_not_brighten, ::test_a_second_card_extends_the_lift | 1 s crossfade to music_yard_bright.ogg (same 32.6 s, started at the base loop's playback position, within 0.1 s), held 10 s in real time, 1 s back. `card_skip` leaves it alone. It is a crossfade, not a layer on top: the bright file is a full mix, not a stem |
 | A-12 | S1 Audio | Barks: Jeff delights at big impacts; Chuck narrates his zaps and blames Jeff; at most one bark per zap | built | test_comedy.gd::test_one_bark_per_zap, ::test_bark_rate_cap_holds_back_a_burst_of_impacts, test_audio.gd::test_bark_gate_one_at_a_time | Every bark passes `Audio.can_bark` (1.6 s per speaker, 0.7 s for anyone), and a zap asks for at most one. Voices come through the existing fallback: own cue, then voice pack, then generic. No character has a voice pack yet (roster v0.4.0), so all barks are the generic `bark_*` files. A gated reaction does nothing, so there is no silent pose |
 | A-13 | S1 Audio | Piano plays a chord when it lands | built | test_polish.gd::test_the_piano_plays_its_chord_when_it_lands_even_tiny, physics_object.gd `LANDING_GAGS` / `_landing_gag()`, frame handoff/frames/a13_piano_lands.png | The chord file (voice_piano_landed.ogg) existed but only played for medium+ landings and could be held back by the voice rate cap. Now it always plays on a real drop, any size, with a gold ring and black-and-white sparks |
 | A-14 | S1 Audio, K | No scary sounds; even the biggest crash is a cartoon crash | partial | | Placeholder beeps aren't scary, but this can't be judged until real SFX land |
@@ -222,7 +224,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 
 ## Totals
 
-152 rows: **built 117 · partial 20 · missing 4 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
+153 rows: **built 118 · partial 20 · missing 4 · superseded 8 · later 3 · dropped 0**. Counted from the Status column.
 
 ## Next up
 
