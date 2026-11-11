@@ -270,7 +270,7 @@ static func balloon(at: Vector2, size: float) -> void:
 	_ci.draw_circle(at - V(size * 0.18, size * 0.6), _s * size * 0.13, Color(1, 1, 1, 0.6))
 
 
-## A yard object with a face. New silhouettes here; the rest come from Pictos.object.
+## A yard object with a face (vehicles and machines without one). New silhouettes here; the rest come from Pictos.object.
 static func thing(id: StringName, m: Vector2, size: float) -> void:
 	var s := _s * size
 	var c: Color = COLORS.get(id, Color.WHITE)
@@ -287,8 +287,7 @@ static func thing(id: StringName, m: Vector2, size: float) -> void:
 			for x in [-0.7, 0.7]:
 				_ci.draw_circle(m + Vector2(s * x, s * 0.55), s * 0.32, INK)
 				_ci.draw_circle(m + Vector2(s * x, s * 0.55), s * 0.13, METAL)
-			face = m + Vector2(s * 0.75, s * 0.1)
-			fs = s * 0.5
+			return   # vehicles and machines never wear a face
 		&"tractor":
 			_ci.draw_rect(Rect2(m + Vector2(-s * 1.1, -s * 0.2), Vector2(s * 2.0, s * 0.6)), c)
 			_ci.draw_rect(Rect2(m + Vector2(-s * 1.0, -s * 1.0), Vector2(s * 0.8, s * 0.8)), c.darkened(0.1))
@@ -297,8 +296,7 @@ static func thing(id: StringName, m: Vector2, size: float) -> void:
 			_ci.draw_circle(m + Vector2(-s * 0.6, s * 0.45), s * 0.55, INK)
 			_ci.draw_circle(m + Vector2(-s * 0.6, s * 0.45), s * 0.22, c)
 			_ci.draw_circle(m + Vector2(s * 0.65, s * 0.6), s * 0.35, INK)
-			face = m + Vector2(s * 0.35, s * 0.05)
-			fs = s * 0.45
+			return
 		&"pig":
 			_ci.draw_circle(m, s * 0.75, c)
 			_ci.draw_circle(m + Vector2(s * 0.75, -s * 0.25), s * 0.5, c)
@@ -338,7 +336,7 @@ static func thing(id: StringName, m: Vector2, size: float) -> void:
 			_ci.draw_rect(r, INK, false, ow)
 			_ci.draw_line(m + Vector2(-s * 0.6, -s * 0.35), m + Vector2(s * 0.6, -s * 0.35), INK, ow, true)
 			_ci.draw_rect(Rect2(m + Vector2(s * 0.35, -s * 0.85), Vector2(s * 0.1, s * 0.35)), METAL)
-			face = m + Vector2(0, s * 0.3)
+			return
 		&"egg":
 			var pts := PackedVector2Array()
 			for i in 24:

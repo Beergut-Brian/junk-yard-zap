@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_obj")
 id = &"tv"
+has_face = false
 shape = 0
 size = Vector3(0.9, 0.75, 0.8)
 mass = 4.0

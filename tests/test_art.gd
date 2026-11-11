@@ -37,7 +37,11 @@ func test_about_forty_object_types_all_with_art_and_faces() -> void:
 		var o := PhysicsObject.new(d)
 		o.position = Vector3(0, 5, 0)
 		world.add_child(o)
-		assert_object(o.face).override_failure_message("no face on %s" % d.id).is_not_null()
+		# Vehicles and machines never wear a face (producer rule); they rattle instead (test_gap_close.gd).
+		if d.has_face:
+			assert_object(o.face).override_failure_message("no face on %s" % d.id).is_not_null()
+		else:
+			assert_object(o.face).override_failure_message("a face on %s" % d.id).is_null()
 		var art := o.get_node("Visual/Art") as Node3D
 		assert_object(art).is_not_null()
 		var floor_y := -d.size.y * 0.5 if d.shape != ObjectData.Shape.SPHERE else -d.size.x * 0.5

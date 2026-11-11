@@ -278,7 +278,10 @@ func test_yard_spawns_the_layout_with_faces() -> void:
 	assert_int(l.objects.size()).is_greater_equal(15)
 	for k in [&"cow", &"car", &"bathtub", &"ball", &"duck", &"plank", &"chicken"]:
 		assert_object(l.object(k)).override_failure_message(String(k)).is_not_null()
-		assert_object(l.object(k).face).is_not_null()
+		if l.object(k).data.has_face:   # vehicles and machines have no face (test_gap_close.gd)
+			assert_object(l.object(k).face).is_not_null()
+		else:
+			assert_bool(k == &"car").is_true()
 	assert_int(Yard.zones.size()).is_greater_equal(5)
 
 

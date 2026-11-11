@@ -16,5 +16,8 @@ extends ObjectData
 @export var poke_speed := 1.5
 ## Seconds before it pops back in at its layout spot.
 @export var respawn_time := 3.0
+## One colour per balloon in the yard, by key (balloon, balloon_2, balloon_3...): mustard, teal,
+## denim, clear of P1 green, P2 red and the balloon gun's magenta. Empty: every balloon is `color`.
+@export var tints: Array[Color] = []
 ## Cue for the pop (the existing set: a puff and a pop).
 @export var pop_cue: StringName = &"solo_swap"

@@ -32,6 +32,27 @@ func _ready() -> void:
 		if home.x >= z[1] and home.x < z[2]:
 			zone_x = Vector2(z[1] + ZONE_INSET, z[2] - ZONE_INSET)
 	_t = float(get_instance_id() % 97) * 0.13
+	_apply_tint()
+
+
+## Its own colour from BalloonData.tints, picked by key: balloon -> 0, balloon_2 -> 1, balloon_3 -> 2.
+func tint() -> Color:
+	var tints := bd().tints
+	if tints.is_empty():
+		return data.color
+	var parts := String(key).rsplit("_", true, 1)
+	var i := int(parts[1]) - 1 if parts.size() == 2 and parts[1].is_valid_int() else 0
+	return tints[posmod(i, tints.size())]
+
+
+func _apply_tint() -> void:
+	var c := tint()
+	var body := _visual.find_child("Body", true, false) as MeshInstance3D
+	var knot := _visual.find_child("Knot", true, false) as MeshInstance3D
+	if body:
+		body.material_override = ArtKit.mat(c, 0.0, 0.62, true)
+	if knot:
+		knot.material_override = ArtKit.mat(c.darkened(0.2))
 
 
 func bd() -> BalloonData:
@@ -134,7 +155,7 @@ func pop() -> void:
 	angular_velocity = Vector3.ZERO
 	_last_v = Vector3.ZERO
 	Audio.play(String(bd().pop_cue), at)
-	Fx.burst(get_tree(), at, Color(data.color, 0.95), 14, 0.9, 0.6)
+	Fx.burst(get_tree(), at, Color(tint(), 0.95), 14, 0.9, 0.6)
 	Fx.burst(get_tree(), at, Color(1, 0.95, 0.6, 0.9), 8, 0.7, 0.5)
 	var puff := make_puff(data.size.x * current_scale)
 	get_parent().add_child(puff)

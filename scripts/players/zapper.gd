@@ -513,6 +513,8 @@ func _fire_glue() -> bool:
 	if glue_first == null or not is_instance_valid(glue_first) or glue_first == obj:
 		glue_first = obj
 		Audio.play("glue_pick", obj.global_position)
+		obj.speak()   # the first pick reacts too: every gun gets a voice and a face (Y-12)
+		obj.react_look(ObjectFace.Mood.WIDE, 0.6)
 		Fx.burst(get_tree(), obj.global_position, gun().beam_color, 10, 0.5, 0.4)
 		return false
 	var ok := Effects.glue(glue_first, obj) != null
