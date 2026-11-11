@@ -17,6 +17,13 @@ Buses: **Music** (duck stage, Settings "music"), **SFX** (Settings "sound"), **V
 follows the sound slider). Music ducks under `impact_heavy` (-5 dB), `impact_huge` (-8 dB),
 `card_done`, `reset_yard` and every bark (-5 dB), holds 0.35 s, recovers at 14 dB/s.
 
+Loudest cue: `card_done` (momentary max -12.5 LUFS). Nothing in play goes above it: the heavy and
+huge landings are trimmed (-2.5 / -3.5 dB) so a giant's crash with its +1.5 dB size boost still
+peaks at about -12.7 (`Audio.IMPACT_BOOST_DB`); the music ducks under it instead.
+
+Mass bands (`Audio.IMPACT_BANDS`, volume mass = `ObjectData.mass * scale^3`): light < 1, medium
+1..8, heavy 8..60, huge 60+. Growing a thing moves it up the bands (an egg grown 4x is 64x the mass).
+
 ## SFX
 
 | Cue (`Audio.play`) | Files | Plays when | Sounds like | Trim dB |
@@ -28,15 +35,15 @@ follows the sound slider). Music ducks under `impact_heavy` (-5 dB), `impact_hug
 | `zap_freeze` | sfx/zap_freeze_1..3.ogg | freeze gun fires | freeze gun: ice crack, fizz, tinkle | 0 |
 | `zap_glue` | sfx/zap_glue_1..3.ogg | glue gun fires (second pick) | glue gun: wet squelch + blop | 0 |
 | `zap_magnet` | sfx/zap_magnet_1..3.ogg | magnet gun fires | magnet gun: short electric buzz + crackles, a zip at the end | 0 |
-| `grow` | sfx/grow_1..3.ogg | size step up (`Zapper._size_step`, partner grow) | rising boing + xylophone up | 0 |
-| `shrink` | sfx/shrink_1..3.ogg | size step down | falling boing + xylophone down | 0 |
+| `grow` | sfx/grow_1..3.ogg | size step up (`Zapper._size_step`, pitched `Audio.size_pitch(target_scale)`: a tiny thing boings high; partner grow) | rising boing + xylophone up | 0 |
+| `shrink` | sfx/shrink_1..3.ogg | size step down (pitched by the new size, like `grow`) | falling boing + xylophone down | 0 |
 | `grab` | sfx/grab_1..2.ogg | gravity grab catches | gravity grab: hum up, little bell 'lock' | 0 |
 | `throw` | sfx/throw_1..3.ogg | flick throw | throw: whoosh with a faint rising whistle | 0 |
 | `drop` | sfx/drop_1..2.ogg | let go without a flick | let go: falling blip + plup | -2 |
-| `impact_light` | sfx/impact_light_1..3.ogg | object lands, volume mass < 1 (`PhysicsObject._on_landed`, pitch 1/sqrt(scale), louder when big) | light landing: wood bonk | -2 |
+| `impact_light` | sfx/impact_light_1..3.ogg | object lands, volume mass < 1 (`PhysicsObject._on_landed` → `Audio.impact_band(mass)`, pitch `Audio.size_pitch(scale)`, up to +1.5 dB when big, down to -9 dB when tiny) | light landing: wood bonk | -2 |
 | `impact_medium` | sfx/impact_medium_1..3.ogg | lands, mass 1..8 | medium landing: thud + knock | -1 |
-| `impact_heavy` | sfx/impact_heavy_1..3.ogg | lands, mass 8..60 (ducks music, Jeff delights) | heavy landing: boom + junk bouncing | 0 |
-| `impact_huge` | sfx/impact_huge_1..2.ogg | lands, mass 60+ (ducks music, Jeff delights) | huge landing: cartoon crash, clattering cans, a boing, stars | 0 |
+| `impact_heavy` | sfx/impact_heavy_1..3.ogg | lands, mass 8..60 (ducks music, Jeff delights) | heavy landing: boom + junk bouncing | -2.5 |
+| `impact_huge` | sfx/impact_huge_1..2.ogg | lands, mass 60+ (ducks music, Jeff delights) | huge landing: cartoon crash, clattering cans, a boing, stars | -3.5 |
 | `splash` | sfx/splash_1..3.ogg | object hits the pond | pond: sploosh + bubbles + droplets | 0 |
 | `card_view` | sfx/card_view_1..2.ogg | a player looks at the fence card | goal card: page flip + soft marimba tick | 0 |
 | `card_done` | sfx/card_done_1..2.ogg | card completed (`GoalDeck.complete`; also brightens the music 10 s) | card done: two fireworks, bell run, crowd 'yaaay' + claps | 0 |
@@ -74,7 +81,8 @@ follows the sound slider). Music ducks under `impact_heavy` (-5 dB), `impact_hug
 
 ## Object voices
 
-`PhysicsObject.speak(kind)` calls `Audio.voice(ObjectData.voice_cue(), kind, self, 1 / sqrt(scale))`:
+`PhysicsObject.speak(kind)` calls `Audio.voice(ObjectData.voice_cue(), kind, self, Audio.size_pitch(scale))`
+(1 / sqrt(scale), clamped 0.5..2):
 it plays `voice_<id>_<kind>.ogg`, else `voice_<id>_react.ogg`, else `voice_<id>` (synth beep).
 Pitch follows size (a giant cow moos low, a tiny one squeaks). Caps: one voice per object per
 0.5 s (`Audio.VOICE_GAP`), at most 4 object voices at once (`MAX_OBJECT_VOICES`).

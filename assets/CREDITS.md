@@ -32,7 +32,7 @@ per-file list and what each sounds like is in `assets/audio/CUES.md`.
 | File | Source / tool | Prompt or notes | License |
 | --- | --- | --- | --- |
 | `audio/sfx/zap_*.ogg`, `grow_*`, `shrink_*`, `grab_*`, `throw_*`, `drop_*` (34 files) | `scripts/audio/make_cues.py` | Gun zaps (boing, hum, rubber twang, squeak, ice crack, squelch, electric buzz), size steps, grab and throw | Project's own |
-| `audio/sfx/impact_*.ogg`, `splash_*` (14 files) | `scripts/audio/make_cues.py` | Four landing bands (bonk to cartoon crash), pond splashes | Project's own |
+| `audio/sfx/impact_*.ogg`, `splash_*` (14 files) | `scripts/audio/make_cues.py` | Four landing bands (bonk to cartoon crash; heavy and huge regenerated 2026-11-10 at -2.5 / -3.5 dB trim), pond splashes | Project's own |
 | `audio/sfx/card_*.ogg`, `reset_*`, `wheel_move_*`, `gun_cycle` (11 files) | `scripts/audio/make_cues.py` | Page flip, fireworks + synth crowd cheer, raspberry, whoosh + bell, clicks | Project's own |
 | `audio/sfx/` small action, partner and menu cues (sparkle, nope, boing, squelch, crack, jump, land, action, recall, snort, snore, unglue, glue_pick, glue, solo_*, player_join, round_*, pause, ui_confirm; 31 files) | `scripts/audio/make_cues.py` | Marimba / glockenspiel / whistle / boing cues | Project's own |
 | `audio/sfx/bark_*.ogg` (13 files) | `scripts/audio/make_cues.py` | Generic wordless cartoon voices (formant synth), the fallback when a character has no own voice; not any character's voice | Project's own |
