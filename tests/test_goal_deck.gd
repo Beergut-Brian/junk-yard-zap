@@ -15,8 +15,20 @@ class Hand extends Node3D:
 		return global_position
 
 
+## The fragility audit (tests/goal_audit.sh) reruns this suite with GOAL_HZ = physics ticks per second
+## and GOAL_JITTER = metres added to the x of every put-down point. Both unset: the project's own.
+var jitter := float(OS.get_environment("GOAL_JITTER")) if OS.has_environment("GOAL_JITTER") else 0.0
+var _hz := Engine.physics_ticks_per_second
+
+
 func before() -> void:
 	Save.profile = "gdunit"
+	if OS.has_environment("GOAL_HZ"):
+		Engine.physics_ticks_per_second = int(OS.get_environment("GOAL_HZ"))
+
+
+func after() -> void:
+	Engine.physics_ticks_per_second = _hz
 
 
 func before_test() -> void:
@@ -34,9 +46,33 @@ func after_test() -> void:
 	Players.reset()
 
 
+## Wait `frames` physics ticks of a 60 Hz yard: the same simulated time at any physics rate (the audit
+## runs 30 and 120 Hz), and never wall-clock time, so a slow box waits exactly as long as a fast one.
 func step(frames: int) -> void:
-	for i in frames:
+	for i in ceili(frames * Engine.physics_ticks_per_second / 60.0):
 		await get_tree().physics_frame
+
+
+## Hold o until the gravity grab has stopped swinging it (bounded: 2 s of physics time). Letting go
+## of a ball that is still catching up with the hand rolls it off whatever it was set on.
+func calm(o: PhysicsObject) -> void:
+	var quiet := 0
+	for i in 120:
+		quiet = quiet + 1 if o.linear_velocity.length() < 0.15 else 0
+		if quiet >= 6:
+			return
+		await step(1)
+
+
+## Turn a held box to its nearest right angle (about the yard's depth axis) and stop it spinning: hands
+## set a crate down square. The 70 m carry from the scrap heap swings it to any angle (a crate arrived
+## at -65 degrees at 120 Hz, landed on an edge, and the next one slid off it), and a stack test that
+## builds on a tilted base proves the dice, not the card.
+func square(o: PhysicsObject) -> void:
+	var r := o.global_rotation
+	o.global_rotation = Vector3(0, 0, snappedf(r.z, PI / 2.0))
+	o.angular_velocity = Vector3.ZERO
+	await step(1)
 
 
 func level() -> YardLevel:
@@ -66,10 +102,10 @@ func top(l: YardLevel, id: StringName) -> void:
 
 
 func done(l: YardLevel, id: StringName, frames := 240) -> bool:
-	for i in frames:
+	for i in ceili(frames * Engine.physics_ticks_per_second / 60.0):
 		if l.deck.done.has(id):
 			return true
-		await step(1)
+		await get_tree().physics_frame
 	return l.deck.done.has(id)
 
 
@@ -79,17 +115,20 @@ func carry(o: PhysicsObject, path: Array) -> Hand:
 	world.add_child(h)
 	h.global_position = o.global_position
 	assert_object(Effects.grab(o, h, Color.WHITE)).is_not_null()
-	for p in path:
+	for i in path.size():
+		var p: Vector3 = path[i]
+		if i == path.size() - 1 and path.size() > 1:
+			p.x += jitter   # where it is put down (a one-point path is a straight lift, not an aim)
 		await move(h, p)
 		assert_float(o.global_position.distance_to(p)).override_failure_message(
 				"%s stuck at %s on the way to %s" % [o.key, o.global_position, p]).is_less(1.0)
 	return h
 
 
-func move(h: Hand, to: Vector3) -> void:
+func move(h: Hand, to: Vector3, speed := HAND_SPEED) -> void:
 	var dt := 1.0 / Engine.physics_ticks_per_second
 	while h.global_position.distance_to(to) > 0.01:
-		h.global_position = h.global_position.move_toward(to, HAND_SPEED * dt)
+		h.global_position = h.global_position.move_toward(to, speed * dt)
 		await step(1)
 	await step(20)
 
@@ -264,6 +303,62 @@ func test_touched_in_needs_the_last_touch_inside() -> void:
 	assert_bool(Goals.check(g, [o], mem)).is_false()
 
 
+func test_touched_in_forgives_an_arms_reach_past_the_edge() -> void:
+	world.add_child(YardStrip.new())
+	var o := box(Vector3(0, 0.5, 0))
+	await step(5)
+	var g := GoalData.new()
+	g.condition = GoalData.Condition.OBJECT_HEIGHT_BELOW
+	g.amount = 2.0
+	g.touched_in = &"barn_loft"
+	var mem := GoalMemory.new()
+	var edge: float = Goals.SPOTS[&"barn_loft"].end.x
+	for past: float in [0.1, 0.9]:       # held out over the tub from the loft's end
+		o.global_position = Vector3(edge + past, 5, 0)
+		mem.touch(o)
+		o.global_position = Vector3(0, 0.5, 0)
+		assert_bool(Goals.check(g, [o], mem)).override_failure_message("%.1f m past the loft" % past).is_true()
+	for at: Vector3 in [Vector3(edge + 1.5, 5, 0), Vector3(edge - 1.0, 1.5, 0)]:   # well off it; under it
+		o.global_position = at
+		mem.touch(o)
+		o.global_position = Vector3(0, 0.5, 0)
+		assert_bool(Goals.check(g, [o], mem)).override_failure_message("touched at %s" % at).is_false()
+
+
+## The third thing on a full tub rides above the rim (its middle is outside the tub's box): it still
+## counts, because it sits on what is in the tub. Beside the tub, or on the ground, does not.
+func test_a_heap_in_the_tub_counts_past_the_rim() -> void:
+	var l := level()
+	await step(5)
+	top(l, &"b2_three_in_tub")
+	var tub := l.object(&"bathtub")
+	var x := tub.global_position.x
+	var a := box(Vector3(x, 0.45, 0), Vector3.ONE * 0.6)
+	var b := box(Vector3(x, 1.06, 0), Vector3.ONE * 0.6)
+	var took: float = await settle([a, b, tub])
+	assert_float(took).is_greater(0.0)
+	await step(12)
+	assert_bool(l.deck.done.has(&"b2_three_in_tub")).is_false()            # two is not three
+	var beside := box(Vector3(x + 2.0, 0.3, 0), Vector3.ONE * 0.5)
+	await step(30)
+	assert_bool(l.deck.done.has(&"b2_three_in_tub")).is_false()            # the third is beside the tub
+	# A ball thrown across, skimming the top of the heap, is not in the tub: the deck keeps the first
+	# true read, so a one-check fly-by would finish the card with nothing new in the tub.
+	var card: GoalData = l.deck.cards[&"b2_three_in_tub"]
+	var fly := box(Vector3(x, Goals._top(b) + 0.27, 0), Vector3.ONE * 0.5)
+	fly.linear_velocity = Vector3(4, 0, 0)
+	assert_bool(Goals._sits_on(fly, b)).is_true()
+	assert_bool(Goals.check(card, [a, b, fly, tub])).override_failure_message("a fly-by counted").is_false()
+	fly.free()
+	var c := box(Vector3(x, Goals._top(b) + 0.27, 0), Vector3.ONE * 0.5)
+	took = await settle([a, b, c, tub])
+	assert_float(took).is_greater(0.0)
+	assert_bool(Goals._sits_on(c, b)).override_failure_message("the heap fell over: %s" % c.global_position).is_true()
+	assert_bool(tub.contains_point(c.global_position)).override_failure_message("c is not above the rim").is_false()
+	await expect_done(l, &"b2_three_in_tub", 30)
+	beside.free()
+
+
 func test_stack_height_counts_a_resting_column() -> void:
 	world.add_child(YardStrip.new())
 	var objs := []
@@ -281,6 +376,44 @@ func test_stack_height_counts_a_resting_column() -> void:
 	g.amount = 0.0
 	g.count = 4
 	assert_bool(Goals.check(g, objs)).is_false()          # the fourth is beside it, not on it
+
+
+## A crooked five-stack that stands must read as a stack on every physics tick, not only now and then:
+## bodies falling asleep and waking, or rocking a little after a nudge, must never make it flicker.
+func test_a_standing_stack_reads_done_on_every_tick() -> void:
+	world.add_child(YardStrip.new())
+	var objs := []
+	var y := 0.0
+	var sizes := [Vector3(1.2, 1.0, 1), Vector3(1.0, 0.8, 1), Vector3(1.0, 1.0, 1), Vector3(0.8, 0.6, 1), Vector3(0.6, 0.4, 1)]
+	for i in sizes.size():
+		var sz: Vector3 = sizes[i]
+		objs.append(box(Vector3((0.1 + jitter) if i % 2 else -0.1, y + sz.y * 0.5 + 0.02, 0), sz))
+		var took: float = await settle(objs)   # one at a time, each set on the one before at rest
+		assert_float(took).is_greater(0.0)
+		y = Goals._top(objs[i])
+	var g := GoalData.new()
+	g.condition = GoalData.Condition.STACK_HEIGHT
+	g.count = 5
+	var misses := 0
+	for i in 2 * Engine.physics_ticks_per_second:
+		await get_tree().physics_frame
+		misses += 0 if Goals.check(g, objs) else 1
+	assert_int(misses).override_failure_message("a resting stack read not-done on %d ticks" % misses).is_equal(0)
+	(objs[4] as PhysicsObject).apply_central_impulse(Vector3(0.25, 0, 0))   # a bump that rocks, not topples
+	(objs[2] as PhysicsObject).sleeping = false
+	for i in 2 * Engine.physics_ticks_per_second:
+		await get_tree().physics_frame
+		misses += 0 if Goals.check(g, objs) else 1
+	assert_int(misses).override_failure_message("a nudged stack read not-done on %d ticks" % misses).is_equal(0)
+	var h := Hand.new()                 # held on top is not stacked; let go and it is, at once
+	world.add_child(h)
+	h.global_position = objs[4].global_position
+	Effects.grab(objs[4], h, Color.WHITE)
+	await step(12)
+	assert_bool(Goals.check(g, objs)).is_false()
+	drop(objs[4], h)
+	await step(2)
+	assert_bool(Goals.check(g, objs)).is_true()
 
 
 func test_all_of_and_count_and_group() -> void:
@@ -371,14 +504,17 @@ func test_b2_three_in_tub() -> void:
 	# Each thing gets its own place, the way you'd pack a tub: the toaster on the floor at the left
 	# end, the bucket on the toaster, then the ball at the right end. The tub is 1.76 m inside and
 	# 0.86 m deep, so the 0.9 m ball rides on the rims and rolls to a wall. Dropping all three on the
-	# centre made a pile that kicked one out or not depending on the CPU (CI failed, local passed);
-	# this packing completes with every drop point moved 12 cm either way, at 30, 60 and 120 Hz physics.
+	# centre made a pile that kicked one out or not depending on the CPU (CI failed, local passed).
+	# Packing alone still failed in the audit (30 Hz, drops 12 cm right, all cores busy; normal and
+	# niced) though it passed run on its own. Now the deck checks in physics time and a resting heap on what is in the tub
+	# counts (Goals._inside, test_a_heap_in_the_tub_counts_past_the_rim): green at every audited rate,
+	# jitter and load (handoff/REPORT.md).
 	for k: Array in [[&"toaster", -0.5, 1.0], [&"bucket", -0.5, 1.4], [&"ball", 0.45, 1.3]]:
 		var o := l.object(k[0])
 		var over := tub.global_position + Vector3(k[1], 3, 0)
 		var h := await carry(o, [o.global_position + Vector3(0, 3, 0), over, tub.global_position + Vector3(k[1], k[2], 0)])
 		drop(o, h)
-		await step(30)
+		await step(90)   # let it settle (the ball bounces) before the next lands on it
 	await expect_done(l, &"b2_three_in_tub")
 
 
@@ -466,12 +602,19 @@ func test_b2_stack_three() -> void:
 	top(l, &"b2_stack_three")
 	var y := 4.2
 	var x := 24.1
+	var stacked: Array[PhysicsObject] = []
 	for k in [&"crate", &"crate_2", &"fridge"]:   # up on the loft's free end: the loft is a head start
 		var o := l.object(k)
 		var hy := y + o.half_extent_along(Vector3.UP) + 0.1
-		var h := await carry(o, [Vector3(o.global_position.x, 10, 0), Vector3(x, 10, 0), Vector3(x, hy, 0)])
+		var h := await carry(o, [Vector3(o.global_position.x, 10, 0), Vector3(x, 10, 0), Vector3(x, hy + 0.6, 0)])
+		await square(o)
+		hy = y + o.half_extent_along(Vector3.UP) + 0.1
+		await move(h, Vector3(x + jitter, hy, 0), 1.5)   # set down gently, as in the five-stack
+		await calm(o)
 		drop(o, h)
-		await step(40)
+		stacked.append(o)
+		var took: float = await settle(stacked)   # was a fixed 40 frames: at 120 Hz the next was aimed at a sliding crate
+		assert_float(took).override_failure_message("stack still moving 4 s after %s landed" % k).is_greater(0.0)
 		y = o.global_position.y + o.half_extent_along(Vector3.UP)
 		x = o.global_position.x
 	await expect_done(l, &"b2_stack_three", 240)
@@ -514,18 +657,60 @@ func test_b3_cow_over_tower() -> void:
 	await expect_done(l, &"b3_cow_over_tower", 600)
 
 
+## Wait, in simulated physics time, until every object in objs has stayed under SETTLE_SPEED for
+## SETTLE_HOLD seconds; give up after max_s. Returns the simulated seconds it took, or -1.0.
+## Counting physics ticks (not frames or wall time) makes it the same on a fast desk and a slow CI box.
+const SETTLE_SPEED := 0.15   # m/s over the g * dt a resting body still reads (0.16 at 60 Hz)
+const SETTLE_SPIN := 0.3     # rad/s; a crate rocking on an edge barely moves its centre
+const SETTLE_HOLD := 0.25    # s of stillness in a row
+
+
+func settle(objs: Array, max_s := 4.0) -> float:
+	var t := 0.0
+	var still := 0.0
+	while t < max_s:
+		await get_tree().physics_frame
+		var dt := get_physics_process_delta_time()
+		t += dt
+		var fast := SETTLE_SPEED + float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)) * dt
+		var moving := false
+		for o: PhysicsObject in objs:
+			moving = moving or o.linear_velocity.length() >= fast or o.angular_velocity.length() >= SETTLE_SPIN
+		still = 0.0 if moving else still + dt
+		if still >= SETTLE_HOLD:
+			return t
+	return -1.0
+
+
 func test_b3_stack_five() -> void:
 	var l := level()
 	await step(5)
 	top(l, &"b3_stack_five")
+	# Each thing is set down 10 cm over the one before and let go; the next is aimed at where that one
+	# came to rest. This used to fail on CI and pass locally: the base went down at x -42.5, half on the
+	# garden gnome (-42.9), the bottom crate was lifted up through crate_2 sitting on it (tumbling it),
+	# and each next drop was aimed after a fixed 40 frames while the top was still sliding (0.7 to 5 m/s).
+	# Now: clear ground between the cone and the watering can, crate_2 off the top first, and each drop
+	# waits in physics time until the whole stack is still. It completes with every aim moved 6 or 12 cm
+	# either way (adding up the stack), and at 30, 60 and 120 Hz physics.
 	var y := 0.0
-	var x := -42.5
-	for k in [&"washing_machine", &"crate", &"crate_2", &"tv", &"toolbox"]:
+	var x := -45.4   # clear ground: traffic cone at -44.0, watering can at -46.7
+	var placed: Array[PhysicsObject] = []
+	for k in [&"washing_machine", &"crate_2", &"crate", &"tv", &"toolbox"]:
 		var o := l.object(k)
 		var hy := y + o.half_extent_along(Vector3.UP) + 0.1
-		var h := await carry(o, [Vector3(o.global_position.x, 8, 0), Vector3(x, 8, 0), Vector3(x, hy, 0)])
+		var h := await carry(o, [Vector3(o.global_position.x, 8, 0), Vector3(x, 8, 0), Vector3(x, hy + 0.6, 0)])
+		await square(o)
+		hy = y + o.half_extent_along(Vector3.UP) + 0.1
+		await move(h, Vector3(x + jitter, hy, 0), 1.5)   # the last bit gently, as hands set a thing down
+		await calm(o)
 		drop(o, h)
-		await step(40)
+		placed.append(o)
+		var took: float = await settle(placed)
+		assert_float(took).override_failure_message("stack still moving 4 s after %s landed" % k).is_greater(0.0)
+		if placed.size() > 1:
+			assert_bool(Goals._sits_on(o, placed[-2])).override_failure_message(
+					"%s at %s is not on %s at %s" % [k, o.global_position, placed[-2].key, placed[-2].global_position]).is_true()
 		y = o.global_position.y + o.half_extent_along(Vector3.UP)
 		x = o.global_position.x
 	await expect_done(l, &"b3_stack_five", 240)
@@ -560,23 +745,40 @@ func test_b3_raft() -> void:
 	await expect_done(l, &"b3_raft", 600)
 
 
+## Set the ball down on the loft and wait until it lies still there with the card's first step taken.
+## It used to be let go while the grab was still swinging it (1 m/s): it rolled for the loft's edge and
+## went over by itself at 30 Hz or with the aim 6 cm off, which rightly finishes the card (or sends the
+## ball home under the loft) and proved nothing about the chain.
+func rest_ball_on_loft(l: YardLevel, ball: PhysicsObject) -> void:
+	# The loft ends at x 28.5 and the old spot (28.0) was squeezed between a hen (27.5) and that edge.
+	# The hen at the end steps down first; the ball then has two clear metres past the egg (26.3).
+	var hen := l.object(&"chicken_3")
+	var h := await carry(hen, [hen.global_position + Vector3(0, 2.6, 0), Vector3(30.2, 7, 0)])
+	drop(hen, h)
+	h = await carry(ball, [ball.global_position + Vector3(0, 7, 0), Vector3(27.4, 7, 0), Vector3(27.4, 5.3, 0)])
+	await move(h, Vector3(27.4 + jitter, 4.7, 0), 1.5)
+	await calm(ball)
+	drop(ball, h)
+	var took: float = await settle([ball])
+	assert_float(took).override_failure_message("ball still rolling: %s" % ball.global_position).is_greater(0.0)
+	await step(12)   # two deck checks
+	assert_bool(Goals.spot(&"barn_loft").has_point(ball.global_position)).override_failure_message(
+			"ball left the loft: %s" % ball.global_position).is_true()
+	assert_int(l.deck.memory.stage(ball)).override_failure_message("ball never rested on the loft: %s" % ball.global_position).is_equal(1)
+	assert_bool(l.deck.done.has(&"b3_chain_ball")).is_false()
+
+
 func test_b3_chain_ball() -> void:
 	var l := level()
 	await step(5)
 	top(l, &"b3_chain_ball")
 	var ball := l.object(&"ball")
-	var h := await carry(ball, [ball.global_position + Vector3(0, 7, 0), Vector3(28.0, 7, 0), Vector3(28.0, 4.7, 0)])
-	drop(ball, h)   # set down gently, so it rests up there
-	for i in 120:
-		if l.deck.memory.stage(ball) == 1:
-			break
-		await step(1)
-	assert_int(l.deck.memory.stage(ball)).override_failure_message("ball never rested on the loft: %s" % ball.global_position).is_equal(1)
-	assert_bool(l.deck.done.has(&"b3_chain_ball")).is_false()
-	# Nobody touches the ball: a hen thrown along the loft knocks into the egg, the other hen, the ball.
+	await rest_ball_on_loft(l, ball)
+	# Nobody touches the ball: the bale knocks into the hen, the hen into the egg, the egg into the ball.
 	var hay := l.object(&"hay")   # a hay bale shoved along the loft: hens, egg and ball go over
-	h = await carry(hay, [Vector3(15.2, 7, 0), Vector3(23.9, 7, 0), Vector3(23.9, 4.9, 0)])
-	drop(hay, h, Vector3(14, 0.5, 0))
+	var h := await carry(hay, [Vector3(15.2, 7, 0), Vector3(23.9, 7, 0), Vector3(23.9, 4.9, 0)])
+	assert_bool(l.deck.done.has(&"b3_chain_ball")).is_false()   # still up there until the bale arrives
+	drop(hay, h, Vector3(18, 0.5, 0))   # hard enough to carry hen, egg and ball over at any rate
 	await expect_done(l, &"b3_chain_ball", 300)
 
 
@@ -585,10 +787,8 @@ func test_b3_chain_ball_does_not_count_a_zapped_ball() -> void:
 	await step(5)
 	top(l, &"b3_chain_ball")
 	var ball := l.object(&"ball")
-	var h := await carry(ball, [ball.global_position + Vector3(0, 7, 0), Vector3(28.0, 7, 0), Vector3(28.0, 5.0, 0)])
-	drop(ball, h)
-	await step(60)
-	h = await carry(ball, [Vector3(28.0, 6.0, 0), Vector3(30.5, 6.0, 0)])   # just carry it off the edge
+	await rest_ball_on_loft(l, ball)
+	var h := await carry(ball, [Vector3(ball.global_position.x, 6.0, 0), Vector3(30.5, 6.0, 0)])   # just carry it off the edge
 	drop(ball, h)
 	var ok: bool = await done(l, &"b3_chain_ball", 120)
 	assert_bool(ok).is_false()

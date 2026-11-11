@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_obj")
 id = &"washing_machine"
+has_face = false
 shape = 0
 size = Vector3(0.85, 1.0, 0.8)
 mass = 8.0

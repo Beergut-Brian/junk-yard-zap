@@ -59,6 +59,7 @@ func after_test() -> void:
 	Game.demo = false
 	Game._set_state(Game.State.LOBBY)
 	get_tree().paused = false
+	Yard.reset_world()   # main.tscn set the yard's bounds, gate and pond water: don't hand them on
 
 
 func _on_quit() -> void:
@@ -361,7 +362,7 @@ func test_pause_door_asks_then_quits() -> void:
 	Save.set_value("menus_quit", 1)
 	Game.pause()
 	var pm := _pause_menu()
-	for i in 4:
+	for i in 5:
 		pm.move_focus(1)   # the last one bumps the end, stays on the door
 	assert_int(pm.focus).is_equal(PauseMenu.Choice.DOOR)
 	pm.press()

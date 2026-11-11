@@ -1,7 +1,7 @@
 ## A player (P1 green, P2 red) as whoever they picked in the lobby (Roster; Jeff and Chuck by
 ## default) on the locked Z plane with a belt of guns (GAME.md "Camera and
 ## controls"). Left stick moves and aims, A fires (hold for grow/shrink steps and gravity grab),
-## B jumps (low, floaty, forgiving), RB/LB cycle the belt, right stick also aims.
+## B jumps (tap = short hop, hold = higher up to a cap; floaty, forgiving), Select held 1.5 s resets the yard, RB/LB cycle the belt, right stick also aims.
 ## Zapping the partner does something harmless and funny for at most PARTNER_TIME seconds.
 ## P2 can start asleep in the tire pile; any press of his pad wakes him with a snort.
 class_name Zapper
@@ -15,11 +15,9 @@ signal partner_zapped(player: int, gun: StringName)
 const GROUP := &"zappers"
 const SPEED := 6.0
 const ACCEL := 40.0
-const JUMP := 7.5
-const RISE_GRAVITY := 0.6      # floaty on the way up
-const FALL_GRAVITY := 0.9
-const COYOTE := 0.15
-const JUMP_BUFFER := 0.15
+const JUMP_DATA := "res://data/players/jump.tres"   # tap = hop, hold = higher (JumpTuning)
+## Hold Select this long (real play seconds) to reset the yard; a tap does nothing.
+const RESET_HOLD := 1.5
 const PARTNER_TIME := 1.0      # kid-design: never hinders for more than a second
 const SIZE_REPEAT := 0.45
 const FLICK_WINDOW := 0.18
@@ -33,7 +31,10 @@ const GENERIC_BARK := "bark"
 ## Roster id of the Jarling this player is. Empty (the default): Roster.pick(player), read once at
 ## spawn; main.gd respawns everyone on the way back from the lobby, so a new pick shows next round.
 @export var character := ""
+## Variable jump numbers (data/players/jump.tres when empty).
+@export var jump_tuning: JumpTuning
 ## Joined mid-session or not joined yet: asleep in the tire pile until his pad presses something.
+const BEAM_SHADER := preload("res://scripts/fx/beam.gdshader")
 var asleep := false
 ## Template name for the same thing (tests/test_lobby.gd, main.gd).
 var waiting: bool:
@@ -48,7 +49,8 @@ var target: Node3D
 var glue_first: PhysicsObject
 var held: PhysicsObject
 ## Tests and the demo bot drive the player through this instead of the InputMap:
-## {"move": Vector2, "aim": Vector2, "action": bool, "jump": bool, "next": bool, "prev": bool}
+## {"move": Vector2, "aim": Vector2, "action": bool, "jump": bool, "next": bool, "prev": bool,
+##  "reset": bool (Select), "start": bool (this player's Start)}
 var input_override: Dictionary = {}
 ## While > 0 the player is a statue (partner freeze) and ignores input.
 var statue_left := 0.0
@@ -57,7 +59,7 @@ var rig: JarlingRig
 ## Barks, reaction poses and idle bits (scripts/players/reactions.gd).
 var reactions: Reactions
 var _beam: MeshInstance3D
-var _beam_mat: StandardMaterial3D
+var _beam_mat: ShaderMaterial   # scripts/fx/beam.gdshader: a pattern per gun (PT10-2)
 var _marker: MeshInstance3D
 var _zzz: CPUParticles3D
 var _partner_look: EffectLook
@@ -66,6 +68,12 @@ var _jump_buffer := 0.0
 var _was_on_floor := true
 var _action_was := false
 var _jump_was := false
+var _jump_held := false      # B still down since take-off: the rise isn't cut yet
+var _jump_cut := false       # B came up during this rise: the heavier released_rise_gravity
+## Select hold: seconds held, and "spent" (Start, the solo swap, a pause or a finished reset
+## happened on this press: nothing more until Select comes up).
+var reset_held := 0.0
+var _reset_spent := false
 var _next_was := false
 var _prev_was := false
 var _size_latched: PhysicsObject
@@ -129,6 +137,9 @@ func _ready() -> void:
 	reactions.zapper = self
 	add_child(reactions)
 	Audio.big_impact.connect(_on_big_impact)
+	if jump_tuning == null:
+		jump_tuning = load(JUMP_DATA) as JumpTuning
+	Game.state_changed.connect(_on_game_state)
 	if guns.is_empty():
 		guns = load_guns()
 	set_gun(gun_index, false)
@@ -161,7 +172,8 @@ func set_gun(i: int, sound := true) -> void:
 	_size_latched = null
 	glue_first = null
 	gun_index = posmod(i, guns.size())
-	_beam_mat.albedo_color = Color(gun().beam_color, 0.07)
+	_beam_mat.set_shader_parameter(&"color", gun().beam_color)
+	_beam_mat.set_shader_parameter(&"pattern", int(gun().kind))
 	rig.show_gun(gun().effect_id())
 	if sound:
 		Audio.play("wheel_move")
@@ -185,7 +197,7 @@ func wake() -> void:
 	if not asleep:
 		return
 	set_asleep(false)
-	velocity.y = JUMP * 0.8
+	velocity.y = jump_tuning.takeoff_speed * 0.8
 	Audio.play("snort", global_position)
 	Fx.burst(get_tree(), global_position + Vector3(0, 0.8, 0), Color(0.9, 0.9, 0.8, 0.8), 14, 0.8, 0.5)
 	rig.set_expression("surprised")
@@ -223,6 +235,8 @@ func _read() -> Dictionary:
 		"jump": Input.is_action_pressed(Players.action(player, "jump")),
 		"next": Input.is_action_pressed(Players.action(player, "gun_next")),
 		"prev": Input.is_action_pressed(Players.action(player, "gun_prev")),
+		"reset": Input.is_action_pressed(Players.action(player, "reset")),
+		"start": Players.start_held(player),
 	}
 
 
@@ -240,6 +254,7 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 	_tick_partner(delta)
+	_tick_reset(inp, delta, live)
 	if statue_left > 0.0 or not live:
 		inp = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
 	var mv: Vector2 = inp.get("move", Vector2.ZERO)
@@ -254,18 +269,28 @@ func _physics_process(delta: float) -> void:
 	if absf(mv.x) > 0.2:
 		facing = signf(mv.x)
 	var on_floor := is_on_floor()
-	_coyote = COYOTE if on_floor else _coyote - delta
+	var jt := jump_tuning
+	_coyote = jt.coyote if on_floor else _coyote - delta
 	var jump: bool = inp.get("jump", false)
 	if jump and not _jump_was:
-		_jump_buffer = JUMP_BUFFER
+		_jump_buffer = jt.buffer
 	_jump_was = jump
 	_jump_buffer -= delta
 	if _jump_buffer > 0.0 and _coyote > 0.0:
-		velocity.y = JUMP
+		velocity.y = jt.takeoff_speed
 		_jump_buffer = 0.0
 		_coyote = 0.0
+		_jump_held = true
+		_jump_cut = false
 		Audio.play("jump", global_position)
 		Fx.burst(get_tree(), global_position, Color(0.8, 0.7, 0.55, 0.7), 8, 0.4, 0.4)
+	if not jump and _jump_held:
+		# Let go while rising: the rise is cut, so a tap is a short hop (a buffered jump whose
+		# B already came up is a hop too). Holding to the top is the full, capped jump.
+		_jump_held = false
+		_jump_cut = true
+		if velocity.y > jt.cut_speed:
+			velocity.y = jt.cut_speed
 	move_and_slide()
 	if on_floor and not _was_on_floor:
 		Audio.play("land", global_position)
@@ -319,8 +344,56 @@ func _gravity(delta: float) -> void:
 		return
 	if not is_on_floor():
 		var rising := velocity.dot(up_direction) > 0.0
-		velocity += g * (RISE_GRAVITY if rising else FALL_GRAVITY) * delta
+		var jt := jump_tuning
+		var k := (jt.released_rise_gravity if _jump_cut else jt.rise_gravity) if rising else jt.fall_gravity
+		if not rising:
+			_jump_held = false
+			_jump_cut = false
+		velocity += g * k * delta
 		velocity.y = maxf(velocity.y, -16.0)
+
+
+# ------------------------------------------------------------------------------------- reset yard
+
+## Hold Select RESET_HOLD s: the yard resets (whoosh and bell). A tap fills a bit of the ring and
+## drains; nothing happens. Start (solo's Select + Start, either order), the solo swap
+## (LB + RB + Select), a pause or a statue spend the press: no reset until Select comes up.
+func _tick_reset(inp: Dictionary, delta: float, live: bool) -> void:
+	var down: bool = inp.get("reset", false)
+	if not down:
+		_reset_spent = false
+		reset_held = 0.0
+		return
+	var blocked: bool = inp.get("start", false) or inp.get("next", false) or inp.get("prev", false) \
+			or not live or statue_left > 0.0
+	if blocked:
+		_reset_spent = true
+	if _reset_spent:
+		reset_held = 0.0
+		return
+	if reset_held == 0.0:
+		Audio.play("reset_hold", global_position)
+		Fx.ring(get_tree(), center(), Players.COLOR[player], 0.6)
+	reset_held += delta
+	if reset_held < RESET_HOLD:
+		return
+	reset_held = 0.0
+	_reset_spent = true
+	Players.spend_select(player)   # the same Select press can't start solo either
+	var level := YardLevel.find(self)
+	if level:
+		level.reset_yard(self)
+
+
+## 0..1 of the Select hold, for the ring by the player (hud.gd).
+func reset_progress() -> float:
+	return clampf(reset_held / RESET_HOLD, 0.0, 1.0)
+
+
+## Coming back from pause (Start, or solo's Select + Start): a Select still down is spent.
+func _on_game_state(_from: int, _to: int) -> void:
+	reset_held = 0.0
+	_reset_spent = true
 
 
 # ------------------------------------------------------------------------------------------- guns
@@ -408,7 +481,7 @@ func _press() -> void:
 				o.speak()
 				o.last_touch = &"gun"
 	if changed:
-		Fx.ring(get_tree(), target.global_position, g.beam_color, (target as PhysicsObject).radius() if target is PhysicsObject else 1.0)
+		GunHits.play(get_tree(), g.kind, target.global_position, g.beam_color, (target as PhysicsObject).radius() if target is PhysicsObject else 1.0)
 	# Chuck narrates his own zaps and blames the partner when one is refused (GAME.md "Audio");
 	# at most one bark per zap, through the gate.
 	reactions.own_zap(changed, _refused)
@@ -432,7 +505,9 @@ func _size_step(dir: int) -> bool:
 	if not is_instance_valid(o):
 		return false
 	var ok := Effects.zap(&"grow" if dir > 0 else &"shrink", o)
-	Audio.play(("grow" if dir > 0 else "shrink") if ok else "nope", o.global_position)
+	# The boing is pitched by the new size: a tiny thing boings high, a giant one low.
+	Audio.play(("grow" if dir > 0 else "shrink") if ok else "nope", o.global_position,
+		Audio.size_pitch(o.target_scale) if ok else 1.0)
 	_refused = not ok
 	if ok:
 		o.speak()
@@ -513,6 +588,8 @@ func _fire_glue() -> bool:
 	if glue_first == null or not is_instance_valid(glue_first) or glue_first == obj:
 		glue_first = obj
 		Audio.play("glue_pick", obj.global_position)
+		obj.speak()   # the first pick reacts too: every gun gets a voice and a face (Y-12)
+		obj.react_look(ObjectFace.Mood.WIDE, 0.6)
 		Fx.burst(get_tree(), obj.global_position, gun().beam_color, 10, 0.5, 0.4)
 		return false
 	var ok := Effects.glue(glue_first, obj) != null
@@ -548,7 +625,7 @@ func partner_zap(g: GunData, from: Zapper) -> void:
 			_float_up = PARTNER_TIME * 0.6
 			fake.append(Effects.Grab.new(null, Players.COLOR[from.player]))
 		GunData.Kind.BOUNCY:
-			velocity.y = JUMP * 1.4
+			velocity.y = jump_tuning.takeoff_speed * 1.4
 			fake.append(Effects.Bouncy.new())
 			Audio.play("boing", global_position)
 		GunData.Kind.BALLOON:
@@ -632,12 +709,8 @@ func _on_big_impact(at: Vector3, band: String) -> void:
 func _build_beam() -> void:
 	_beam = MeshInstance3D.new()
 	_beam.mesh = _cone_mesh()
-	_beam_mat = StandardMaterial3D.new()
-	_beam_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_beam_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_beam_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_beam_mat.no_depth_test = true
-	_beam_mat.albedo_color = Color(1, 1, 1, 0.1)
+	_beam_mat = ShaderMaterial.new()
+	_beam_mat.shader = BEAM_SHADER
 	_beam.material_override = _beam_mat
 	_beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_beam.position = Vector3(0, HEIGHT * 0.6, 0.2)
@@ -678,7 +751,7 @@ static func marker_point(t: Node3D) -> Vector3:
 
 func _flash() -> void:
 	var tw := create_tween()
-	tw.tween_property(_beam_mat, "albedo_color:a", 0.07, 0.3).from(0.3)
+	tw.tween_method(func(v: float) -> void: _beam_mat.set_shader_parameter(&"flash", v), 1.0, 0.0, 0.35)
 
 
 ## A flat wedge on the play plane showing the aim cone.
@@ -690,7 +763,10 @@ func _cone_mesh() -> ArrayMesh:
 	for i in n:
 		var a0 := -HALF + 2.0 * HALF * i / n
 		var a1 := -HALF + 2.0 * HALF * (i + 1) / n
+		st.set_uv(Vector2(0.0, (i + 0.5) / n))
 		st.add_vertex(Vector3.ZERO)
+		st.set_uv(Vector2(1.0, float(i) / n))
 		st.add_vertex(Vector3(cos(a0), sin(a0), 0) * BEAM_LEN)
+		st.set_uv(Vector2(1.0, float(i + 1) / n))
 		st.add_vertex(Vector3(cos(a1), sin(a1), 0) * BEAM_LEN)
 	return st.commit()

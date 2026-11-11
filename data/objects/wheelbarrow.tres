@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_vvf38")
 id = &"wheelbarrow"
+has_face = false
 shape = 3
 size = Vector3(1.4, 0.55, 0.8)
 mass = 2.0

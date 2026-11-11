@@ -29,6 +29,18 @@ const CARDS: Array[StringName] = [
 	&"b3_piano_pipe_pond", &"b3_raft", &"b3_chain_ball",
 ]
 
+## PT10-3: the gun that does each pictured card (its token sits in the card's header).
+## &"" = no gun (the chain reaction: knock it with things, never a zap).
+const GUN_FOR := {
+	&"b1_tiny_car": &"size", &"b1_tiny_tractor": &"size", &"b1_magnet_fridge": &"magnet",
+	&"b1_pig_in_pond": &"grab", &"b1_sheep_to_gate": &"grab", &"b2_tub_from_loft": &"grab",
+	&"b2_three_in_tub": &"grab", &"b2_chicken_stairs": &"freeze", &"b2_duck_on_tower": &"grab",
+	&"b2_egg_off_loft": &"grab", &"b2_stack_three": &"grab", &"b2_car_over_fence": &"grab",
+	&"b3_tractor_loft": &"grab", &"b3_fast_duck": &"bouncy", &"b3_cow_over_tower": &"balloon",
+	&"b3_stack_five": &"grab", &"b3_cannonball_pond": &"grab", &"b3_piano_pipe_pond": &"size",
+	&"b3_raft": &"glue", &"b3_chain_ball": &"",
+}
+
 static var _ci: CanvasItem
 static var _m := Vector2.ZERO
 static var _s := 1.0
@@ -132,8 +144,143 @@ static func draw(ci: CanvasItem, id: StringName, band: int, r: Rect2, guns: Dict
 			thing(&"ball", P(1.6, 1.9), 0.4)
 			arrow(P(1.6, -0.4), P(1.6, 1.2))
 			_no_gun(P(-1.4, 1.2))
-	for i in band:
-		_ci.draw_circle(r.position + Vector2(r.size.x * (0.06 + i * 0.1), r.size.y * 0.05), r.size.x * 0.035, BAND)
+
+
+## The gun id (or effect id) whose token goes in g's header.
+static func gun_for(g: GoalData) -> StringName:
+	if g == null:
+		return &""
+	if GUN_FOR.has(g.id):
+		return GUN_FOR[g.id]
+	match g.condition:
+		GoalData.Condition.OBJECT_SCALE_AT_LEAST, GoalData.Condition.OBJECT_SCALE_AT_MOST:
+			return &"size"
+		GoalData.Condition.OBJECT_HAS_EFFECT:
+			return &"size" if g.effect == &"grow" or g.effect == &"shrink" else g.effect
+		GoalData.Condition.GLUED_PAIR:
+			return &"glue"
+		GoalData.Condition.OBJECT_IN_ZONE, GoalData.Condition.STACK_HEIGHT, GoalData.Condition.OBJECT_HEIGHT_ABOVE:
+			return &"grab"
+	return &""
+
+
+## True when draw_goal can draw g from its condition alone (no baked picture needed).
+static func handles(g: GoalData) -> bool:
+	return g.condition in [GoalData.Condition.OBJECT_SCALE_AT_LEAST, GoalData.Condition.OBJECT_SCALE_AT_MOST,
+			GoalData.Condition.OBJECT_HAS_EFFECT, GoalData.Condition.OBJECT_IN_ZONE, GoalData.Condition.GLUED_PAIR]
+
+
+## PT10-3: any card's picture, live and crisp at any size: the hand-drawn idea for the pictured
+## cards, else the objects and the result from its condition (cow + car = joined, small -> big, ...).
+static func draw_goal(ci: CanvasItem, g: GoalData, r: Rect2, guns: Dictionary) -> void:
+	if CARDS.has(g.id):
+		draw(ci, g.id, g.band, r, guns)
+		return
+	_ci = ci
+	_m = r.get_center()
+	_s = r.size.x * 0.16
+	_guns = guns
+	var subj := _who(g.subject, g, 0)
+	match g.condition:
+		GoalData.Condition.OBJECT_SCALE_AT_LEAST:
+			thing(subj, P(-1.75, 1.0), 0.45)
+			arrow(P(-1.05, 0.75), P(-0.2, 0.75), 0.14)
+			thing(subj, P(1.15, 0.35), 1.15 if g.amount < 3.0 else 1.3)
+			_grow_marks(P(1.15, 0.35), 2.0)
+		GoalData.Condition.OBJECT_SCALE_AT_MOST:
+			_shrink(subj)
+		GoalData.Condition.OBJECT_HAS_EFFECT:
+			_effect(subj, g.effect)
+		GoalData.Condition.OBJECT_IN_ZONE:
+			_into(subj, g.other)
+		GoalData.Condition.GLUED_PAIR:
+			var b := _who(g.other, g, 1)
+			thing(subj, P(-1.45, -1.25), 0.5)
+			_plus(P(0, -1.25))
+			thing(b, P(1.45, -1.25), 0.5)
+			arrow(P(0, -0.65), P(0, -0.05), 0.12)
+			thing(subj, P(-0.95, 1.15), 0.68)
+			thing(b, P(0.95, 1.15), 0.68)
+			GunIcons.blob(_ci, P(0, 0.75), _s * 0.22, _s * 0.07)
+		_:
+			thing(subj, _m, 1.0)
+
+
+## "any" on a card means: the first hinted object, else a crate.
+static func _who(id: StringName, g: GoalData, i: int) -> StringName:
+	if id != &"any" and id != &"":
+		return id
+	if g.hint_objects.size() > i:
+		return StringName(String(g.hint_objects[i]).trim_suffix("_2"))
+	return &"crate"
+
+
+static func _effect(subj: StringName, effect: StringName) -> void:
+	match effect:
+		&"freeze":
+			thing(subj, P(0, 0.5), 1.0)
+			var box := Rect2(P(-2.0, -1.1), V(4.0, 3.0))
+			_ci.draw_rect(box, Color(0.86, 0.97, 1.0, 0.55))
+			_ci.draw_rect(box, INK, false, _s * 0.07)
+			_line(box.position + V(0.4, 1.0), box.position + V(1.0, 0.4), Color.WHITE, 0.12)
+			_line(box.position + V(0.4, 1.8), box.position + V(1.8, 0.4), Color(1, 1, 1, 0.7), 0.08)
+			GunIcons.flake(_ci, P(1.9, -1.2), _s * 0.55, _s * 0.08)
+		&"balloon":
+			var at := P(0, 1.1)
+			balloon(P(0, -1.5), 1.3)
+			_line(P(0, -0.5), at - V(0, 0.5), INK, 0.05)
+			thing(subj, at, 1.0)
+			arrow(P(-2.1, 1.0), P(-2.1, -0.6), 0.14)
+			arrow(P(2.1, 1.0), P(2.1, -0.6), 0.14)
+		&"bouncy":
+			_line(P(-2.6, 1.95), P(2.6, 1.95), INK, 0.1)
+			for i in 12:
+				var t := (i + 0.5) / 13.0
+				var x := lerpf(-2.4, 1.0, t)
+				var y := 1.6 - absf(sin(t * PI * 2.0)) * (1.6 + t * 1.3)
+				_ci.draw_circle(P(x, y), _s * 0.11, INK)
+			thing(subj, P(1.3, -1.3), 0.7)
+			_ci.draw_line(P(-1.6, 1.98), P(-0.9, 1.98), Color(1, 0.85, 0.2), _s * 0.14, true)
+		&"magnet":
+			thing(subj, P(1.0, 0.4), 0.8)
+			GunIcons.horseshoe(_ci, P(-1.6, 0.4), _s * 0.75, _s * 0.08)
+			for i in 2:
+				_ci.draw_arc(P(-0.7 + i * 0.55, 0.4), _s * 0.8, -0.7, 0.7, 10, INK, _s * 0.1, true)
+		_:
+			thing(subj, P(0, 0.6), 1.0)
+			gun(effect, P(0, -1.6), 0.8)
+
+
+static func _into(subj: StringName, other: StringName) -> void:
+	match other:
+		&"pond":
+			water(Rect2(P(-2.6, 1.0), V(5.2, 1.5)))
+		&"barn":
+			barn(Rect2(P(-1.2, -0.2), V(2.4, 2.4)))
+		_:
+			if COLORS.has(other) or Pictos.OBJ_COLORS.has(other):
+				thing(other, P(0, 1.35), 1.4)
+			else:   # a spot in the yard: a dashed target box
+				var box := Rect2(P(-1.4, 0.5), V(2.8, 1.8))
+				_ci.draw_rect(box, Color(1, 1, 1, 0.35))
+				for e in [[box.position, Vector2(box.end.x, box.position.y)], [Vector2(box.end.x, box.position.y), box.end],
+						[box.end, Vector2(box.position.x, box.end.y)], [Vector2(box.position.x, box.end.y), box.position]]:
+					_ci.draw_dashed_line(e[0], e[1], INK, _s * 0.1, _s * 0.3, true)
+	thing(subj, P(0, -1.55), 0.75)
+	arrow(P(0, -0.7), P(0, 0.3), 0.14)
+
+
+static func _plus(at: Vector2) -> void:
+	_line(at - V(0.38, 0), at + V(0.38, 0), INK, 0.17)
+	_line(at - V(0, 0.38), at + V(0, 0.38), INK, 0.17)
+
+
+## Little corner brackets bursting out round a grown thing.
+static func _grow_marks(at: Vector2, size: float) -> void:
+	for c in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
+		var p: Vector2 = at + c * _s * size * 0.85
+		_ci.draw_line(p, p - Vector2(c.x, 0) * _s * 0.4, INK, _s * 0.1, true)
+		_ci.draw_line(p, p - Vector2(0, c.y) * _s * 0.4, INK, _s * 0.1, true)
 
 
 # ----------------------------------------------------------------------------- the card ideas
@@ -270,7 +417,7 @@ static func balloon(at: Vector2, size: float) -> void:
 	_ci.draw_circle(at - V(size * 0.18, size * 0.6), _s * size * 0.13, Color(1, 1, 1, 0.6))
 
 
-## A yard object with a face. New silhouettes here; the rest come from Pictos.object.
+## A yard object with a face (vehicles and machines without one). New silhouettes here; the rest come from Pictos.object.
 static func thing(id: StringName, m: Vector2, size: float) -> void:
 	var s := _s * size
 	var c: Color = COLORS.get(id, Color.WHITE)
@@ -287,8 +434,7 @@ static func thing(id: StringName, m: Vector2, size: float) -> void:
 			for x in [-0.7, 0.7]:
 				_ci.draw_circle(m + Vector2(s * x, s * 0.55), s * 0.32, INK)
 				_ci.draw_circle(m + Vector2(s * x, s * 0.55), s * 0.13, METAL)
-			face = m + Vector2(s * 0.75, s * 0.1)
-			fs = s * 0.5
+			return   # vehicles and machines never wear a face
 		&"tractor":
 			_ci.draw_rect(Rect2(m + Vector2(-s * 1.1, -s * 0.2), Vector2(s * 2.0, s * 0.6)), c)
 			_ci.draw_rect(Rect2(m + Vector2(-s * 1.0, -s * 1.0), Vector2(s * 0.8, s * 0.8)), c.darkened(0.1))
@@ -297,8 +443,7 @@ static func thing(id: StringName, m: Vector2, size: float) -> void:
 			_ci.draw_circle(m + Vector2(-s * 0.6, s * 0.45), s * 0.55, INK)
 			_ci.draw_circle(m + Vector2(-s * 0.6, s * 0.45), s * 0.22, c)
 			_ci.draw_circle(m + Vector2(s * 0.65, s * 0.6), s * 0.35, INK)
-			face = m + Vector2(s * 0.35, s * 0.05)
-			fs = s * 0.45
+			return
 		&"pig":
 			_ci.draw_circle(m, s * 0.75, c)
 			_ci.draw_circle(m + Vector2(s * 0.75, -s * 0.25), s * 0.5, c)
@@ -338,7 +483,7 @@ static func thing(id: StringName, m: Vector2, size: float) -> void:
 			_ci.draw_rect(r, INK, false, ow)
 			_ci.draw_line(m + Vector2(-s * 0.6, -s * 0.35), m + Vector2(s * 0.6, -s * 0.35), INK, ow, true)
 			_ci.draw_rect(Rect2(m + Vector2(s * 0.35, -s * 0.85), Vector2(s * 0.1, s * 0.35)), METAL)
-			face = m + Vector2(0, s * 0.3)
+			return
 		&"egg":
 			var pts := PackedVector2Array()
 			for i in 24:

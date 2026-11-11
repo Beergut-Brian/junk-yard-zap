@@ -22,6 +22,10 @@ signal splashed(obj: PhysicsObject)
 
 ## Objects whose landing is a gag of its own: id -> cue (played instead of the generic landed voice).
 const LANDING_GAGS := {&"piano": "voice_piano_landed"}
+const RATTLE_MIN := 0.35   # seconds: the shortest rattle a faceless object does
+const RATTLE_MAX := 0.9
+const RATTLE_TILT := 0.12  # radians at the start of a rattle
+const RATTLE_HOP := 0.12   # of the object's height
 const GAG_MIN_IMPULSE := 4.0   # a real drop, not a settle
 const CHUTE_MAX := 1.9          # seconds: the parachute never hangs around longer than this
 const CHUTE_SPEED := 2.6        # m/s, the slow fall under the canopy (4 m at the gate in ~1.6 s)
@@ -62,6 +66,8 @@ var _pending_splash := false
 var _clamp_left := 0.0
 var _blocked_time := 0.0
 var _squash_tween: Tween
+var _rattle_left := 0.0
+var _rattle_len := 1.0
 ## K-08: a recalled object floats down at the gate under a parachute (seconds left; 0 = closed).
 var chute_left := 0.0
 var _chute: Node3D
@@ -257,6 +263,7 @@ func _physics_process(delta: float) -> void:
 	elif _clamp_left > 0.0:
 		_clamp_left -= delta
 	_visual.scale = squash * current_scale * _wobble()
+	_rattle(delta)
 	if sleeping and absf(global_position.z) > 0.02:
 		sleeping = false   # don't let a body fall asleep off the plane
 	stack.tick(delta)
@@ -584,26 +591,51 @@ func _mood_for_stack() -> ObjectFace.Mood:
 
 
 func _on_effect_changed(_t: Node3D, _effect: StringName, on: bool) -> void:
+	react_look(ObjectFace.Mood.WIDE if on else ObjectFace.Mood.HAPPY, 0.6)
+
+
+## Show a reaction. Objects with a face pull the mood. Vehicles and machines have no face
+## (producer rule: no faces on vehicles or machines), so they rattle on their wheels or feet instead:
+## a quick shake and a hop that dies away, read from the sofa as clearly as a face.
+func react_look(mood: ObjectFace.Mood, seconds: float) -> void:
 	if face:
-		face.react(ObjectFace.Mood.WIDE if on else ObjectFace.Mood.HAPPY, 0.6)
+		face.react(mood, seconds)
+		return
+	_rattle_len = clampf(seconds, RATTLE_MIN, RATTLE_MAX)
+	_rattle_left = _rattle_len
+
+
+func rattling() -> bool:
+	return _rattle_left > 0.0
+
+
+func _rattle(delta: float) -> void:
+	if _rattle_left <= 0.0:
+		return
+	_rattle_left = maxf(0.0, _rattle_left - delta)
+	var k := _rattle_left / _rattle_len
+	_visual.rotation.z = sin(_rattle_left * 48.0) * RATTLE_TILT * k
+	_visual.position.y = absf(sin(_rattle_left * 22.0)) * RATTLE_HOP * k * size_now().y
+	if _rattle_left == 0.0:
+		_visual.rotation.z = 0.0
+		_visual.position.y = 0.0
 
 
 ## The object's voice, pitched by size: a giant cow moos low, a tiny car beeps high.
 ## kind: react, grabbed, thrown, landed (Audio.voice caps it at one per object per 0.5 s).
 func speak(kind := "react") -> void:
-	Audio.voice(data.voice_cue(), kind, self, 1.0 / sqrt(current_scale))
+	Audio.voice(data.voice_cue(), kind, self, Audio.size_pitch(current_scale))
 
 
 ## Thrown or launched: dizzy for a moment.
 func dizzy(seconds := 1.5) -> void:
-	if face:
-		face.react(ObjectFace.Mood.DIZZY, seconds)
+	react_look(ObjectFace.Mood.DIZZY, seconds)
 
 
 func _on_landed(impulse: float) -> void:
 	var m := volume_mass()
-	var band := "light" if m < 1.0 else ("medium" if m < 8.0 else ("heavy" if m < 60.0 else "huge"))
-	Audio.play("impact_%s" % band, global_position, 1.0 / sqrt(current_scale))
+	var band := Audio.impact_band(m)
+	Audio.play("impact_" + band, global_position, Audio.size_pitch(current_scale))
 	var gag: String = LANDING_GAGS.get(data.id, "")
 	if gag != "" and impulse >= GAG_MIN_IMPULSE:
 		_landing_gag(gag)
@@ -616,13 +648,12 @@ func _on_landed(impulse: float) -> void:
 ## A named landing gag (GAME.md "Audio": "Piano plays a chord when it lands"): it always plays,
 ## whatever the size and past the object-voice rate cap, with a ring of keys-coloured sparks.
 func _landing_gag(cue: String) -> void:
-	Audio.play(cue, global_position, 1.0 / sqrt(current_scale))
+	Audio.play(cue, global_position, Audio.size_pitch(current_scale))
 	var top := global_position + Yard.up_at(global_position) * _half_along(Yard.up_at(global_position), current_scale)
 	Fx.ring(get_tree(), global_position, Color(1.0, 0.85, 0.35), radius() * 1.2)
 	Fx.burst(get_tree(), top, Color(1, 1, 0.95, 0.9), 10, 0.7, 0.7)
 	Fx.burst(get_tree(), top, Color(0.12, 0.1, 0.12, 0.9), 6, 0.6, 0.6)
-	if face:
-		face.react(ObjectFace.Mood.SMUG, 1.0)
+	react_look(ObjectFace.Mood.SMUG, 1.0)
 
 
 ## K-08 (GAME.md "Kid-design checks": "recall to the gate with a parachute"): the object floats

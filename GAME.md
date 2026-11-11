@@ -195,11 +195,12 @@ pictogram `Pictos` draws from the condition.
 | --- | --- |
 | Left stick | Move left/right; aim direction while firing (the beam follows the stick) |
 | A (Action) | Fire the current gun. Hold for grow/shrink and gravity grab |
-| B (Jump) | Jump. Low, floaty, forgiving. Both characters can hop onto most objects |
+| B (Jump) | Tap: a short hop. Hold: higher, up to a cap (let go early and the rise stops). Floaty, forgiving; both characters, off the ground or off objects. Numbers in `data/players/jump.tres` |
 | RB / LB | Next / previous gun. A big icon wheel pops for half a second |
 | Right stick | Also aims, for players who want it. Never required |
-| Start | Pause |
-| Select | Not used in play; the Reset Yard sign is in-world, hold A on it |
+| Start | Pause. The pause menu has **Reset Yard** (the swirl picture): one press, back into the yard as it resets |
+| Select | **Hold 1.5 s: Reset Yard** (a ring by the player fills, then whoosh and bell). A tap does nothing. Also: hold A on the big lit sign by the start for 2 s |
+| Select + Start | Held 2 s (either order): solo mode on/off. Never resets the yard, and a Select hold that reset the yard never turns into solo |
 
 - Camera: shared, frames both players, zooms out as they separate, soft-locked to the yard bounds. Never splits. If one player wanders off-screen the camera leans toward them and a little arrow with their colour points the way.
 - Objects can tumble in 3D but are nudged back toward the play plane by a gentle spring, so nothing drifts behind or in front of the players.
@@ -331,6 +332,16 @@ On top of the template checklist in `docs/kid-design.md`.
 - [ ] Palette: pick one of three.
 - [ ] Should the cow be a library character (a name, a personality, appears in other games) or stay a yard object? Recommendation: library character; a recurring cow is a gift that keeps giving.
 
+## Playtest 2026-11-10 changes (Kaden; these supersede the sections above)
+
+Notes quoted in `playtests/2026-11-10.md`. The yard and objects are right ("beautiful"); the UI and controls felt unpolished.
+
+1. **Gun icons redesigned** (Kaden: "The gun icons, cards were very confusing and unpolished"). Each gun gets one bold, readable icon that shows *what it does* (the effect, not the gadget): grow = a small thing becoming big, shrink the reverse, grab = a hand lifting, glue = two things stuck, and so on. Same colour as its beam. The gun wheel on RB/LB shows big icons with the current one clearly selected, with weight (scale punch, sound). The held gun's model and beam match the icon's colour and shape.
+2. **Every gun teaches itself** (Kaden: "It was hard to know what gun did what"). Switching to a gun plays a 1-2 s picture-only preview by the player (the icon animates its effect on a tiny object). The first time a gun is fired in a session, its effect gets a beat (a brief camera emphasis and a distinct sound). Each gun's beam, hit effect and sound are unmistakably different.
+3. **Goal cards redesigned** (supersedes the current card art): a card shows the goal as a clear picture (the objects involved and the result, for example cow + car = joined), big and readable from the couch, consistent layout, done/skip states obvious. Card view, done and skip feel like events (flip, fireworks, raspberry). The trophy shelf uses the same card art.
+4. **Reset the yard with a button** (Kaden: "There definitely needs to be a reset zone button"; supersedes "Select: not used in play; the Reset Yard sign is in-world, hold A on it"). Gary's pick: **hold Select for 1.5 s** with a filling ring by the player (a tap does nothing, so it's never an accident), plus a **Reset yard** entry in the pause menu. The in-world sign stays but becomes far more visible (big, lit, near the start). Every reset plays the whoosh and bell. Select + Start held for 2 s still toggles solo mode; the two never trigger each other.
+5. **Variable jump** (Kaden: "tapping is short jump, holding is long jump"): a tap of B is a short hop; holding B goes higher, up to a cap. Still floaty and forgiving.
+
 ## Decisions made without Kaden
 
 - 2026-11-09 (Gary): physics bodies use `body_mass = volume_mass ^ 0.5` (`Yard.mass_exponent`); the logical mass by volume still drives cards, impact sounds and juice. Jolt sinks light bodies under heavy ones past ~25:1; this keeps "heavier is heavier" stable. Grow is refused (a "nope" boing) when it would push into static or frozen things; glue pulls the two objects together before locking and lets go after 3 s if they can't meet.
@@ -358,3 +369,13 @@ On top of the template checklist in `docs/kid-design.md`.
   - **The deck checks the top card every 0.1 s** (was 0.25 s) so a car flying over the fence is not missed mid-arc. One card, at most 40 objects, no allocation beyond the group list.
   - **Chain-reaction card is forgiving about where the ball lands:** it counts once the untouched ball rests below 2.5 m (the loft floor is about 4.7 m), so a ball that lands on a hay bale still counts (Gary, after a CI run where it did).
   - **The first two "anything" cards now hint** (bouncy: ball and tire; glue: the two crates) so every card glows something.
+- 2026-11-10 (plan-status lane, recording answers Kaden already gave; both "Open questions for Kaden" above are settled):
+  - **Palette: D44 a, Golden Afternoon (smooth shading).** `~/openjar/HANDOFF-2026-11-10-morning.md`; built as the yard look (art_kit.gd). It also supersedes "flat-shaded with thick outlines" in Art direction.
+  - **The cow is a library character: D53 a, named Patience** (the quadruped Jarling; openjar-characters `main`, `proposals/cow/bible.md`, PR 15). She is a resident, so never playable. The barn cow in this game is still a plain yard object; swapping in Patience is PLAN-STATUS row Y-17.
+- 2026-11-10 (UI clarity lane, jyz-ui-1, for Gary/Kaden to confirm):
+  - **Gun icons show the effect on a little cream crate with eyes** (the yard's own look), on a disc in the gun's beam colour: grow = small crate and big crate, grab = an open hand lifting it, bouncy = a ball on a dotted bounce trail, balloon = a balloon carrying it up, freeze = in an ice block, glue = two crates and a glue blob, magnet = a horseshoe pulling it in. The same drawing animates as the switch preview.
+  - **The held gun keeps its junk-built nozzle** (dish, cone, bellows, ...) in the beam colour; it matches the icon through colour plus its beam pattern and hit, not a sticker (a sticker on a 30 px gun can't be read from the sofa).
+  - **First-fire beat:** once per player per gun per session (not saved), and only when the zap hits something: a zap at nothing doesn't use it up.
+  - **The wheel ring shows 0.95 s** (was 0.6) and its middle plays the 1.8 s preview, which stays by the player after the ring folds.
+  - **Each card's header shows the token of the gun that does it** (the chain-reaction card shows none: no zaps allowed). Cards are drawn live in code at every size; the 20 baked PNGs are no longer shown for those cards.
+- 2026-11-10 (vehicle faces lane): no faces on vehicles or machines (Kaden, 2026-11-10), JYZ applies it to all vehicles. Car, tractor, boat, wheelbarrow, washing machine, TV, toaster, fridge, cannon and the crane hook read as friendly through shape and colour; headlights stay lights. The live goal-card pictograms (Pictos) follow `ObjectData.has_face` too.

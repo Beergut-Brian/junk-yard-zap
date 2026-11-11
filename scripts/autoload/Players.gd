@@ -9,7 +9,7 @@ const P2 := 1
 const COLOR := { P1: Color("3cc24a"), P2: Color("e4393c") }
 const PREFIX := { P1: "p1_", P2: "p2_" }
 const ACTIONS := ["move_left", "move_right", "move_up", "move_down", "action", "jump",
-		"gun_next", "gun_prev", "aim_left", "aim_right", "aim_up", "aim_down"]
+		"gun_next", "gun_prev", "aim_left", "aim_right", "aim_up", "aim_down", "reset"]
 ## Device id for a keyboard or --demo player: no pad events are rebound.
 const VIRTUAL := -2
 ## Solo (playtest only): Select + Start held together this long, in real seconds, toggles it.
@@ -30,6 +30,7 @@ var _solo_device := VIRTUAL
 var _saved_events := {}          # action name -> Array[InputEvent] as they were before solo
 var _held := {}                  # device -> seconds Select + Start have been held together
 var _paused_before := {}         # device -> was the tree paused when the hold began
+var _select_spent := {}          # device -> this Select press already reset the yard (no solo on it)
 var _last_us := 0
 var _marker: CanvasLayer
 
@@ -50,9 +51,9 @@ func _process(_delta: float) -> void:
 	var dt := (now - _last_us) / 1000000.0
 	_last_us = now
 	for d in Input.get_connected_joypads():
-		var both := Input.is_joy_button_pressed(d, SOLO_BUTTONS[0]) \
-				and Input.is_joy_button_pressed(d, SOLO_BUTTONS[1])
-		if hold_step(d, both, dt):
+		var select := Input.is_joy_button_pressed(d, SOLO_BUTTONS[0])
+		var both := select and Input.is_joy_button_pressed(d, SOLO_BUTTONS[1])
+		if hold_step(d, both, dt, select):
 			_undo_hold_pause(d)
 
 
@@ -101,6 +102,22 @@ func move_vector(player: int) -> Vector2:
 		action(player, "move_up"), action(player, "move_down"))
 
 
+## Is this player's Start down? Their pad's Start, or (keyboard / --demo / solo) the pause key.
+func start_held(player: int) -> bool:
+	var d := device_of(player)
+	if d >= 0 and Input.is_joy_button_pressed(d, JOY_BUTTON_START):
+		return true
+	return d < 0 and Input.is_action_pressed("pause")
+
+
+## The yard just reset on this player's Select hold: that press can't start solo too.
+func spend_select(player: int) -> void:
+	var d := device_of(player)
+	if d >= 0:
+		_select_spent[d] = true
+		_held.erase(d)
+
+
 func join_virtual(player: int) -> void:
 	if not is_active(player):
 		_assign(player, VIRTUAL)
@@ -112,7 +129,13 @@ static func solo_from_args(args: PackedStringArray) -> bool:
 
 ## The hold rule, fed once a frame per pad. Toggles solo after SOLO_HOLD s of both buttons held;
 ## the buttons must come up before the next toggle. Returns true when it toggled.
-func hold_step(device: int, both_down: bool, delta: float) -> bool:
+## select_down: Select alone. A Select press that already reset the yard (spend_select) never
+## toggles solo, whenever Start joins it; Select must come up first.
+func hold_step(device: int, both_down: bool, delta: float, select_down := both_down) -> bool:
+	if not select_down:
+		_select_spent.erase(device)
+	if _select_spent.has(device):
+		both_down = false
 	if not both_down:
 		_held.erase(device)
 		return false
@@ -183,6 +206,7 @@ func reset() -> void:
 	solo_focus = P1
 	_held.clear()
 	_paused_before.clear()
+	_select_spent.clear()
 	if _marker:
 		_marker.show_solo(false, false)
 	_device_of = { P1: -1, P2: -1 }

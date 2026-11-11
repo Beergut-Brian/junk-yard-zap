@@ -2,8 +2,10 @@
 ## every STRESS_EVERY seconds it zaps a random effect onto a random object (grow, shrink, bouncy,
 ## balloon, freeze, magnet) and now and then glues a random pair or unglues one, so many effects stay
 ## stacked. Every LOG_EVERY seconds it prints one "soak:" line: objects, nodes, orphans, joints,
-## effects on, recalls, and the mean wall-clock frame time over the window. Use --fixed-fps 60 so
-## seconds are simulated seconds, and --screenshot-after=<s> to end the run.
+## effects on, recalls, the mean and worst wall-clock frame time over the window, mean process /
+## physics CPU ms, audio voices playing and static memory. Use --fixed-fps 60 so seconds are
+## simulated seconds, and --screenshot-after=<s> to end the run; or, for a real-time soak,
+## `--max-fps 60 --quit-after 108000` (30 minutes at 60 fps).
 class_name SoakProbe
 extends Node
 
@@ -19,6 +21,9 @@ var _log := 0.0
 var _frames := 0
 var _usec := 0
 var _last := 0
+var _worst := 0
+var _proc := 0.0                     # summed Performance.TIME_PROCESS (ms), the whole frame's CPU
+var _phys := 0.0                     # summed Performance.TIME_PHYSICS_PROCESS (ms), one physics tick
 var zaps := 0
 var glues := 0
 
@@ -32,7 +37,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	var now := Time.get_ticks_usec()
 	_usec += now - _last
+	_worst = maxi(_worst, now - _last)
 	_last = now
+	_proc += Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0
+	_phys += Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0
 	_frames += 1
 	_t += delta
 	_stress += delta
@@ -71,9 +79,14 @@ func _line() -> void:
 	for o in _objects():
 		on += (o as PhysicsObject).stack.effects.size()
 	var ms := (_usec / 1000.0) / maxf(_frames, 1)
-	print("soak: t=%5.1f objects=%d nodes=%d orphans=%d objs_db=%d joints=%d effects_on=%d zaps=%d glues=%d recalls=%d frame_ms=%.2f" % [
+	var n := maxf(_frames, 1)
+	print("soak: t=%5.1f objects=%d nodes=%d orphans=%d objs_db=%d joints=%d effects_on=%d zaps=%d glues=%d recalls=%d frame_ms=%.2f worst_ms=%.1f process_ms=%.2f physics_ms=%.2f voices=%d mem_mb=%.1f" % [
 			_t, _objects().size(), Performance.get_monitor(Performance.OBJECT_NODE_COUNT),
 			Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT), Performance.get_monitor(Performance.OBJECT_COUNT),
-			get_tree().get_nodes_in_group(&"glue_joints").size(), on, zaps, glues, Yard.recalls, ms])
+			get_tree().get_nodes_in_group(&"glue_joints").size(), on, zaps, glues, Yard.recalls, ms,
+			_worst / 1000.0, _proc / n, _phys / n, Audio.active_voices(), Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0])
 	_frames = 0
 	_usec = 0
+	_worst = 0
+	_proc = 0.0
+	_phys = 0.0

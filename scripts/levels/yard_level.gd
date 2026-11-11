@@ -20,6 +20,7 @@ const POND_FLOOR := -2.4
 const WATER_Y := -0.35
 const RESET_HOLD := 2.0       # seconds; long enough that holding A to grab near the sign never wipes the yard
 const RESET_REACH := 1.6
+const SIGN_Y := 2.9            # the Reset Yard sign board's centre height (YardDressing, hud ring)
 const AUTOSAVE := 30.0
 const SAVE_KEY := "yard"
 const LAYOUT := "res://data/yard_layout.tres"
@@ -114,7 +115,7 @@ func spawn_layout() -> void:
 
 
 func spawn(e: YardLayoutEntry) -> PhysicsObject:
-	var o := PhysicsObject.new(e.object)
+	var o: PhysicsObject = LooseBalloon.new(e.object) if e.object is BalloonData else PhysicsObject.new(e.object)
 	o.key = e.key
 	o.name = String(e.key)
 	o.position = e.position
@@ -139,8 +140,10 @@ func clear_objects() -> void:
 	objects.clear()
 
 
-## Hold A on the sign: everything back to data/yard_layout.tres with a whoosh. The deck stays.
-func reset_yard() -> void:
+## Everything back to data/yard_layout.tres with the whoosh and bell. The deck stays.
+## Three ways in: hold Select 1.5 s (Zapper), hold A on the sign 2 s, or Reset Yard in the pause menu.
+## by: the player who did it (a ring in their colour), or null.
+func reset_yard(by: Node3D = null) -> void:
 	deck.checking = false
 	for o in objects.values():
 		if is_instance_valid(o):
@@ -150,6 +153,8 @@ func reset_yard() -> void:
 	for o in objects.values():
 		Fx.burst(get_tree(), o.global_position, Color(0.95, 0.9, 0.6, 0.8), 10, 0.8, 0.5)
 	resets += 1
+	if by is Zapper:
+		Fx.ring(get_tree(), (by as Zapper).center(), Players.COLOR[(by as Zapper).player], 2.2)
 	Audio.play("reset_yard")
 	Fx.shake(0.6)
 	yard_reset.emit()

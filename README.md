@@ -1,4 +1,52 @@
-# Open Jar Games — game template
+# Junk Yard Zap (Open Jar Games #2)
+
+A two-player couch sandbox: a toy-diorama junk yard full of physics junk and a belt of seven silly
+guns. Grow the cow, balloon the bathtub, glue a chicken to the car. No rounds, no fail state, no
+timer: the yard saves as you leave it. Optional picture cards on the fence ("float the car") turn
+it into a little puzzle whenever you want one. Built in Godot 4 for the family TV.
+
+## How to play
+
+1. Start it from the Open Jar launcher (or `godot --path .`). The lobby comes up over the yard.
+2. Each player presses **A** to join and get ready (or **B** to join without readying).
+   **Left / right** on your podium picks who you play as; they say their catchphrase.
+   Player 1 is always **green**, player 2 always **red**, whoever you pick.
+3. When everyone is ready the countdown runs and the yard opens. Hold **A** on Play to start alone.
+   A second player can join any time: their character is asleep in the tire pile, any button wakes them.
+
+| Button | Does |
+| --- | --- |
+| Left stick | Walk; aim while zapping (the beam snaps to the nearest thing) |
+| **A** | Zap with the current gun. Hold for grow / shrink and to carry with the grab gun |
+| **B** | Jump: tap for a hop, hold to go higher |
+| **RB / LB** | Next / previous gun (a big picture wheel shows what it does) |
+| **Start** | Pause: Resume, Reset Yard, back to the lobby, Settings, back to Open Jar |
+| **Select** (hold 1.5 s) | Reset the yard (a ring fills first; a tap does nothing). Or hold **A** on the lit sign |
+| **Select + Start** (hold 2 s) | Solo mode: one pad plays both; LB + RB + Select swaps who you drive |
+
+Menus: stick or D-pad to move, **A** to pick, **B** to go back. Every screen has a way back, and the
+door ("Back to Open Jar") always asks first.
+
+The guns: **size** (grow / shrink), **grab** (carry and throw), **bouncy**, **balloon**, **freeze**,
+**glue** (zap two things), **magnet**. Zap the same thing again with the same gun to undo it.
+
+## Run, test, export
+
+```
+godot --path .                                                              # play
+godot --path . -- --solo                                                    # one pad plays both
+godot --path . -- --demo                                                    # bots play (attract mode)
+godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue
+godot --headless --path . --export-release "Linux" build/game.x86_64       # export
+scripts/tools/session_flow.sh .scratch/flow                                 # whole session, real frames
+```
+
+The version in the lobby footer is stamped from the release tag by `.github/workflows/release.yml`.
+Credits for every asset: `assets/CREDITS.md`.
+
+---
+
+## Template notes
 
 Starter repo for every Open Jar Games title: small, loud, two-player couch games built in
 Godot 4 by a producer agent (Hermes) and parallel agent lanes, played on the family TV box.
@@ -42,11 +90,3 @@ P1 is green (`#3cc24a`), P2 is red (`#e4393c`). First pad to press a button is P
 Each player picks a character on their podium in the lobby (the chooser, `Roster`); Jeff is the P1
 default and Chuck the P2 default. Picks are remembered across every Open Jar game and the launcher.
 The roster is vendored from `openjar-characters` by `scripts/tools/sync_characters.sh` (`docs/roster.md`).
-
-## Run
-
-```
-godot --path .                                                              # play
-godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests  # test
-godot --headless --path . --export-release "Linux" build/game.x86_64       # export
-```

@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
@@ -111,6 +111,7 @@ func _spawn(player: int, asleep := false) -> Zapper:
 	_players[player] = z
 	level.register_zapper(z)
 	z.gun_changed.connect(_on_gun_changed)
+	z.zapped.connect(hud.on_zapped)   # PT10-2: the first-fire beat
 	return z
 
 
@@ -171,6 +172,14 @@ func _start_demo() -> void:
 		"delight": _beat_delight()
 		"blame": _beat_blame()
 		"idles": _beat_idles()
+		"rattle": _beat_rattle()
+		"trophy": _beat_trophy()
+		"jump": _beat_jump(false)
+		"jump-crate": _beat_jump(true)
+		"reset-hold": _beat_reset_hold()
+		"sign-hold": _beat_sign_hold()
+		"wheel": _beat_wheel()
+		"beams": _beat_beams()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -209,6 +218,78 @@ func _beat_combo() -> void:
 			cow.speak()
 			Fx.ring(get_tree(), cow.global_position, level.guns_by_effect.get(&"size" if s[2] == &"grow" else s[2], level.guns_by_effect[&"size"]).beam_color, cow.radius())
 			z._flash())
+
+
+## Vehicles and machines rattle instead of pulling a face: the scrap heap's car, TV, fridge and
+## toaster get zapped in turn every 0.4 s, so any frame catches one mid-rattle.
+func _beat_rattle() -> void:
+	_beat_zone(&"scrap_heap")
+	var ids := [&"car", &"tv", &"fridge", &"toaster"]
+	for i in 12:
+		get_tree().create_timer(1.0 + i * 0.4).timeout.connect(func() -> void:
+			var o := level.object(ids[i % ids.size()])
+			if o:
+				o.react_look(ObjectFace.Mood.WIDE, 0.9)
+				o.speak())
+
+
+## G-13: three cards done, then Jeff zaps the trophy shelf and the newest one flips up.
+func _beat_trophy() -> void:
+	_place(Players.P1, -42.5, -1.0)
+	_place(Players.P2, -38.0, -1.0)
+	camera.focus = [level.card.shelf]
+	for i in 3:
+		level.deck.complete()
+	get_tree().create_timer(1.2).timeout.connect(func() -> void:
+		level.card.shelf.zapped_by(_players[Players.P1], null)
+		_players[Players.P1]._flash())
+
+
+## PT10-1/2 (jyz-ui-1): both players flick the belt (wheel + switch preview), then Jeff fires his new
+## gun at the cow for the first time (the first-fire beat). Shots at ~1.7 s (wheel), ~2.8 s (preview) and ~3.7 s (beat).
+func _beat_wheel() -> void:
+	var cow := level.object(&"cow")
+	cow.global_position = Vector3(-34.0, 1.0, 0)
+	_place(Players.P1, -37.5, 1.0)   # clear of the Reset Yard sign (A there holds the reset)
+	_place(Players.P2, -29.5, -1.0)
+	camera.focus = [cow]
+	for t in [1.2, 1.45]:
+		get_tree().create_timer(t).timeout.connect(func() -> void:
+			var z: Zapper = _players[Players.P1]
+			z.set_gun(z.gun_index + 1))
+	get_tree().create_timer(1.5).timeout.connect(func() -> void:
+		var z: Zapper = _players[Players.P2]
+		z.set_gun(z.gun_index + 4))
+	get_tree().create_timer(3.4).timeout.connect(func() -> void:
+		var z: Zapper = _players[Players.P1]
+		z.aim_dir = Vector2(1, 0.05).normalized()
+		z._update_target()
+		z._press())
+
+
+## PT10-2: every gun's beam and hit, one after another. Jeff fires each of the seven guns at the
+## crate, 0.7 s apart from 1.0 s (size, grab, bouncy, balloon, freeze, glue, magnet); Chuck aims his
+## freeze beam at the tire so two patterns show at once.
+func _beat_beams() -> void:
+	var crate := level.object(&"crate")
+	crate.global_position = Vector3(-33.5, 0.6, 0)
+	var tire := level.object(&"tire")
+	tire.global_position = Vector3(-30.0, 0.6, 0)
+	_place(Players.P1, -37.0, 1.0)
+	_place(Players.P2, -26.5, -1.0)
+	camera.focus = [crate, tire]
+	(_players[Players.P2] as Zapper).set_gun(4, false)
+	for i in 7:
+		get_tree().create_timer(1.0 + i * 0.7).timeout.connect(func() -> void:
+			var z: Zapper = _players[Players.P1]
+			z.set_gun(i)
+			z.aim_dir = Vector2(1, 0.05).normalized()
+			z._update_target()
+			if i == 5 and z.target:   # glue needs a first pick: stick the crate to the tire
+				z._press()
+				z.target = tire
+			if z.target:
+				z._press())
 
 
 ## Art check: Jeff and Chuck standing in one zone (front_gate, scrap_heap, pond, barn, tower), guns up.
@@ -400,3 +481,49 @@ func _beat_idles() -> void:
 	get_tree().create_timer(2.6).timeout.connect(func() -> void:
 		jeff.reactions.do_bit("hum")
 		chuck.reactions.do_bit("check_hat"))
+
+
+## PT10-5: side by side, at 1.0 s Jeff taps B (a short hop) and Chuck holds it (the full, capped
+## jump). jump-crate: the same off two crates, so it works on objects.
+func _beat_jump(on_crates: bool) -> void:
+	_clear(-36.0, -24.0)
+	var xs := [-31.5, -28.5]
+	camera.focus = []
+	for i in 2:
+		var p: int = [Players.P1, Players.P2][i]
+		var z: Zapper = _players[p]
+		_place(p, xs[i], 1.0 if i == 0 else -1.0)
+		z.input_override = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
+		camera.focus.append(z)
+	if on_crates:
+		for i in 2:
+			var c := level.object([&"crate", &"crate_2"][i])
+			if c:
+				c.global_position = Vector3(xs[i], 0.6, 0)
+				(_players[[Players.P1, Players.P2][i]] as Zapper).global_position.y = 1.4
+	get_tree().create_timer(1.0).timeout.connect(func() -> void:
+		for p in [Players.P1, Players.P2]:
+			(_players[p] as Zapper).input_override["jump"] = true)
+	get_tree().create_timer(1.04).timeout.connect(func() -> void:
+		(_players[Players.P1] as Zapper).input_override["jump"] = false)
+	get_tree().create_timer(2.6).timeout.connect(func() -> void:
+		(_players[Players.P2] as Zapper).input_override["jump"] = false)
+
+
+## PT10-4: Jeff holds Select by the tire pile; the ring by him fills for 1.5 s, then the yard resets.
+func _beat_reset_hold() -> void:
+	_place(Players.P1, -37.0, 1.0)
+	_place(Players.P2, -33.0, -1.0)
+	var jeff: Zapper = _players[Players.P1]
+	jeff.input_override = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false, "reset": false}
+	get_tree().create_timer(0.5).timeout.connect(func() -> void: jeff.input_override["reset"] = true)
+	get_tree().create_timer(3.0).timeout.connect(func() -> void: jeff.input_override["reset"] = false)
+
+
+## PT10-4: the big lit sign with Jeff holding A on it (its own ring and racing bulbs).
+func _beat_sign_hold() -> void:
+	_place(Players.P1, -42.0, 1.0)
+	_place(Players.P2, -36.0, -1.0)
+	var jeff: Zapper = _players[Players.P1]
+	jeff.input_override = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
+	get_tree().create_timer(0.6).timeout.connect(func() -> void: jeff.input_override["action"] = true)

@@ -15,7 +15,7 @@ enum Kind { SIZE, GRAB, BOUNCY, BALLOON, FREEZE, GLUE, MAGNET }
 @export var beam_color := Color.WHITE
 ## Played on every zap that lands (zap_<id>).
 @export var cue: StringName = &""
-## Gun mesh colour on the hand (placeholder; the Art lane ships junk-built guns per player).
+## Not drawn any more: the junk-built guns (scripts/art/gun_art.gd) take the beam colour.
 @export var body_color := Color(0.6, 0.6, 0.6)
 
 

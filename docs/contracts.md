@@ -202,8 +202,11 @@ two-heads icon shows top-left while it is on. A keyboard key from a player's act
 
 Input map actions (defined in `project.godot`, per player, prefix `p1_` / `p2_`):
 `move_left`, `move_right`, `move_up`, `move_down`, `action`, `jump`, and for Junk Yard Zap
-`gun_next` (RB, E / .), `gun_prev` (LB, Q / ,), `aim_left/right/up/down` (right stick, IJKL / numpad).
-`restart` is keyboard-only (R): Select is not used in play (GAME.md).
+`gun_next` (RB, E / .), `gun_prev` (LB, Q / ,), `aim_left/right/up/down` (right stick, IJKL / numpad),
+`reset` (Select, Backspace / Delete): hold 1.5 s to reset the yard (Zapper, PT10-4).
+`restart` is keyboard-only (R).
+`Players.start_held(player)`: that player's Start (or the pause key) is down. `Players.spend_select(player)`:
+the yard just reset on this Select press, so it can't toggle solo; `hold_step(device, both, delta, select_down)`.
 Global: `pause`, `restart`, `debug_overlay`, `debug_screenshot`.
 
 ### `Save` (`scripts/autoload/Save.gd`)
@@ -290,7 +293,7 @@ signal yard_reset()
 var deck: GoalDeck
 var objects: Dictionary          # layout key ("cow", "chicken_2") -> PhysicsObject
 func object(key: StringName) -> PhysicsObject
-func reset_yard() -> void        # Reset Yard: back to data/yard_layout.tres; the deck stays
+func reset_yard(by: Node3D = null) -> void   # back to data/yard_layout.tres, whoosh + bell; the deck stays. by: ring in their colour
 func to_save() -> Dictionary     # {"version": 1, "objects": {key: {p, r, size, fx}}, "glue": [[a, b]], "deck": {...}}
 func from_save(d: Dictionary) -> void
 static func find(n: Node) -> YardLevel
@@ -328,7 +331,9 @@ signal partner_zapped(player: int, gun: StringName)
 var asleep: bool                 # in the tire pile until his pad presses something
 func wake() -> void
 func partner_zap(gun: GunData, from: Zapper) -> void     # harmless, at most PARTNER_TIME (1 s)
-var input_override: Dictionary   # tests and the demo bot: {move, aim, action, jump, next, prev}
+var input_override: Dictionary   # tests and the demo bot: {move, aim, action, jump, next, prev, reset, start}
+var jump_tuning: JumpTuning      # data/players/jump.tres: tap = hop, hold = higher up to the cap
+func reset_progress() -> float   # 0..1 of the Select hold (Zapper.RESET_HOLD 1.5 s), the ring by the player
 var character: String            # Roster id; "" at spawn = Roster.pick(player) (Jeff P1 / Chuck P2 by default)
 func bark(kind := "") -> String  # own cue bark_<id>[_kind] > Roster.bark(id) > generic bark[_kind]
 # Body: JarlingRig (scripts/players/jarling_rig.gd) loads Roster.info(id).glb, any standard-body
@@ -350,7 +355,7 @@ func GoalMemory.touch(o: PhysicsObject) -> void   # a gun touched o here (the de
 | --- | --- | --- |
 | `OBJECT_SCALE_AT_LEAST` | grown at least `amount` steps, done growing | amount |
 | `OBJECT_HAS_EFFECT` | carries `effect` | effect |
-| `OBJECT_IN_ZONE` | inside `other`: a Yard zone, a card spot, or an object (the bathtub) | other |
+| `OBJECT_IN_ZONE` | inside `other`: a Yard zone, a card spot, or an object (the bathtub; things piled on what is in it count too, held ones never) | other |
 | `GLUED_PAIR` | glued to `other` | other |
 | `OBJECT_HEIGHT_ABOVE` / `OBJECT_HEIGHT_BELOW` | centre above / below `amount` m | amount |
 | `OBJECT_SPEED_OVER` / `OBJECT_SPEED_UNDER` | faster (and not held by gravity grab) / slower than `amount` m/s | amount |
@@ -359,7 +364,8 @@ func GoalMemory.touch(o: PhysicsObject) -> void   # a gun touched o here (the de
 | `ALL_OF` | the same object satisfies every one of `steps` | steps |
 | `SEQUENCE` | the same object satisfies `steps` in order (needs a GoalMemory; false without one) | steps |
 
-Guards, on any card or step: `touched_in` (the object's last gun touch was inside that zone/spot; needs
+Guards, on any card or step: `touched_in` (the object's last gun touch was inside that zone/spot, or within
+`Goals.TOUCH_REACH` (1 m, an arm's reach) of it; needs
 a GoalMemory) and `untouched` (in a sequence: no gun touched it since the previous step; a touch sends
 the object back to step 1). A "gun touch" is any zap on it, or being held by gravity grab. Knocks from
 other objects, magnets on *other* objects and the see-saw are not touches: that is the chain-reaction rule.
@@ -367,7 +373,8 @@ other objects, magnets on *other* objects and the see-saw are not touches: that 
 Card spots (`Goals.SPOTS`, boxes copied from the yard's landmarks; `tests/test_goal_deck.gd` keeps them
 honest): `barn_loft`, `pipe_top`, `pipe_bottom`, `over_pond`, `tower_top`.
 
-Cards sort by `band`, then `rank`, then `id`. The deck checks the top card every 0.1 s; sequence progress
+Cards sort by `band`, then `rank`, then `id`. The deck checks the top card every 0.1 s of physics time
+(`_physics_process`, so a slow frame never stretches the gap); sequence progress
 resets when the top card changes and on Reset Yard.
 
 ```gdscript
