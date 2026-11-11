@@ -111,6 +111,7 @@ func _spawn(player: int, asleep := false) -> Zapper:
 	_players[player] = z
 	level.register_zapper(z)
 	z.gun_changed.connect(_on_gun_changed)
+	z.zapped.connect(hud.on_zapped)   # PT10-2: the first-fire beat
 	return z
 
 
@@ -173,6 +174,8 @@ func _start_demo() -> void:
 		"idles": _beat_idles()
 		"rattle": _beat_rattle()
 		"trophy": _beat_trophy()
+		"wheel": _beat_wheel()
+		"beams": _beat_beams()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -236,6 +239,53 @@ func _beat_trophy() -> void:
 	get_tree().create_timer(1.2).timeout.connect(func() -> void:
 		level.card.shelf.zapped_by(_players[Players.P1], null)
 		_players[Players.P1]._flash())
+
+
+## PT10-1/2 (jyz-ui-1): both players flick the belt (wheel + switch preview), then Jeff fires his new
+## gun at the cow for the first time (the first-fire beat). Shots at ~1.7 s (wheel), ~2.8 s (preview) and ~3.7 s (beat).
+func _beat_wheel() -> void:
+	var cow := level.object(&"cow")
+	cow.global_position = Vector3(-34.0, 1.0, 0)
+	_place(Players.P1, -37.5, 1.0)   # clear of the Reset Yard sign (A there holds the reset)
+	_place(Players.P2, -29.5, -1.0)
+	camera.focus = [cow]
+	for t in [1.2, 1.45]:
+		get_tree().create_timer(t).timeout.connect(func() -> void:
+			var z: Zapper = _players[Players.P1]
+			z.set_gun(z.gun_index + 1))
+	get_tree().create_timer(1.5).timeout.connect(func() -> void:
+		var z: Zapper = _players[Players.P2]
+		z.set_gun(z.gun_index + 4))
+	get_tree().create_timer(3.4).timeout.connect(func() -> void:
+		var z: Zapper = _players[Players.P1]
+		z.aim_dir = Vector2(1, 0.05).normalized()
+		z._update_target()
+		z._press())
+
+
+## PT10-2: every gun's beam and hit, one after another. Jeff fires each of the seven guns at the
+## crate, 0.7 s apart from 1.0 s (size, grab, bouncy, balloon, freeze, glue, magnet); Chuck aims his
+## freeze beam at the tire so two patterns show at once.
+func _beat_beams() -> void:
+	var crate := level.object(&"crate")
+	crate.global_position = Vector3(-33.5, 0.6, 0)
+	var tire := level.object(&"tire")
+	tire.global_position = Vector3(-30.0, 0.6, 0)
+	_place(Players.P1, -37.0, 1.0)
+	_place(Players.P2, -26.5, -1.0)
+	camera.focus = [crate, tire]
+	(_players[Players.P2] as Zapper).set_gun(4, false)
+	for i in 7:
+		get_tree().create_timer(1.0 + i * 0.7).timeout.connect(func() -> void:
+			var z: Zapper = _players[Players.P1]
+			z.set_gun(i)
+			z.aim_dir = Vector2(1, 0.05).normalized()
+			z._update_target()
+			if i == 5 and z.target:   # glue needs a first pick: stick the crate to the tire
+				z._press()
+				z.target = tire
+			if z.target:
+				z._press())
 
 
 ## Art check: Jeff and Chuck standing in one zone (front_gate, scrap_heap, pond, barn, tower), guns up.
