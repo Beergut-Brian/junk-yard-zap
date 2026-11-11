@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
@@ -174,6 +174,10 @@ func _start_demo() -> void:
 		"idles": _beat_idles()
 		"rattle": _beat_rattle()
 		"trophy": _beat_trophy()
+		"jump": _beat_jump(false)
+		"jump-crate": _beat_jump(true)
+		"reset-hold": _beat_reset_hold()
+		"sign-hold": _beat_sign_hold()
 		"wheel": _beat_wheel()
 		"beams": _beat_beams()
 		_:
@@ -477,3 +481,49 @@ func _beat_idles() -> void:
 	get_tree().create_timer(2.6).timeout.connect(func() -> void:
 		jeff.reactions.do_bit("hum")
 		chuck.reactions.do_bit("check_hat"))
+
+
+## PT10-5: side by side, at 1.0 s Jeff taps B (a short hop) and Chuck holds it (the full, capped
+## jump). jump-crate: the same off two crates, so it works on objects.
+func _beat_jump(on_crates: bool) -> void:
+	_clear(-36.0, -24.0)
+	var xs := [-31.5, -28.5]
+	camera.focus = []
+	for i in 2:
+		var p: int = [Players.P1, Players.P2][i]
+		var z: Zapper = _players[p]
+		_place(p, xs[i], 1.0 if i == 0 else -1.0)
+		z.input_override = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
+		camera.focus.append(z)
+	if on_crates:
+		for i in 2:
+			var c := level.object([&"crate", &"crate_2"][i])
+			if c:
+				c.global_position = Vector3(xs[i], 0.6, 0)
+				(_players[[Players.P1, Players.P2][i]] as Zapper).global_position.y = 1.4
+	get_tree().create_timer(1.0).timeout.connect(func() -> void:
+		for p in [Players.P1, Players.P2]:
+			(_players[p] as Zapper).input_override["jump"] = true)
+	get_tree().create_timer(1.04).timeout.connect(func() -> void:
+		(_players[Players.P1] as Zapper).input_override["jump"] = false)
+	get_tree().create_timer(2.6).timeout.connect(func() -> void:
+		(_players[Players.P2] as Zapper).input_override["jump"] = false)
+
+
+## PT10-4: Jeff holds Select by the tire pile; the ring by him fills for 1.5 s, then the yard resets.
+func _beat_reset_hold() -> void:
+	_place(Players.P1, -37.0, 1.0)
+	_place(Players.P2, -33.0, -1.0)
+	var jeff: Zapper = _players[Players.P1]
+	jeff.input_override = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false, "reset": false}
+	get_tree().create_timer(0.5).timeout.connect(func() -> void: jeff.input_override["reset"] = true)
+	get_tree().create_timer(3.0).timeout.connect(func() -> void: jeff.input_override["reset"] = false)
+
+
+## PT10-4: the big lit sign with Jeff holding A on it (its own ring and racing bulbs).
+func _beat_sign_hold() -> void:
+	_place(Players.P1, -42.0, 1.0)
+	_place(Players.P2, -36.0, -1.0)
+	var jeff: Zapper = _players[Players.P1]
+	jeff.input_override = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
+	get_tree().create_timer(0.6).timeout.connect(func() -> void: jeff.input_override["action"] = true)

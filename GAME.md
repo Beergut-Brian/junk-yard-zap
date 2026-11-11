@@ -195,11 +195,12 @@ pictogram `Pictos` draws from the condition.
 | --- | --- |
 | Left stick | Move left/right; aim direction while firing (the beam follows the stick) |
 | A (Action) | Fire the current gun. Hold for grow/shrink and gravity grab |
-| B (Jump) | Jump. Low, floaty, forgiving. Both characters can hop onto most objects |
+| B (Jump) | Tap: a short hop. Hold: higher, up to a cap (let go early and the rise stops). Floaty, forgiving; both characters, off the ground or off objects. Numbers in `data/players/jump.tres` |
 | RB / LB | Next / previous gun. A big icon wheel pops for half a second |
 | Right stick | Also aims, for players who want it. Never required |
-| Start | Pause |
-| Select | Not used in play; the Reset Yard sign is in-world, hold A on it |
+| Start | Pause. The pause menu has **Reset Yard** (the swirl picture): one press, back into the yard as it resets |
+| Select | **Hold 1.5 s: Reset Yard** (a ring by the player fills, then whoosh and bell). A tap does nothing. Also: hold A on the big lit sign by the start for 2 s |
+| Select + Start | Held 2 s (either order): solo mode on/off. Never resets the yard, and a Select hold that reset the yard never turns into solo |
 
 - Camera: shared, frames both players, zooms out as they separate, soft-locked to the yard bounds. Never splits. If one player wanders off-screen the camera leans toward them and a little arrow with their colour points the way.
 - Objects can tumble in 3D but are nudged back toward the play plane by a gentle spring, so nothing drifts behind or in front of the players.

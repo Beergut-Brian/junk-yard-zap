@@ -337,16 +337,59 @@ func _build_front_gate() -> void:
 	box(b, Vector3(3.3, 0.22, 0.6), 0.08, c("rust_dark"), Vector3(0, 4.15, 0.1), Vector3(-12, 0, 0))
 	for y in [1.2, 3.9]:
 		box(b, Vector3(3.1, 0.14, 0.2), 0.04, c("fence_dark"), Vector3(0, y, 0.02))
-	# The Reset Yard sign: a yellow board with a round "start again" arrow.
+	# The Reset Yard sign (playtest 2026-11-10: "far more visible"): a tall marquee board on two
+	# posts, a big glowing "start again" swirl on deep plum, a ring of chasing bulbs, a warm lamp
+	# and a lit stand-here pad at its feet. ResetSignFx animates it.
 	var s := level.reset_sign
-	box(s, Vector3(0.16, 1.7, 0.16), 0.05, c("fence_dark"), Vector3(0, 0.85, 0))
-	box(s, Vector3(1.35, 0.95, 0.12), 0.12, ArtKit.gun(&"bouncy").lerp(c("cream"), 0.25), Vector3(0, 1.75, 0))
-	box(s, Vector3(1.45, 1.05, 0.08), 0.12, c("ink"), Vector3(0, 1.75, -0.03))
-	var arrow := group(Vector3(0, 1.75, 0.08), Vector3.ZERO, s)
-	var ring := put(arrow, ArtKit.torus(0.2, 0.3, 24), c("ink"), Vector3.ZERO, Vector3(90, 0, 0), Vector3(1, 0.5, 1))
-	ring.name = "Swirl"
-	put(arrow, ArtKit.cyl(0.14, 0.2, 0.0, 12), c("ink"), Vector3(0.25, 0.08, 0), Vector3(0, 0, 180), Vector3(1, 1, 0.5))
-	box(arrow, Vector3(0.14, 0.14, 0.06), 0.03, ArtKit.gun(&"bouncy").lerp(c("cream"), 0.25), Vector3(0.25, 0.2, 0.02))
+	var y := YardLevel.SIGN_Y
+	var gold := Color("ffd23f")
+	for x in [-1.05, 1.05]:
+		box(s, Vector3(0.22, y + 1.1, 0.22), 0.06, c("fence_dark"), Vector3(x, (y + 1.1) * 0.5, -0.08))
+	box(s, Vector3(2.75, 2.25, 0.16), 0.14, c("ink"), Vector3(0, y, -0.04))
+	box(s, Vector3(2.5, 2.0, 0.14), 0.16, c("plum").darkened(0.25), Vector3(0, y, 0.02))
+	box(s, Vector3(2.9, 0.26, 0.5), 0.08, c("rust_dark"), Vector3(0, y + 1.22, 0.1), Vector3(-10, 0, 0))
+	var fx := ResetSignFx.new()
+	fx.name = "SignFx"
+	fx.level = level
+	fx.on_mat = ArtKit.mat(Color("fff3b0"), 3.0)
+	fx.off_mat = ArtKit.mat(Color("8a6a3a"))
+	s.add_child(fx)
+	var bulb := ArtKit.sphere(0.075, 10)
+	var n_x := 9
+	var n_y := 7
+	for i in n_x:   # top and bottom rows, then the sides
+		for row in [-1.0, 1.0]:
+			fx.bulbs.append(put(s, bulb, Color.WHITE, Vector3(-1.2 + 2.4 * i / (n_x - 1), y + row * 0.92, 0.12)))
+	for i in range(1, n_y - 1):
+		for col in [-1.0, 1.0]:
+			fx.bulbs.append(put(s, bulb, Color.WHITE, Vector3(col * 1.2, y - 0.92 + 1.84 * i / (n_y - 1), 0.12)))
+	var arrow := group(Vector3(0, y, 0.12), Vector3.ZERO, s)
+	arrow.name = "Swirl"
+	fx.swirl = arrow
+	# Three quarters of a fat ring (beads along an arc) and a big triangle head chasing its tail.
+	var bead := ArtKit.sphere(0.13, 12)
+	var rad := 0.55
+	var a0 := deg_to_rad(-60.0)
+	var span := deg_to_rad(270.0)
+	for i in 19:
+		var a := a0 + span * i / 18.0
+		ArtKit.put(arrow, bead, gold, Vector3(cos(a), sin(a), 0) * rad, Vector3.ZERO, Vector3.ONE, 1.6)
+	var tip_a := a0 + span
+	var tip := Vector3(cos(tip_a), sin(tip_a), 0) * rad
+	# A triangular prism facing the camera, pointing along the arc (counter-clockwise).
+	# (The prism's first corner points down once stood up; the holder turns it onto the tangent.)
+	var head := group(tip, Vector3(0, 0, rad_to_deg(tip_a) + 90.0 - 270.0), arrow)
+	ArtKit.put(head, ArtKit.cyl(0.36, 0.14, -1.0, 3), gold, Vector3.ZERO, Vector3(90, 0, 0), Vector3.ONE, 1.6)
+	var lamp := OmniLight3D.new()
+	lamp.light_color = Color("ffd98a")
+	lamp.omni_range = 5.5
+	lamp.light_energy = 2.2
+	lamp.position = Vector3(0, y, 1.4)
+	s.add_child(lamp)
+	fx.lamp = lamp
+	# The stand-here pad: a glowing ring on the ground in front of the sign.
+	ArtKit.put(s, ArtKit.cyl(1.25, 0.04, -1.0, 32), gold.lerp(c("cream"), 0.3), Vector3(0, 0.03, 1.0), Vector3.ZERO, Vector3(1, 1, 0.55), 0.8)
+	ArtKit.put(s, ArtKit.cyl(1.0, 0.05, -1.0, 32), c("ground").lerp(gold, 0.25), Vector3(0, 0.04, 1.0), Vector3.ZERO, Vector3(1, 1, 0.55))
 	# The tire pile Chuck naps in.
 	var tp := level.tire_pile
 	var tyre := ArtKit.torus(0.3, 0.62, 28)

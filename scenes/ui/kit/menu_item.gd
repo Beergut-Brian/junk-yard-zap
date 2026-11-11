@@ -30,6 +30,8 @@ var chip := "":
 		chip = v
 		queue_redraw()
 var chip_players: Array = []
+## A picture before the label (Bleed.LEFT bars): glyph.call(item, centre, radius, colour).
+var glyph := Callable()
 
 var focused := false:
 	set(v):
@@ -162,6 +164,10 @@ func _draw() -> void:
 				_draw_chip(Vector2(tx + w + 60.0, cy), k)
 		Bleed.LEFT:
 			var tx := maxf(r.position.x, 0.0) + 64.0
+			if glyph.is_valid():
+				var gr := fs * 0.5
+				glyph.call(self, Vector2(tx + gr, cy), gr, col)
+				tx += gr * 2.0 + 28.0
 			UiStyle.draw_show(self, Vector2(tx, cy), label, _fit(label, fs, r.end.x - 132.0 * k - 30.0 - tx), col)
 		_:
 			UiStyle.draw_show(self, Vector2(r.get_center().x + 30.0 * k, cy), label, _fit(label, fs, r.size.x - 100.0 * k - 40.0), col, 1)

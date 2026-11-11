@@ -1,11 +1,18 @@
 ## Pause menu, Showtime style: the game stays visible, softened and tinted, and a dark wedge slides
 ## in from the left edged in the pauser's colour, with a big PAUSED, a "PLAYER 2 PAUSED" tag and
-## slanted bars: Resume, Restart (back to the lobby), Settings, Back to Open Jar (asks first).
+## slanted bars, each with a picture: Resume, Reset Yard (whoosh and bell, back in the yard at once,
+## no question), Restart (back to the lobby), Settings, Back to Open Jar (asks first).
 ## Either pad moves the cursor, A presses, B resumes or backs out of Settings / the question.
 ## Start is Game's (it resumes from anywhere). Shown while Game.state == PAUSED.
 extends Control
 
-enum Choice { RESUME, RESTART, SETTINGS, DOOR }
+enum Choice { RESUME, RESET, RESTART, SETTINGS, DOOR }
+
+const GLYPHS := {
+	Choice.RESUME: UiGlyphs.Kind.RESUME, Choice.RESET: UiGlyphs.Kind.RESET,
+	Choice.RESTART: UiGlyphs.Kind.LOBBY, Choice.SETTINGS: UiGlyphs.Kind.SETTINGS,
+	Choice.DOOR: UiGlyphs.Kind.DOOR,
+}
 
 var focus := Choice.RESUME
 ## The player whose Start opened the menu (P1 for the keyboard).
@@ -17,7 +24,8 @@ var paused_by := Players.P1:
 
 var _tw: Tween
 
-@onready var _buttons: Array = [$Card/Buttons/Resume, $Card/Buttons/Restart, $Card/Buttons/Settings, $Card/Buttons/Door]
+@onready var _buttons: Array = [$Card/Buttons/Resume, $Card/Buttons/ResetYard, $Card/Buttons/Restart,
+		$Card/Buttons/Settings, $Card/Buttons/Door]
 @onready var _card: Control = $Card
 @onready var _wedge: Control = $Wedge
 @onready var _by: Control = $Card/PausedBy
@@ -33,6 +41,11 @@ func _ready() -> void:
 	add_to_group("openjar_skinned")
 	_by.draw.connect(_draw_paused_by)
 	apply_skin()
+	for i in _buttons.size():
+		var kind: UiGlyphs.Kind = GLYPHS[i]
+		_buttons[i].glyph = func(item: CanvasItem, c: Vector2, r: float, col: Color) -> void:
+			var spin := Time.get_ticks_msec() * 0.002 if kind == UiGlyphs.Kind.RESET and i == focus else 0.0
+			UiGlyphs.draw(item, kind, c, r, col, spin)
 	visible = Game.state == Game.State.PAUSED
 	_set_focus(Choice.RESUME, false)
 
@@ -57,6 +70,8 @@ func _process(_delta: float) -> void:
 	# Settings brings its own wedge; the pause wedge steps aside for it.
 	_card.visible = not _settings.active
 	_wedge.visible = not _settings.active
+	if focus == Choice.RESET:
+		_buttons[Choice.RESET].queue_redraw()   # the swirl turns while Reset Yard is picked
 	var input := MenuInput.read()
 	if _confirm.active:
 		_confirm.handle(input)
@@ -81,6 +96,8 @@ func press(choice: Choice = focus) -> void:
 	match choice:
 		Choice.RESUME:
 			Game.resume()
+		Choice.RESET:
+			reset_yard()
 		Choice.RESTART:
 			UiSound.play("ui_confirm")
 			Game.to_lobby()
@@ -88,6 +105,16 @@ func press(choice: Choice = focus) -> void:
 			_settings.open()
 		Choice.DOOR:
 			_confirm.open()
+
+
+## Reset Yard from the menu: straight back into the yard, which resets in front of everyone
+## (whoosh, bell, the sign's bulbs racing). Kid-design: no question, one press.
+func reset_yard() -> void:
+	UiSound.play("ui_confirm")
+	Game.resume()
+	var level := YardLevel.find(self)
+	if level:
+		level.reset_yard()
 
 
 ## B: out of the question or Settings, else resume.

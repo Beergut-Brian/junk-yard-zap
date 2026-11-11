@@ -86,10 +86,10 @@ func carry(o: PhysicsObject, path: Array) -> Hand:
 	return h
 
 
-func move(h: Hand, to: Vector3) -> void:
+func move(h: Hand, to: Vector3, speed := HAND_SPEED) -> void:
 	var dt := 1.0 / Engine.physics_ticks_per_second
 	while h.global_position.distance_to(to) > 0.01:
-		h.global_position = h.global_position.move_toward(to, HAND_SPEED * dt)
+		h.global_position = h.global_position.move_toward(to, speed * dt)
 		await step(1)
 	await step(20)
 
@@ -514,18 +514,57 @@ func test_b3_cow_over_tower() -> void:
 	await expect_done(l, &"b3_cow_over_tower", 600)
 
 
+## Wait, in simulated physics time, until every object in objs has stayed under SETTLE_SPEED for
+## SETTLE_HOLD seconds; give up after max_s. Returns the simulated seconds it took, or -1.0.
+## Counting physics ticks (not frames or wall time) makes it the same on a fast desk and a slow CI box.
+const SETTLE_SPEED := 0.15   # m/s over the g * dt a resting body still reads (0.16 at 60 Hz)
+const SETTLE_SPIN := 0.3     # rad/s; a crate rocking on an edge barely moves its centre
+const SETTLE_HOLD := 0.25    # s of stillness in a row
+
+
+func settle(objs: Array, max_s := 4.0) -> float:
+	var t := 0.0
+	var still := 0.0
+	while t < max_s:
+		await get_tree().physics_frame
+		var dt := get_physics_process_delta_time()
+		t += dt
+		var fast := SETTLE_SPEED + float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)) * dt
+		var moving := false
+		for o: PhysicsObject in objs:
+			moving = moving or o.linear_velocity.length() >= fast or o.angular_velocity.length() >= SETTLE_SPIN
+		still = 0.0 if moving else still + dt
+		if still >= SETTLE_HOLD:
+			return t
+	return -1.0
+
+
 func test_b3_stack_five() -> void:
 	var l := level()
 	await step(5)
 	top(l, &"b3_stack_five")
+	# Each thing is set down 10 cm over the one before and let go; the next is aimed at where that one
+	# came to rest. This used to fail on CI and pass locally: the base went down at x -42.5, half on the
+	# garden gnome (-42.9), the bottom crate was lifted up through crate_2 sitting on it (tumbling it),
+	# and each next drop was aimed after a fixed 40 frames while the top was still sliding (0.7 to 5 m/s).
+	# Now: clear ground between the cone and the watering can, crate_2 off the top first, and each drop
+	# waits in physics time until the whole stack is still. It completes with every aim moved 6 or 12 cm
+	# either way (adding up the stack), and at 30, 60 and 120 Hz physics.
 	var y := 0.0
-	var x := -42.5
-	for k in [&"washing_machine", &"crate", &"crate_2", &"tv", &"toolbox"]:
+	var x := -45.4   # clear ground: traffic cone at -44.0, watering can at -46.7
+	var placed: Array[PhysicsObject] = []
+	for k in [&"washing_machine", &"crate_2", &"crate", &"tv", &"toolbox"]:
 		var o := l.object(k)
 		var hy := y + o.half_extent_along(Vector3.UP) + 0.1
-		var h := await carry(o, [Vector3(o.global_position.x, 8, 0), Vector3(x, 8, 0), Vector3(x, hy, 0)])
+		var h := await carry(o, [Vector3(o.global_position.x, 8, 0), Vector3(x, 8, 0), Vector3(x, hy + 0.6, 0)])
+		await move(h, Vector3(x, hy, 0), 1.5)   # the last bit gently, as hands set a thing down
 		drop(o, h)
-		await step(40)
+		placed.append(o)
+		var took: float = await settle(placed)
+		assert_float(took).override_failure_message("stack still moving 4 s after %s landed" % k).is_greater(0.0)
+		if placed.size() > 1:
+			assert_bool(Goals._sits_on(o, placed[-2])).override_failure_message(
+					"%s at %s is not on %s at %s" % [k, o.global_position, placed[-2].key, placed[-2].global_position]).is_true()
 		y = o.global_position.y + o.half_extent_along(Vector3.UP)
 		x = o.global_position.x
 	await expect_done(l, &"b3_stack_five", 240)
