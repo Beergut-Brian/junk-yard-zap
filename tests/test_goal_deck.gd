@@ -372,7 +372,7 @@ func test_b2_three_in_tub() -> void:
 		var o := l.object(k)
 		var h := await carry(o, [o.global_position + Vector3(0, 3, 0), tub.global_position + Vector3(0, 3, 0), tub.global_position + Vector3(0, 1.2, 0)])
 		drop(o, h)
-		await step(30)
+		await step(90)   # let it settle (the ball bounces) before the next lands on it
 	await expect_done(l, &"b2_three_in_tub")
 
 

@@ -47,8 +47,8 @@ func test_about_forty_object_types_all_with_art_and_faces() -> void:
 		var floor_y := -d.size.y * 0.5 if d.shape != ObjectData.Shape.SPHERE else -d.size.x * 0.5
 		var low := _lowest(art, o.get_node("Visual"))
 		# Sits on its collision floor: not floating, not sunk (a little give for rounded feet). The
-		# kite's tail of bows drapes below it on purpose.
-		if d.id != &"kite":
+		# kite's tail of bows and the balloon's string drape below them on purpose.
+		if d.id not in [&"kite", &"balloon"]:
 			assert_float(low).override_failure_message("%s art bottom %.2f vs floor %.2f" % [d.id, low, floor_y]) \
 					.is_between(floor_y - 0.1, floor_y + 0.1)
 		o.free()
