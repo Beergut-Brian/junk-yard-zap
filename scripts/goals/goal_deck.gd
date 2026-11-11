@@ -63,9 +63,11 @@ func current() -> GoalData:
 	return cards.get(order[0]) if not order.is_empty() else null
 
 
-func _process(delta: float) -> void:
+## Counted in physics time, not frames: a slow frame (or a slow CI box) can't stretch the gap between
+## two checks and miss a duck that was only fast, or a car that was only over the fence, for a moment.
+func _physics_process(delta: float) -> void:
 	_t += delta
-	if _t < CHECK_EVERY or not checking:
+	if _t < CHECK_EVERY - 0.001 or not checking:
 		return
 	_t = 0.0
 	check_now()
