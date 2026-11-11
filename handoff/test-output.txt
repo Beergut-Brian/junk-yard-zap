@@ -1,0 +1,7 @@
+docs only: no tests run
+
+git diff --cached --stat (before commit; handoff.json and this file are in the commit too):
+ PLAN-STATUS.md                 |  8 ++++----
+ handoff/REPORT.md              | 34 ++++++++++++++++++++++++++++++++++
+ handoff/worm-readiness-rows.md | 22 ++++++++++++++++++++++
+ 3 files changed, 60 insertions(+), 4 deletions(-)
