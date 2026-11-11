@@ -368,9 +368,15 @@ func test_b2_three_in_tub() -> void:
 	await step(5)
 	top(l, &"b2_three_in_tub")
 	var tub := l.object(&"bathtub")
-	for k in [&"ball", &"toaster", &"bucket"]:
-		var o := l.object(k)
-		var h := await carry(o, [o.global_position + Vector3(0, 3, 0), tub.global_position + Vector3(0, 3, 0), tub.global_position + Vector3(0, 1.2, 0)])
+	# Each thing gets its own place, the way you'd pack a tub: the toaster on the floor at the left
+	# end, the bucket on the toaster, then the ball at the right end. The tub is 1.76 m inside and
+	# 0.86 m deep, so the 0.9 m ball rides on the rims and rolls to a wall. Dropping all three on the
+	# centre made a pile that kicked one out or not depending on the CPU (CI failed, local passed);
+	# this packing completes with every drop point moved 12 cm either way, at 30, 60 and 120 Hz physics.
+	for k: Array in [[&"toaster", -0.5, 1.0], [&"bucket", -0.5, 1.4], [&"ball", 0.45, 1.3]]:
+		var o := l.object(k[0])
+		var over := tub.global_position + Vector3(k[1], 3, 0)
+		var h := await carry(o, [o.global_position + Vector3(0, 3, 0), over, tub.global_position + Vector3(k[1], k[2], 0)])
 		drop(o, h)
 		await step(90)   # let it settle (the ball bounces) before the next lands on it
 	await expect_done(l, &"b2_three_in_tub")
