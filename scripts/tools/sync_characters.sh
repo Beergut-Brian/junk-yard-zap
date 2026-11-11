@@ -4,7 +4,7 @@
 #   scripts/tools/sync_characters.sh ~/openjar/openjar-characters v0.3.0
 # For every id in the tag's characters.json "roster" it copies the runtime files into
 # assets/characters/<id>/:
-#   <id>.glb          the 3D master (model_3d); Godot extracts its face/cloth textures on import
+#   <id>.glb          the 3D master (model_3d); its face/cloth textures stay embedded on import (project.godot [importer_defaults])
 #   pixel.png         the pixel form at native size, drawn by the library's own sprite code
 #                     (needs python3 + Pillow; skipped with a warning without them)
 #   voice/*.ogg       the voice barks, if any are recorded yet
@@ -92,8 +92,8 @@ for cid in index.get("roster", []):
         show(c["model_3d"], os.path.join(d, f"{cid}.glb"))
         entry["glb"] = res + f"{cid}.glb"
         credits.append((f"characters/{cid}/{cid}.glb", f"`openjar-characters` `{tag}`, `{c['model_3d']}` "
-                        "(Jarlings avatar kit, Blender, procedural); Godot extracts its textures "
-                        f"(`{cid}_*.png`) on import", f"{c['name']}, playable; copied unchanged"))
+                        "(Jarlings avatar kit, Blender, procedural); its textures stay embedded "
+                        "on import (no extracted files)", f"{c['name']}, playable; copied unchanged"))
     if pixel_png(c, os.path.join(d, "pixel.png")):
         entry["pixel"] = res + "pixel.png"
         credits.append((f"characters/{cid}/pixel.png", f"`openjar-characters` `{tag}`, "
