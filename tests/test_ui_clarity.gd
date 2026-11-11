@@ -3,6 +3,9 @@
 class_name TestUiClarity
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const P1 := Players.P1
 const P2 := Players.P2
 const Lobby := preload("res://scenes/ui/lobby.gd")
@@ -14,6 +17,7 @@ var _real_picks := ""
 
 
 func before() -> void:
+	_clock.pin()
 	_real_profile = Save.profile
 	Save.profile = "gdunit_ui_clarity"   # main.tscn saves the yard: never the family's profile
 	Save.wipe()
@@ -28,6 +32,7 @@ func before() -> void:
 
 
 func after() -> void:
+	_clock.restore()
 	Game.quit_exits = true
 	Save.wipe()
 	Save.profile = _real_profile

@@ -4,6 +4,9 @@
 class_name TestMoreObjects
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const OBJECTS := "res://data/objects/"
 const NEW := [&"rubber_chicken", &"garden_gnome", &"kiddie_pool", &"trampoline", &"tire_swing",
 		&"swim_ring", &"lawn_flamingo", &"surfboard"]
@@ -12,10 +15,18 @@ const TOGGLES := [&"bouncy", &"balloon", &"magnet", &"freeze"]
 var world: Node3D
 
 
+func before() -> void:
+	_clock.pin()
+
+
 func before_test() -> void:
 	Game.demo = false
 	world = Node3D.new()
 	add_child(world)
+
+
+func after() -> void:
+	_clock.restore()
 
 
 func after_test() -> void:

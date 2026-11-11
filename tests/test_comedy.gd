@@ -4,6 +4,9 @@
 class_name TestComedy
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const P1 := Players.P1
 const P2 := Players.P2
 const IDLE := {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
@@ -15,6 +18,7 @@ var _t0 := 100000.0
 
 
 func before() -> void:
+	_clock.pin()
 	_real_profile = Save.profile
 	Save.profile = "gdunit_comedy"   # never touch the family's yard
 	_real_settings = Save.settings_path
@@ -23,6 +27,7 @@ func before() -> void:
 
 
 func after() -> void:
+	_clock.restore()
 	Save.wipe_settings()
 	Save.settings_path = _real_settings
 	Save.reload_settings()
