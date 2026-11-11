@@ -4,6 +4,9 @@
 class_name TestPlaytest1
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const P1 := Players.P1
 const P2 := Players.P2
 const GREEN := Color("3cc24a")
@@ -16,6 +19,7 @@ var _real_picks := ""
 
 
 func before() -> void:
+	_clock.pin()
 	Save.profile = "gdunit"
 	_real_settings = Save.settings_path
 	Save.settings_path = "user://test_settings_playtest1.json"
@@ -27,6 +31,7 @@ func before() -> void:
 
 
 func after() -> void:
+	_clock.restore()
 	Save.wipe_settings()
 	Save.settings_path = _real_settings
 	Save.reload_settings()

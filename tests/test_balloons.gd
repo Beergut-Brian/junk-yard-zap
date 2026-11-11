@@ -4,10 +4,17 @@
 class_name TestBalloons
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 const KEYS := [&"balloon", &"balloon_2", &"balloon_3"]
 
 var world: Node3D
 var _real_settings := ""
+
+
+func before() -> void:
+	_clock.pin()
 
 
 func before_test() -> void:
@@ -16,6 +23,10 @@ func before_test() -> void:
 	Save.settings_path = "user://test_settings_balloons.json"
 	world = Node3D.new()
 	add_child(world)
+
+
+func after() -> void:
+	_clock.restore()
 
 
 func after_test() -> void:

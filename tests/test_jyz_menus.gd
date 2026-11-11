@@ -47,6 +47,8 @@ func after_test() -> void:
 		_main.free()
 	Players.reset()
 	Game._set_state(Game.State.LOBBY)
+	Yard.reset_world()   # main.tscn set the yard's bounds, gate and pond water: don't hand them on
+	get_tree().paused = false
 
 
 func test_skin_loads_with_the_game_look() -> void:

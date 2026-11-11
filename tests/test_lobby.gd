@@ -59,6 +59,7 @@ func after_test() -> void:
 	Game.demo = false
 	Game._set_state(Game.State.LOBBY)
 	get_tree().paused = false
+	Yard.reset_world()   # main.tscn set the yard's bounds, gate and pond water: don't hand them on
 
 
 func _on_quit() -> void:

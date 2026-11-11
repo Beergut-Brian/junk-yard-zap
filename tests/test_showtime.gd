@@ -58,6 +58,7 @@ func after_test() -> void:
 	var w := get_tree().root.get_node_or_null("ShowtimeWipe")
 	if w:
 		w.free()
+	Yard.reset_world()   # main.tscn set the yard's bounds, gate and pond water: don't hand them on
 
 
 func _boot() -> Node:

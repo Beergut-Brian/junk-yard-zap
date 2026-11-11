@@ -5,6 +5,9 @@
 class_name TestVehicleFaces
 extends GdUnitTestSuite
 
+const Clock := preload("res://tests/fixtures/physics_clock.gd")
+var _clock := Clock.new()   # 60 Hz, time scale 1: frame counts below mean the same seconds everywhere
+
 ## Every vehicle and machine object type. A new vehicle or machine goes here AND gets has_face = false.
 const VEHICLES_AND_MACHINES := [&"car", &"tractor", &"boat", &"wheelbarrow", &"washing_machine", &"tv",
 		&"toaster", &"fridge", &"cannon"]
@@ -18,6 +21,7 @@ var _real_profile := ""
 
 
 func before() -> void:
+	_clock.pin()
 	_real_profile = Save.profile
 	Save.profile = "gdunit_vehicle_faces"
 	Save.wipe()
@@ -27,6 +31,7 @@ func before() -> void:
 
 
 func after() -> void:
+	_clock.restore()
 	Save.wipe()
 	Save.profile = _real_profile
 	Save.wipe_settings()
