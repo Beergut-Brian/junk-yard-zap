@@ -25,11 +25,18 @@ func test_play_does_not_crash() -> void:
 
 
 func test_play_twice_reuses_pool_node() -> void:
-	UiSound.play("ui_move")
+	# Every menu cue has a designed file now (launch-ready-1), so play() goes through Audio and the
+	# synth pool is only the fallback for a cue without one: exercise the pool itself.
+	var first := UiSound._ensure_pool()
 	await get_tree().process_frame
-	var first := get_tree().root.get_node_or_null("UiSound")
 	assert_object(first).is_not_null()
-	UiSound.play("ui_tick")
+	assert_object(get_tree().root.get_node_or_null("UiSound")).is_same(first)
+	assert_object(UiSound._ensure_pool()).is_same(first)
 	await get_tree().process_frame
 	assert_int(get_tree().root.get_children().filter(func(c): return c.name == "UiSound").size()).is_equal(1)
-	assert_object(get_tree().root.get_node_or_null("UiSound")).is_same(first)
+
+
+func test_a_cue_with_a_file_plays_through_audio() -> void:
+	assert_bool(UiSound.has_file("ui_move")).is_true()
+	UiSound.play("ui_move")
+	assert_bool(Audio.played("ui_move")).is_true()
