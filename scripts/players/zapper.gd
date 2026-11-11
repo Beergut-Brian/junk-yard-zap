@@ -432,7 +432,9 @@ func _size_step(dir: int) -> bool:
 	if not is_instance_valid(o):
 		return false
 	var ok := Effects.zap(&"grow" if dir > 0 else &"shrink", o)
-	Audio.play(("grow" if dir > 0 else "shrink") if ok else "nope", o.global_position)
+	# The boing is pitched by the new size: a tiny thing boings high, a giant one low.
+	Audio.play(("grow" if dir > 0 else "shrink") if ok else "nope", o.global_position,
+		Audio.size_pitch(o.target_scale) if ok else 1.0)
 	_refused = not ok
 	if ok:
 		o.speak()

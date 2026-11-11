@@ -654,7 +654,7 @@ func _rattle(delta: float) -> void:
 ## The object's voice, pitched by size: a giant cow moos low, a tiny car beeps high.
 ## kind: react, grabbed, thrown, landed (Audio.voice caps it at one per object per 0.5 s).
 func speak(kind := "react") -> void:
-	Audio.voice(data.voice_cue(), kind, self, 1.0 / sqrt(current_scale))
+	Audio.voice(data.voice_cue(), kind, self, Audio.size_pitch(current_scale))
 
 
 ## Thrown or launched: dizzy for a moment.
@@ -664,8 +664,8 @@ func dizzy(seconds := 1.5) -> void:
 
 func _on_landed(impulse: float) -> void:
 	var m := volume_mass()
-	var band := "light" if m < 1.0 else ("medium" if m < 8.0 else ("heavy" if m < 60.0 else "huge"))
-	Audio.play("impact_%s" % band, global_position, 1.0 / sqrt(current_scale))
+	var band := Audio.impact_band(m)
+	Audio.play("impact_" + band, global_position, Audio.size_pitch(current_scale))
 	var gag: String = LANDING_GAGS.get(data.id, "")
 	if gag != "" and impulse >= GAG_MIN_IMPULSE:
 		_landing_gag(gag)
@@ -678,7 +678,7 @@ func _on_landed(impulse: float) -> void:
 ## A named landing gag (GAME.md "Audio": "Piano plays a chord when it lands"): it always plays,
 ## whatever the size and past the object-voice rate cap, with a ring of keys-coloured sparks.
 func _landing_gag(cue: String) -> void:
-	Audio.play(cue, global_position, 1.0 / sqrt(current_scale))
+	Audio.play(cue, global_position, Audio.size_pitch(current_scale))
 	var top := global_position + Yard.up_at(global_position) * _half_along(Yard.up_at(global_position), current_scale)
 	Fx.ring(get_tree(), global_position, Color(1.0, 0.85, 0.35), radius() * 1.2)
 	Fx.burst(get_tree(), top, Color(1, 1, 0.95, 0.9), 10, 0.7, 0.7)

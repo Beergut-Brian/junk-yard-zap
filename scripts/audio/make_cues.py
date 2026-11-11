@@ -931,9 +931,11 @@ for i, f in enumerate((620, 700, 540), 1):
 for i, f in enumerate((170, 150, 190), 1):
     add("impact_medium_%d" % i, impact_medium(f), "medium landing: thud + knock", -1)
 for i, f in enumerate((120, 105, 130), 1):
-    add("impact_heavy_%d" % i, impact_heavy(f), "heavy landing: boom + junk bouncing")
-add("impact_huge_1", impact_huge(95), "huge landing: cartoon crash, clattering cans, a boing, stars")
-add("impact_huge_2", impact_huge(85), "huge landing: cartoon crash, clattering cans, a boing, stars")
+    add("impact_heavy_%d" % i, impact_heavy(f), "heavy landing: boom + junk bouncing", -2.5)
+# Heavy / huge trims (A-04): a giant landing gets up to +1.5 dB in Audio.play and ducks the music,
+# so the files sit lower and the biggest crash still peaks under card_done, the loudest cue.
+add("impact_huge_1", impact_huge(95), "huge landing: cartoon crash, clattering cans, a boing, stars", -3.5)
+add("impact_huge_2", impact_huge(85), "huge landing: cartoon crash, clattering cans, a boing, stars", -3.5)
 for i, s in enumerate((0.7, 0.8, 0.65), 1):
     add("splash_%d" % i, splash(s), "pond: sploosh + bubbles + droplets")
 add("card_view_1", card_view(84), "goal card: page flip + soft marimba tick")

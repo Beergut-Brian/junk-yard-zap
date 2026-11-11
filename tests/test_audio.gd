@@ -8,10 +8,23 @@ const KINDS := ["react", "grabbed", "thrown", "landed"]
 
 var world: Node3D
 var _bands: Array = []
+var _real_settings := ""
 
 
 func _on_big(_p: Vector3, band: String) -> void:
 	_bands.append(band)
+
+
+func before_suite() -> void:
+	# Never the player's real settings file (a test that changes a slider must not touch it).
+	_real_settings = Save.settings_path
+	Save.settings_path = "user://test_settings_audio.json"
+
+
+func after_suite() -> void:
+	if FileAccess.file_exists(Save.settings_path):
+		DirAccess.remove_absolute(Save.settings_path)
+	Save.settings_path = _real_settings
 
 
 func before_test() -> void:
@@ -217,3 +230,62 @@ func test_pool_stays_bounded_under_spam() -> void:
 		if p is AudioStreamPlayer and p.playing and p.get_meta(&"cue") == "impact_huge":
 			same += 1
 	assert_int(same).is_less_equal(Audio.MAX_SAME_CUE)
+
+
+## A-01: one zap cue per gun, all seven different, each with its own files.
+func test_every_gun_has_its_own_zap_cue() -> void:
+	var seen := {}
+	for g in Zapper.load_guns():
+		var cue: String = g.zap_cue()
+		assert_bool(seen.has(cue)).override_failure_message("%s shared" % cue).is_false()
+		seen[cue] = true
+		assert_int(Audio.variants(cue)).override_failure_message(cue).is_greater_equal(2)
+	assert_int(seen.size()).is_equal(7)
+
+
+## A-04: four mass bands; light and heavy things never share a landing sound.
+func test_impact_band_follows_mass() -> void:
+	assert_str(Audio.impact_band(0.2)).is_equal("light")
+	assert_str(Audio.impact_band(0.999)).is_equal("light")
+	assert_str(Audio.impact_band(1.0)).is_equal("medium")
+	assert_str(Audio.impact_band(8.0)).is_equal("heavy")
+	assert_str(Audio.impact_band(60.0)).is_equal("huge")
+	assert_str(Audio.impact_band(5000.0)).is_equal("huge")
+	for band in ["light", "medium", "heavy", "huge"]:
+		assert_bool(Audio.has_cue("impact_" + band)).override_failure_message(band).is_true()
+
+
+func test_light_and_heavy_objects_land_in_different_bands() -> void:
+	Audio.synth_fallback = false
+	var egg := PhysicsObject.new(ObjectData.make(&"egg", ObjectData.Shape.BOX, Vector3.ONE * 0.3, 0.3, Color.WHITE))
+	var anvil := PhysicsObject.new(ObjectData.make(&"anvil", ObjectData.Shape.BOX, Vector3.ONE, 20.0, Color.WHITE))
+	world.add_child(egg)
+	world.add_child(anvil)
+	egg._on_landed(1.0)
+	anvil._on_landed(1.0)
+	Audio.synth_fallback = true
+	assert_bool(Audio.played("impact_light")).is_true()
+	assert_bool(Audio.played("impact_heavy")).is_true()
+	assert_str(Audio.impact_cue(egg.volume_mass())).is_not_equal(Audio.impact_cue(anvil.volume_mass()))
+	# The same egg grown 4x is 64x the mass: a bigger band, and a lower landing.
+	egg.current_scale = 4.0
+	assert_str(Audio.impact_cue(egg.volume_mass())).is_not_equal("impact_light")
+
+
+## A-02: the smaller the object, the higher it sounds (voice, landing and the grow / shrink boing).
+func test_grow_and_shrink_boing_pitch_follows_size() -> void:
+	assert_float(Audio.size_pitch(1.0)).is_equal_approx(1.0, 0.001)
+	assert_float(Audio.size_pitch(0.25)).is_greater(Audio.size_pitch(1.0))
+	assert_float(Audio.size_pitch(4.0)).is_less(Audio.size_pitch(1.0))
+	var o := PhysicsObject.new(ObjectData.make(&"cow", ObjectData.Shape.BOX, Vector3.ONE, 1.0, Color.WHITE))
+	world.add_child(o)
+	var z: Zapper = load("res://scenes/players/zapper.tscn").instantiate()
+	world.add_child(z)
+	z._size_latched = o
+	assert_bool(z._size_step(1)).is_true()
+	var big_pitch: float = Audio.last_pitch["grow"]
+	z._size_step(-1)
+	z._size_step(-1)
+	var small_pitch: float = Audio.last_pitch["shrink"]
+	assert_float(o.target_scale).is_less(1.0)
+	assert_float(small_pitch).is_greater(big_pitch)

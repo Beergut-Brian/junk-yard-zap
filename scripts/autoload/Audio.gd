@@ -39,6 +39,11 @@ const DUCK_ON := {"impact_heavy": DUCK_IMPACT_DB * 0.6, "impact_huge": DUCK_IMPA
 ## Which characters do what (GAME.md "Audio"): Jeff delights at big impacts, Chuck narrates his
 ## own zaps. Anyone else in the roster does both, politely (the gates still apply).
 const BARK_STYLE := {"jeff": ["delight"], "chuck": ["narrate"]}
+## A-04: landing cue by volume mass (ObjectData.mass * scale^3). Upper bound (exclusive) -> band;
+## anything at or above the last bound is "huge". Light bonk, medium thud, heavy boom, huge crash.
+const IMPACT_BANDS := [[1.0, "light"], [8.0, "medium"], [60.0, "heavy"]]
+const IMPACT_TOP := "huge"
+const IMPACT_BOOST_DB := 1.5      # most a giant's landing is turned up (a tiny one goes down to -9)
 
 var _pool: Array[AudioStreamPlayer] = []
 var _voice_pool: Array[AudioStreamPlayer] = []
@@ -188,8 +193,9 @@ func play(cue: String, _position = null, pitch := 1.0) -> void:
 		stream = Synth.beep(cue)
 	var vol := 0.0
 	if cue.begins_with("impact_"):
-		# Scaled by size: a giant lands lower (pitch) and louder; a tiny one quieter.
-		vol = clampf(6.0 * log(1.0 / maxf(pitch, 0.05)) / log(2.0), -9.0, 3.0)
+		# Scaled by size: a giant lands lower (pitch) and louder; a tiny one quieter. The boost is
+		# capped at IMPACT_BOOST_DB so the biggest crash stays under card_done (kid design).
+		vol = clampf(6.0 * log(1.0 / maxf(pitch, 0.05)) / log(2.0), -9.0, IMPACT_BOOST_DB)
 	_start(_pick(_pool, cue), stream, cue, pitch * _rng.randf_range(0.95, 1.05), vol)
 	if DUCK_ON.has(cue):
 		duck(DUCK_ON[cue])
@@ -197,6 +203,26 @@ func play(cue: String, _position = null, pitch := 1.0) -> void:
 			big_impact.emit(_position if _position is Vector3 else Vector3.ZERO, cue)
 	if BRIGHTEN_ON.has(cue):
 		brighten()
+
+
+## Mass band name for a landing ("light", "medium", "heavy", "huge"), see IMPACT_BANDS.
+static func impact_band(mass: float) -> String:
+	for b in IMPACT_BANDS:
+		if mass < float(b[0]):
+			return b[1]
+	return IMPACT_TOP
+
+
+## The landing cue for this mass: "impact_<band>".
+static func impact_cue(mass: float) -> String:
+	return "impact_" + impact_band(mass)
+
+
+## A-02: pitch for anything an object says at this scale (voice, impact, grow / shrink): 1 / sqrt,
+## so a quarter-size object sounds an octave up and a 4x giant an octave down. Clamped so a very
+## big or tiny thing stays a friendly sound, never a rumble or a whistle.
+static func size_pitch(scale: float) -> float:
+	return clampf(1.0 / sqrt(maxf(scale, 0.01)), 0.5, 2.0)
 
 
 func _record(cue: String) -> void:
