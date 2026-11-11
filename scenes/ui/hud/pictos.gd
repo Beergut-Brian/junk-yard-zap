@@ -55,13 +55,37 @@ static func gun_icon(ci: CanvasItem, gun: GunData, r: Rect2, alpha := 1.0) -> vo
 				ci.draw_rect(Rect2(m + Vector2(side * s * 0.6 - s * 0.18, s * 0.4), Vector2(s * 0.36, s * 0.3)), Color(0.85, 0.85, 0.9, alpha))
 
 
-## A yard object as a little drawing with a face. id picks the silhouette.
+## No faces on vehicles or machines (Kaden, 2026-11-10): the drawing follows the object's own data
+## (ObjectData.has_face, the same flag the 3D object uses), so the car, tractor, fridge, cannon and
+## friends read as friendly through shape and colour, and their headlights stay lights.
+static var _face_cache := {}
+
+
+static func draws_face(id: StringName) -> bool:
+	if not _face_cache.has(id):
+		var path := "res://data/objects/%s.tres" % id
+		var d := load(path) as ObjectData if ResourceLoader.exists(path) else null
+		_face_cache[id] = d.has_face if d else true
+	return _face_cache[id]
+
+
+## A yard object as a little drawing; a face only when draws_face(id). id picks the silhouette.
 static func object(ci: CanvasItem, id: StringName, m: Vector2, s: float, alpha := 1.0) -> void:
 	var c: Color = OBJ_COLORS.get(id, OBJ_COLORS[&"any"])
 	c.a = alpha
 	var ink := Color(INK, alpha)
 	var face := m
 	match id:
+		&"car":   # a little car: body, cab with a window, a cream headlight, two wheels
+			var cab := Rect2(m + Vector2(-s * 0.6, -s * 0.75), Vector2(s * 1.2, s * 0.6))
+			ci.draw_rect(cab, c)
+			ci.draw_rect(Rect2(cab.position + Vector2(s * 0.12, s * 0.1), Vector2(s * 0.42, s * 0.4)), Color(0.75, 0.9, 1.0, alpha))
+			ci.draw_rect(Rect2(cab.position + Vector2(s * 0.66, s * 0.1), Vector2(s * 0.42, s * 0.4)), Color(0.75, 0.9, 1.0, alpha))
+			ci.draw_rect(Rect2(m + Vector2(-s * 1.2, -s * 0.2), Vector2(s * 2.4, s * 0.7)), c)
+			ci.draw_circle(m + Vector2(s * 1.08, s * 0.0), s * 0.13, Color(1.0, 0.95, 0.7, alpha))
+			for x in [-0.7, 0.7]:
+				ci.draw_circle(m + Vector2(s * x, s * 0.55), s * 0.32, ink)
+				ci.draw_circle(m + Vector2(s * x, s * 0.55), s * 0.13, Color(0.75, 0.75, 0.78, alpha))
 		&"cow":
 			ci.draw_rect(Rect2(m + Vector2(-s, -s * 0.5), Vector2(s * 1.6, s)), c)
 			ci.draw_rect(Rect2(m + Vector2(s * 0.5, -s * 0.85), Vector2(s * 0.6, s * 0.65)), c)
@@ -90,6 +114,8 @@ static func object(ci: CanvasItem, id: StringName, m: Vector2, s: float, alpha :
 		_:
 			ci.draw_rect(Rect2(m - Vector2(s, s) * 0.75, Vector2(s, s) * 1.5), c)
 			ci.draw_rect(Rect2(m - Vector2(s, s) * 0.75, Vector2(s, s) * 1.5), Color(INK, alpha * 0.4), false, s * 0.08)
+	if not draws_face(id):
+		return
 	ci.draw_circle(face + Vector2(-s * 0.25, -s * 0.15), s * 0.11, ink)
 	ci.draw_circle(face + Vector2(s * 0.25, -s * 0.15), s * 0.11, ink)
 	ci.draw_arc(face + Vector2(0, s * 0.05), s * 0.25, 0.3, PI - 0.3, 8, ink, maxf(2.0, s * 0.07), true)
