@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_pdpk1")
 id = &"fridge"
+has_face = false
 size = Vector3(0.9, 1.8, 0.8)
 mass = 6.0
 color = Color(0.92, 0.92, 0.88, 1)

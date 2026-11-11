@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
@@ -171,6 +171,7 @@ func _start_demo() -> void:
 		"delight": _beat_delight()
 		"blame": _beat_blame()
 		"idles": _beat_idles()
+		"rattle": _beat_rattle()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -209,6 +210,19 @@ func _beat_combo() -> void:
 			cow.speak()
 			Fx.ring(get_tree(), cow.global_position, level.guns_by_effect.get(&"size" if s[2] == &"grow" else s[2], level.guns_by_effect[&"size"]).beam_color, cow.radius())
 			z._flash())
+
+
+## Vehicles and machines rattle instead of pulling a face: the scrap heap's car, TV, fridge and
+## toaster get zapped in turn every 0.4 s, so any frame catches one mid-rattle.
+func _beat_rattle() -> void:
+	_beat_zone(&"scrap_heap")
+	var ids := [&"car", &"tv", &"fridge", &"toaster"]
+	for i in 12:
+		get_tree().create_timer(1.0 + i * 0.4).timeout.connect(func() -> void:
+			var o := level.object(ids[i % ids.size()])
+			if o:
+				o.react_look(ObjectFace.Mood.WIDE, 0.9)
+				o.speak())
 
 
 ## Art check: Jeff and Chuck standing in one zone (front_gate, scrap_heap, pond, barn, tower), guns up.

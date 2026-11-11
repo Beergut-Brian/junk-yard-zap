@@ -92,3 +92,65 @@ func test_every_gun_fires_its_own_sound() -> void:
 		var sum := _md5(cue)
 		assert_bool(seen.has(sum)).override_failure_message("%s sounds the same as %s" % [g.id, seen.get(sum)]).is_false()
 		seen[sum] = g.id
+
+
+# ---------------------------------------------------------------------------- Y-12, K-10 faces
+
+const FACELESS := [&"car", &"tractor", &"boat", &"wheelbarrow", &"washing_machine", &"tv", &"toaster",
+		&"fridge", &"cannon"]
+
+
+static func _all_objects() -> Array[ObjectData]:
+	var out: Array[ObjectData] = []
+	for f in DirAccess.get_files_at("res://data/objects/"):
+		if f.ends_with(".tres"):
+			out.append(load("res://data/objects/" + f) as ObjectData)
+	return out
+
+
+func test_vehicles_and_machines_have_no_face_everything_else_does() -> void:
+	var datas := _all_objects()
+	assert_int(datas.size()).is_greater_equal(48)
+	for d in datas:
+		assert_bool(d.has_face).override_failure_message("%s: face rule" % d.id).is_equal(not FACELESS.has(d.id))
+		# Nothing is mute: every type, faceless or not, has its own voice file set.
+		assert_bool(Audio.has_cue(d.voice_cue() + "_react")).override_failure_message("%s is mute" % d.id).is_true()
+
+
+func test_a_faceless_machine_rattles_and_speaks_when_zapped() -> void:
+	world.add_child(YardStrip.new())
+	var car := PhysicsObject.new(load("res://data/objects/car.tres"))
+	car.position = Vector3(0, 1.0, 0)
+	world.add_child(car)
+	await step(40)
+	assert_object(car.face).is_null()
+	var vis := car.get_node("Visual") as Node3D
+	assert_float(vis.rotation.z).is_equal(0.0)
+	Audio.history.clear()
+	Audio.stop_all()
+	Audio.clock = 5000.0   # clear of the landing's voice rate cap
+	assert_bool(Effects.zap(&"bouncy", car)).is_true()
+	car.speak()
+	Audio.clock = -1.0
+	assert_bool(car.rattling()).is_true()
+	assert_bool(Audio.played("voice_car_react")).is_true()
+	var moved := false
+	for i in 20:
+		await step(1)
+		moved = moved or absf(vis.rotation.z) > 0.02 or vis.position.y > 0.01
+	assert_bool(moved).override_failure_message("the car did not rattle").is_true()
+	await step(60)
+	assert_bool(car.rattling()).is_false()
+	assert_float(vis.rotation.z).is_equal(0.0)
+	assert_float(vis.position.y).is_equal(0.0)
+
+
+func test_a_cow_still_pulls_a_face_and_does_not_rattle() -> void:
+	world.add_child(YardStrip.new())
+	var cow := PhysicsObject.new(load("res://data/objects/cow.tres"))
+	cow.position = Vector3(0, 1.0, 0)
+	world.add_child(cow)
+	await step(20)
+	assert_object(cow.face).is_not_null()
+	Effects.zap(&"bouncy", cow)
+	assert_bool(cow.rattling()).is_false()
