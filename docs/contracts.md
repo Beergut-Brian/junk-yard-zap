@@ -355,7 +355,7 @@ func GoalMemory.touch(o: PhysicsObject) -> void   # a gun touched o here (the de
 | --- | --- | --- |
 | `OBJECT_SCALE_AT_LEAST` | grown at least `amount` steps, done growing | amount |
 | `OBJECT_HAS_EFFECT` | carries `effect` | effect |
-| `OBJECT_IN_ZONE` | inside `other`: a Yard zone, a card spot, or an object (the bathtub) | other |
+| `OBJECT_IN_ZONE` | inside `other`: a Yard zone, a card spot, or an object (the bathtub; things piled on what is in it count too, held ones never) | other |
 | `GLUED_PAIR` | glued to `other` | other |
 | `OBJECT_HEIGHT_ABOVE` / `OBJECT_HEIGHT_BELOW` | centre above / below `amount` m | amount |
 | `OBJECT_SPEED_OVER` / `OBJECT_SPEED_UNDER` | faster (and not held by gravity grab) / slower than `amount` m/s | amount |
@@ -364,7 +364,8 @@ func GoalMemory.touch(o: PhysicsObject) -> void   # a gun touched o here (the de
 | `ALL_OF` | the same object satisfies every one of `steps` | steps |
 | `SEQUENCE` | the same object satisfies `steps` in order (needs a GoalMemory; false without one) | steps |
 
-Guards, on any card or step: `touched_in` (the object's last gun touch was inside that zone/spot; needs
+Guards, on any card or step: `touched_in` (the object's last gun touch was inside that zone/spot, or within
+`Goals.TOUCH_REACH` (1 m, an arm's reach) of it; needs
 a GoalMemory) and `untouched` (in a sequence: no gun touched it since the previous step; a touch sends
 the object back to step 1). A "gun touch" is any zap on it, or being held by gravity grab. Knocks from
 other objects, magnets on *other* objects and the see-saw are not touches: that is the chain-reaction rule.
@@ -372,7 +373,8 @@ other objects, magnets on *other* objects and the see-saw are not touches: that 
 Card spots (`Goals.SPOTS`, boxes copied from the yard's landmarks; `tests/test_goal_deck.gd` keeps them
 honest): `barn_loft`, `pipe_top`, `pipe_bottom`, `over_pond`, `tower_top`.
 
-Cards sort by `band`, then `rank`, then `id`. The deck checks the top card every 0.1 s; sequence progress
+Cards sort by `band`, then `rank`, then `id`. The deck checks the top card every 0.1 s of physics time
+(`_physics_process`, so a slow frame never stretches the gap); sequence progress
 resets when the top card changes and on Reset Yard.
 
 ```gdscript
