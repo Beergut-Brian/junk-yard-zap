@@ -124,12 +124,37 @@ static func motif(ci: CanvasItem, kind: GunData.Kind, m: Vector2, s: float, t :=
 
 # ------------------------------------------------------------------------------------- pieces
 
+## Polygons skipped because they had no area (launch-ready: tests read it).
+static var skipped := 0
+
+
+## draw_colored_polygon, except a shape squashed to nothing (a token popping in from size 0, an
+## arrow of zero length) is skipped: the engine can't triangulate it and logs an error every frame.
+static func fill(ci: CanvasItem, pts: PackedVector2Array, col: Color) -> bool:
+	if not has_area(pts):
+		skipped += 1
+		return false
+	ci.draw_colored_polygon(pts, col)
+	return true
+
+
+## At least three points and more than a quarter of a square pixel inside (shoelace); smaller is
+## invisible anyway.
+static func has_area(pts: PackedVector2Array) -> bool:
+	if pts.size() < 3:
+		return false
+	var a := 0.0
+	for i in pts.size():
+		a += pts[i].cross(pts[(i + 1) % pts.size()])
+	return absf(a) * 0.5 > 0.25
+
+
 ## A cream junk crate with eyes, half-size h, turned by rot.
 static func box(ci: CanvasItem, at: Vector2, h: float, ow: float, alpha := 1.0, rot := 0.0) -> void:
 	var pts := PackedVector2Array()
 	for c in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
 		pts.append(at + (c * h).rotated(rot))
-	ci.draw_colored_polygon(pts, Color(CREAM, alpha))
+	fill(ci, pts, Color(CREAM, alpha))
 	pts.append(pts[0])
 	ci.draw_polyline(pts, Color(INK, alpha), ow, true)
 	var slat := Color(0.85, 0.72, 0.55, alpha)
@@ -144,7 +169,7 @@ static func ball(ci: CanvasItem, at: Vector2, r: float, ow: float, alpha := 1.0,
 	for i in 24:
 		var a := TAU * i / 24.0
 		pts.append(at + Vector2(cos(a) * r / squash, sin(a) * r * squash + r * (1.0 - squash)))
-	ci.draw_colored_polygon(pts, Color(CREAM, alpha))
+	fill(ci, pts, Color(CREAM, alpha))
 	pts.append(pts[0])
 	ci.draw_polyline(pts, Color(INK, alpha), ow, true)
 	ci.draw_arc(at, r * 0.62, PI * 1.1, PI * 1.5, 8, Color(1, 1, 1, alpha), ow * 0.8, true)
@@ -159,10 +184,10 @@ static func balloon(ci: CanvasItem, at: Vector2, r: float, ow: float, alpha := 1
 	for i in 24:
 		var a := TAU * i / 24.0
 		pts.append(at + Vector2(cos(a) * r * 0.86, sin(a) * r))
-	ci.draw_colored_polygon(pts, Color(CREAM, alpha))
+	fill(ci, pts, Color(CREAM, alpha))
 	pts.append(pts[0])
 	ci.draw_polyline(pts, Color(INK, alpha), ow, true)
-	ci.draw_colored_polygon(PackedVector2Array([at + Vector2(-r * 0.15, r * 1.12), at + Vector2(r * 0.15, r * 1.12), at + Vector2(0, r * 0.95)]), Color(INK, alpha))
+	fill(ci, PackedVector2Array([at + Vector2(-r * 0.15, r * 1.12), at + Vector2(r * 0.15, r * 1.12), at + Vector2(0, r * 0.95)]), Color(INK, alpha))
 	ci.draw_arc(at, r * 0.62, PI * 1.1, PI * 1.45, 8, Color(1, 1, 1, alpha), ow, true)
 
 
@@ -232,9 +257,9 @@ static func _arrow(ci: CanvasItem, from: Vector2, to: Vector2, w: float, ow: flo
 	var head := PackedVector2Array([to + d * w * 1.2, to - d * w + n * w * 1.5, to - d * w - n * w * 1.5])
 	ci.draw_line(from, to - d * w * 0.5, Color(INK, c.a), w + ow * 2.0, true)
 	var hh := PackedVector2Array([head[0] + d * ow * 1.5, head[1] + (n - d) * ow * 1.3, head[2] + (-n - d) * ow * 1.3])
-	ci.draw_colored_polygon(hh, Color(INK, c.a))
+	fill(ci, hh, Color(INK, c.a))
 	ci.draw_line(from, to - d * w * 0.5, c, w, true)
-	ci.draw_colored_polygon(head, c)
+	fill(ci, head, c)
 
 
 ## Where the bouncing ball is at t: two hops, the last one ending at its top.

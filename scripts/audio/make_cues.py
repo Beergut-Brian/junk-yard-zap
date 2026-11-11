@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate every Junk Yard Zap sound file from parameters. Python stdlib + ffmpeg only.
 
-    python3 scripts/audio/make_cues.py                    # everything (parallel)
+    python3 scripts/audio/make_cues.py                    # every SFX (parallel); music only when named
     python3 scripts/audio/make_cues.py zap_size_1 voice_cow_react
     python3 scripts/audio/make_cues.py --list             # stems and what they are
     python3 scripts/audio/make_cues.py --preview handoff/sfx_preview.ogg   # only the preview
@@ -462,6 +462,71 @@ def round_end(rng):
 def solo_swap(rng):
     puff = envelope(soft(noise(0.15, rng), 1500), ar(0.15, 0.01, 0.1))
     return cat([(puff, 0.0, 0.8), (chirp(500, 1200, 0.1), 0.06, 0.5)])
+
+
+# ---------------------------------------------------------------- menu kit cues (UiSound)
+# The Showtime menu kit synthesises these in code when no file exists (scenes/ui/kit/ui_sound.gd);
+# these are the yard's own versions: marimba, wood and tin, never a test-tone beep.
+
+def cut(x, sec):
+    """Keep the first `sec` seconds (menu cues stay short; build() fades the end)."""
+    return x[:int(sec * SR)]
+
+
+def ui_move(rng):
+    return cat([(knock(900, rng, 0.035, 0.8), 0.0, 1.0), (burst(rng, 0.015, 2600, 2.0, 0.004), 0.0, 0.25)])
+
+
+def ui_back(rng):
+    return cat([(knock(700, rng, 0.04, 0.8), 0.0, 0.8), (chirp(520, 380, 0.08, ((1, 1, 0), (2, 0.12, 0))), 0.01, 0.35)])
+
+
+def ui_tick(rng):
+    return cat([(burst(rng, 0.012, 3000, 3.0, 0.003), 0.0, 1.0), (knock(1300, rng, 0.02, 0.6), 0.0, 0.5)])
+
+
+def ui_toggle(rng):
+    return cat([(clang(620, 0.05, rng, 0.7), 0.0, 0.6), (knock(240, rng, 0.05), 0.012, 1.0)])
+
+
+def player_ready(rng):
+    run = notes_seq([(72, 0.0), (76, 0.07), (79, 0.14)], rng, MARIMBA, 0.09)
+    return cat([(run, 0.0, 1.0), (thump(160, 70, 0.14, 0.05), 0.22, 0.9), (clang(900, 0.08, rng, 0.5), 0.22, 0.35)])
+
+
+def player_unready(rng):
+    return notes_seq([(76, 0.0), (71, 0.1)], rng, MARIMBA, 0.09)
+
+
+def count_tick(rng):   # countdown: a wood block and a little bell, not a test tone
+    return cat([(knock(1100, rng, 0.05), 0.0, 1.0), (struck(midi(88), 0.07, rng, BELL), 0.0, 0.35)])
+
+
+def ui_go(rng):
+    return cut(cat([(chord((72, 76, 79, 84), 0.2, rng, MARIMBA), 0.0, 1.0), (thump(140, 60, 0.18, 0.06), 0.0, 0.8),
+                    (sparkle(rng, 4, 0.05, 0.3, 0.12), 0.05, 1.0)]), 0.6)
+
+
+def ui_wipe(rng):
+    return cat([(swoosh(rng, 0.18, 500, 2600), 0.0, 0.8), (swoosh(rng, 0.18, 600, 3000), 0.13, 0.8),
+                (swoosh(rng, 0.22, 700, 3400), 0.26, 0.9)])
+
+
+def ui_card(rng):
+    return cut(cat([(swoosh(rng, 0.5, 1200, 5000, 0.8, 0.85), 0.0, 0.7), (sparkle(rng, 5, 0.3, 0.65, 0.14), 0.0, 1.0),
+                    (struck(midi(84), 0.2, rng, BELL), 0.48, 0.5)]), 0.9)
+
+
+def ui_pause(rng):
+    dip = chirp(700, 300, 0.18, ((1, 1, 0), (2, 0.2, 0)))
+    pad = cut(chord((60, 64, 67), 0.3, rng, MARIMBA), 0.5)
+    pad = envelope(pad, ar(len(pad) / SR, 0.02, 0.3))
+    return cat([(burst(rng, 0.05, 1800, 1.5, 0.02), 0.0, 0.5), (dip, 0.0, 0.6), (pad, 0.16, 0.7)])
+
+
+def char_swap(rng):
+    puff = envelope(soft(noise(0.12, rng), 1600), ar(0.12, 0.01, 0.08))
+    return cat([(puff, 0.0, 0.8), (pop(650)(rng), 0.07, 0.8), (chirp(600, 1300, 0.09), 0.08, 0.4)])
 
 
 # ---------------------------------------------------------------- barks (generic Jarling voices)
@@ -979,6 +1044,18 @@ add("round_start", round_start, "round start: soft pea-whistle toot-tooot")
 add("round_end", round_end, "round end: marimba ta-da")
 add("pause", two_notes(81, 76, XYLO), "pause / resume: two soft xylophone notes down")
 add("ui_confirm", two_notes(72, 79, MARIMBA, 0.07), "menu select: two-note marimba up")
+add("ui_move", ui_move, "menu move: small wood tak", -4)
+add("ui_back", ui_back, "menu back: wood tak + falling chirp", -3)
+add("ui_tick", ui_tick, "settings segment: ratchet tick", -5)
+add("ui_toggle", ui_toggle, "settings toggle: tin clack + wood click", -3)
+add("player_ready", player_ready, "lobby ready: marimba run up + stamp", -1)
+add("player_unready", player_unready, "lobby unready: two marimba notes down", -2)
+add("count_tick", count_tick, "lobby countdown: wood block + small bell", -2)
+add("ui_go", ui_go, "lobby go: marimba chord hit + thump + sparkle")
+add("ui_wipe", ui_wipe, "menu wipe: three fast whooshes", -2)
+add("ui_card", ui_card, "round card: airy swell + sparkle + bell")
+add("ui_pause", ui_pause, "pause menu opens: scratch dip + soft marimba pad", -2)
+add("char_swap", char_swap, "chooser swap: puff + pop + rising chirp", -2)
 for k in range(4):
     add("bark_%d" % (k + 1), bark("plain", k), "generic bark (no voice pack): wordless 'hey!' / 'woo!' / 'hup!' / 'ooh!'", -1)
 for k in range(3):
@@ -1073,7 +1150,9 @@ def main():
     if args.preview and not args.only:
         print("preview %.1f s: %s" % (preview(PREVIEW, args.preview), ", ".join(PREVIEW)))
         return
-    stems = args.only or list(FILES)
+    # The shipped music is ElevenLabs (assets/CREDITS.md): the synth music placeholders only build
+    # when named, so a full run never writes over it.
+    stems = args.only or [s for s in FILES if FILES[s][1] != "music"]
     unknown = [s for s in stems if s not in FILES]
     if unknown:
         sys.exit("unknown stem(s): " + ", ".join(unknown))

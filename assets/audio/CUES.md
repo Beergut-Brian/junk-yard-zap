@@ -74,6 +74,18 @@ Mass bands (`Audio.IMPACT_BANDS`, volume mass = `ObjectData.mass * scale^3`): li
 | `round_end` | sfx/round_end.ogg | `Game.end_round` | round end: marimba ta-da | 0 |
 | `pause` | sfx/pause.ogg | pause / resume | pause / resume: two soft xylophone notes down | 0 |
 | `ui_confirm` | sfx/ui_confirm.ogg | menu select (`Game`, `UiSound`) | menu select: two-note marimba up | 0 |
+| `ui_move` | sfx/ui_move.ogg | menu cursor moves (`UiSound`) | small wood tak | -4 |
+| `ui_back` | sfx/ui_back.ogg | menu back / bump (`UiSound`) | wood tak + falling chirp | -3 |
+| `ui_tick` | sfx/ui_tick.ogg | settings slider step (`UiSound`) | ratchet tick | -5 |
+| `ui_toggle` | sfx/ui_toggle.ogg | settings toggle (`UiSound`) | tin clack + wood click | -3 |
+| `player_ready` | sfx/player_ready.ogg | lobby: a player readies (`UiSound`) | marimba run up + stamp | -1 |
+| `player_unready` | sfx/player_unready.ogg | lobby: unready (`UiSound`) | two marimba notes down | -2 |
+| `count_tick` | sfx/count_tick.ogg | lobby countdown dot (`UiSound`) | wood block + small bell | -2 |
+| `ui_go` | sfx/ui_go.ogg | lobby countdown done (`UiSound`) | marimba chord hit + thump + sparkle | 0 |
+| `ui_wipe` | sfx/ui_wipe.ogg | lobby to yard wipe (`UiSound`) | three fast whooshes | -2 |
+| `ui_card` | sfx/ui_card.ogg | round card "ZAP TIME!" (`UiSound`) | airy swell + sparkle + bell | 0 |
+| `ui_pause` | sfx/ui_pause.ogg | pause menu opens (`UiSound`) | scratch dip + soft marimba pad | -2 |
+| `char_swap` | sfx/char_swap.ogg | chooser: next character (`UiSound`) | puff + pop + rising chirp | -2 |
 | `bark` | sfx/bark_1..4.ogg | plain bark, character has no own cue / pack (partner zap) | generic bark (no voice pack): wordless 'hey!' / 'woo!' / 'hup!' / 'ooh!' | -1 |
 | `bark_cheer` | sfx/bark_cheer_1..3.ogg | card done, every awake player (`Zapper.cheer`) | generic cheer: 'yi-yaaay!' + claps | -1 |
 | `bark_zap` | sfx/bark_zap_1..3.ogg | Chuck narrates his own zap | generic zap narration (Chuck): 'bzz-HA!', 'pew-pew!', 'zip!' | -1 |
