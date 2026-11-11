@@ -171,3 +171,31 @@ func test_a_full_cue_rebuild_never_writes_over_the_elevenlabs_music() -> void:
 	var src := FileAccess.get_file_as_string("res://scripts/audio/make_cues.py")
 	assert_str(src).contains('stems = args.only or [s for s in FILES if FILES[s][1] != "music"]')
 	assert_bool(FileAccess.file_exists("res://assets/audio/music/music_yard.ogg")).is_true()
+
+
+## The gun wheel pops its tokens in from size 0: those frames used to log "Invalid polygon data,
+## triangulation failed" (seen in the soak and the session flow).
+func test_gun_icons_skip_shapes_squashed_to_nothing() -> void:
+	assert_bool(GunIcons.has_area(PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO]))).is_false()
+	assert_bool(GunIcons.has_area(PackedVector2Array([Vector2.ZERO, Vector2(1, 0), Vector2(2, 0)]))).is_false()
+	assert_bool(GunIcons.has_area(PackedVector2Array([Vector2.ZERO, Vector2(10, 0), Vector2(0, 10)]))).is_true()
+	var canvas := Control.new()
+	canvas.size = Vector2(400, 400)
+	add_child(canvas)
+	var tiny := [0]
+	var big := [0]
+	canvas.draw.connect(func() -> void:
+		for kind in GunData.Kind.values():
+			for t in [0.0, 0.1, 0.5, 1.0]:
+				var before := GunIcons.skipped
+				GunIcons.token(canvas, kind, Color.ORANGE, Vector2(50, 50), 0.02, t)
+				tiny[0] += GunIcons.skipped - before
+				before = GunIcons.skipped
+				GunIcons.token(canvas, kind, Color.ORANGE, Vector2(200, 200), 60.0, t)
+				big[0] += GunIcons.skipped - before)
+	canvas.queue_redraw()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	assert_int(tiny[0]).is_greater(0)    # the squashed shapes were caught, not sent to the engine
+	assert_int(big[0]).is_equal(0)       # a full-size icon draws every shape
+	canvas.free()

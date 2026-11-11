@@ -249,6 +249,7 @@ Source S12: Kaden 2026-11-10, "I would like to have Spaceballs, Junk Yard Zap, a
 | L-08 | S12 | README play instructions for this game | built | README.md "How to play", "Run, test, export" | Was the template README |
 | L-09 | S12 | Exported build boots clean | built | handoff/REPORT.md "Export" (export + headless boot of the binary, zero script errors) | |
 | L-10 | S12 | PLAN-STATUS whole again: headers, sources, sections and totals were lost in the jyz-ui-1 merge (e6dbb64) | built | this file (structure from 37720a1, every row's latest text) | |
+| L-12 | S12 | No engine errors in play: the gun wheel popped its icons in from size 0 and logged "Invalid polygon data, triangulation failed" (5 in 30 s of demo) | built | scenes/ui/hud/gun_icons.gd `fill()` / `has_area()`, test_launch_ready.gd::test_gun_icons_skip_shapes_squashed_to_nothing; soak and export demo logs | Found in the soak and the session flow |
 | L-11 | S12 | On the TV box: 60 fps at 1920x1080 on the GTX 1060, pads, the real TV | later | docs/launch-checklist.md "Needs the TV box" | Needs the TV box (weekend) |
 
 ## Totals
