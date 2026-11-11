@@ -1,32 +1,4 @@
-# Plan status: Junk Yard Zap
 
-Checked 2026-11-10 (evening) against `origin/dev` @ `56bc037` (after PR #23, playtest 2026-11-10) by the plan-status lane (jyz-plan-sync-2, branch `docs/plan-status-jyz-2`). Moved here: C-13 and C-18 to built; U-16, G-17 and S-03 superseded by the playtest (S9); six new rows from S9 and S10 (U-20, U-21, G-19, S-27, S-28, Y-17); stale notes fixed on C-06, C-09, C-14, C-17, V-01, U-07, V-08, G-10, K-01, P-11, A-12, M-06. Earlier today: polish lane (S-16, A-13, K-08, Y-04, Y-05, Y-08, Y-10, M-03), store lane (V-11), comedy lane (P-05, P-06, P-07, A-12), chooser catchphrase lane (M-06), gap-close-1 (G-13, U-15, Y-12, A-14), balloons-reconcile (Y-11), audio fill (A-01..A-04 notes). Format: `~/openjar/lanes/plan-status-format.md`.
-Lanes: update your rows in the same commit as the work. New briefs add rows; never delete or renumber.
-
-Sources (newest last):
-- S1 `~/openjar/JUNKYARD-PLAN-2026-11-09.md` (Kaden's original brief). GAME.md keeps it nearly verbatim; rows cite the S1 section.
-- S2 GAME.md "Producer notes" (2026-11-09), plus the Kaden quotes in GAME.md: build order (Pitch) and "No personal info or real places, ever".
-- S3 GAME.md "Decisions made without Kaden": 2026-11-09 (Gary), physics mass and grow/glue rules.
-- S4 GAME.md "Decisions": 2026-11-10, playtest #1 polish lane.
-- S5 GAME.md "Decisions": 2026-11-10, Showtime menus lane.
-- S6 GAME.md "Decisions": 2026-11-10, Systems character-chooser adoption.
-- S7 GAME.md "The launch deck (30 cards, 2026-11-10)" and "Decisions": 2026-11-10, goal deck lane.
-- S8 Kaden 2026-11-10 (chooser-catchphrase brief, verbatim): "on the character selector, whenever choosing a new character or scrolling through the list of characters, when a character is up on the screen, I'd like it to say it's catchphrase once. Give a little audio queue of who they are if that makes sense."
-- S9 GAME.md "Playtest 2026-11-10 changes" (Kaden, playtest #1 of `v0.1.0`; report `playtests/2026-11-10.md`). Items 1-5; they supersede the sections above.
-- S10 Kaden's answers to GAME.md "Open questions": D44 a (palette, `~/openjar/HANDOFF-2026-11-10-morning.md`) and D53 a (the cow is a library character, **Patience**: openjar-characters `main` `proposals/cow/bible.md`, commit 90c5d6d, PR 15; `~/openjar/HANDOFF-2026-11-10-afternoon.md` 14:30 and 15:21). Recorded in GAME.md "Decisions made without Kaden" 2026-11-10.
-
-Playtest #1 happened on 2026-11-10 (build `v0.1.0`): `playtests/2026-11-10.md`, and GAME.md "Playtest 2026-11-10 changes" (S9). Verdict: the yard and objects are "beautiful"; gun icons, cards, controls and reset felt unpolished. Gary made two lanes from it: `jyz-ui-1` (U-20, U-21, G-19) and `jyz-controls-1` (S-27, S-28); both are open worktrees with no commits beyond `dev` yet.
-
-**Frame paths:** `handoff/frames/*.png` is not tracked in git. Those frames live in the lane worktree that made them: `~/openjar/work/junk-yard-zap--feature_yard-polish/handoff/frames/` (Y-04, Y-05, Y-08, Y-10, M-03, A-13, K-08), `..._yard-comedy/` (P-05, P-06, P-07), `..._jyz-gap-close-1/` (Y-12, G-13), `..._yard-balloons/` (Y-11 balloon_*, reconcile_*). Checked 2026-11-10 evening: every named frame is there.
-
-How this was checked (sync 2026-11-10 evening): every `file::test` named in a row was checked to exist as a `func` in `tests/` on `origin/dev` (all present; 262 test functions in the suite). The suite was not rerun by this docs lane; it is green on dev per PR #16 and #23 CI. Earlier check: the full suite ran once from a fresh import (`--ignoreHeadlessMode`): **186/186 test cases green, 0 errors**. Real frames came from `scripts/tools/shots.sh` (`--demo --demo-beat=combo|goal|wide|rings|apart`, plus the lobby) into `.scratch/shots/<beat>/t004.0s.png` (lobby: `t002.0s.png`). That folder is gitignored, so re-run the script to see the frames. I looked at every frame. Test names are `file::test`, with files under `tests/`.
-
-Area prefixes: C core loop, build phases, open questions · P players · U guns · Y yard and objects · G goal cards · S systems, camera, controls, save · M menus · V visuals · A audio · K kid-design checks.
-
-## Core loop, phases, open questions
-
-| ID | Source | Item (short, Kaden's words where possible) | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | C-01 | S1 Core loop | "There is no round. A session is however long you want" | built | test_playtest1.gd::test_a_whole_session_loops_cleanly_in_the_main_scene, scenes/main.gd header | |
 | C-02 | S1 Core loop | Saves the yard as you leave it ("every zapped cow stays zapped") | built | test_greybox.gd::test_save_load_round_trip, test_playtest1.gd::test_balloon_parks_in_reach_and_a_reload_keeps_it_there | |
 | C-03 | S1 Core loop | Layer 1 Toy: fire any gun at anything, something visible and funny happens instantly | built | test_greybox.gd::test_toggle_guns_zap_and_undo_with_a_sound, frame combo | |
@@ -47,11 +19,6 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | C-18 | S1 Open questions | Cow as a library character or a yard object (recommendation: library character) | built | D53 a: openjar-characters `main` proposals/cow/bible.md (90c5d6d, PR 15, "the cow is Patience"); `~/openjar/HANDOFF-2026-11-10-afternoon.md` 15:21; GAME.md "Decisions made without Kaden" 2026-11-10 | Kaden answered: library character, named Patience (the quadruped Jarling, still a proposal on characters main, a resident so never playable). The yard cow in this game is still the plain yard object: Y-17 |
 | C-19 | S1 Open questions | Must-have objects from Kaden's own junk yard or shop | superseded | S2 "No personal info or real places, ever"; GAME.md dropped the question | |
 | C-20 | S1 Out of scope | Level editor, a second yard, online/versus/scores, guns beyond seven (time-slow, paint, duplicate, rocket) | later | GAME.md "Out of scope for v1" | After v1 |
-
-## Players
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | P-01 | S1 Players | Jeff P1 green, Chuck P2 red | built | test_playtest1.gd::test_p1_is_jeff_and_green_p2_is_chuck_and_red, test_jyz_chooser.gd::test_defaults_are_jeff_p1_and_chuck_p2 | Now the defaults (P-02) |
 | P-02 | S1 Players | Player-locked Jeff/Chuck | superseded | S6 "You play whoever you picked": test_jyz_chooser.gd::test_spawn_follows_the_pick_with_the_stand_in, ::test_swapped_picks_keep_the_slot_colours | |
 | P-03 | S1 Players, S2 | Each player has a gun belt; guns are gear (`hand_r` gun, `waist` belt) on Jarlings | built | test_jyz_chooser.gd::test_gear_equips_on_the_picked_body, test_art.gd::test_every_gun_is_gear_with_a_muzzle_and_player_tape, assets/gear/belt.glb | |
@@ -65,11 +32,6 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | P-11 | S2 | Same Jarlings as Spaceballs, from openjar-characters | built | test_roster.gd, test_jyz_chooser.gd::test_main_spawns_the_picks_and_drop_in_sleeps_the_pick, frame goal | Roster synced to v0.5.1 (data/roster.json `characters_tag`, 22 characters), with catchphrases on 18 of 22 (not Jeff, Chuck, Bloom, Old Reel) |
 | P-12 | S6 | Barks follow the character: own cue, else their voice pack, else a generic beep, never another character's voice | built | test_jyz_chooser.gd::test_barks_fall_back_to_generic_never_another_voice, ::test_a_character_with_own_cue_uses_it | |
 | P-13 | S4 | Partner aim ring circles the partner at chest height; a sleeping partner is not a target | built | test_playtest1.gd::test_partner_aim_ring_circles_the_partner_not_his_feet, ::test_a_sleeping_partner_is_not_a_target | |
-
-## Guns
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | U-01 | S1 Guns | Seven guns; guns are data (`GunData`), so gun 8 is a Content job | built | data/guns/1_size … 7_magnet.tres, test_greybox.gd::test_belt_has_seven_guns_in_belt_order | |
 | U-02 | S1 Guns | Grow/Shrink: 4 sizes each way; mass and sound pitch follow | built | test_physics_proto.gd::test_grow_shrink_limits_and_mass_by_volume, physics_object.gd:586 (pitch 1/√scale) | |
 | U-03 | S1 Guns | Grow/Shrink controls: "Hold up: scale up. Hold down: scale down" | built | test_greybox.gd::test_size_gun_tap_grows_stick_down_shrinks_hold_repeats | Built a little differently: tap A = bigger, A + stick down = smaller, hold repeats. The decision is in the grey-box lane report, not in GAME.md |
@@ -89,13 +51,8 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | U-17 | S1 Combine | Every effect composes with every other, with no special cases | built | test_physics_proto.gd::test_every_pair_of_effects_composes | |
 | U-18 | S3 | Grow is refused with a "nope" boing when there's no room | built | test_physics_proto.gd::test_grow_with_no_room_is_refused, ::test_grow_on_frozen_object_does_not_crush_through_floor | |
 | U-19 | S3 | Physics body mass = volume_mass^0.5; logical mass still drives cards and juice | built | test_physics_proto.gd::test_giant_landing_on_a_crate_does_not_sink_it | Supersedes S1 Tech "scale mass by volume" for the physics body only |
-| U-20 | S9 1 | "The gun icons ... were very confusing": one bold icon per gun showing what it does, in its beam colour; RB/LB wheel shows big icons, the current one clearly picked, with weight; held gun and beam match the icon | missing | GAME.md "Playtest 2026-11-10 changes" item 1 | Lane `jyz-ui-1` (worktree open, no commits beyond dev yet). Supersedes U-16 |
-| U-21 | S9 2 | "Hard to know what gun did what": switching plays a 1-2 s picture-only preview by the player; first fire per session gets a beat (camera emphasis, distinct sound); every beam, hit and sound unmistakably different | missing | GAME.md "Playtest 2026-11-10 changes" item 2 | Lane `jyz-ui-1`. Distinct sounds already exist (U-15); preview and first-fire beat do not |
-
-## Yard and objects
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
+| U-20 | S9 1 | "The gun icons ... were very confusing": one bold icon per gun showing what it does, in its beam colour; RB/LB wheel shows big icons, the current one clearly picked, with weight; held gun and beam match the icon | built | scenes/ui/hud/gun_icons.gd, handoff frames (jyz-ui-1 icons/wheel) | Built by jyz-ui-1 (playtest 2026-11-10) |
+| U-21 | S9 2 | "Hard to know what gun did what": switching plays a 1-2 s picture-only preview by the player; first fire per session gets a beat (camera emphasis, distinct sound); every beam, hit and sound unmistakably different | built | jyz-ui-1 switch preview + first-fire beat, handoff frames | Built by jyz-ui-1 (playtest 2026-11-10) |
 | Y-01 | S1 Yard | One wide yard, about six screens, a fence at each end | built | frame wide | |
 | Y-02 | S1 Yard | Five zones: front gate, scrap heap, pond, barn, tower | built | frame wide, test_goal_deck.gd::test_every_gun_and_zone_has_a_card | |
 | Y-03 | S1 Yard | Front gate: fence with the card stack, Reset Yard sign, tire pile | built | frame goal (card board, yellow sign, tires) | |
@@ -113,11 +70,6 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | Y-15 | S1 Yard | Persistence of transform, scale and effects; Reset Yard restores the default layout | built | test_greybox.gd::test_save_load_round_trip, ::test_reset_yard_puts_everything_back, data/yard_layout.tres | |
 | Y-16 | S2 Kaden | "No personal info or real places, ever": generic, invented objects and landmarks | built | I read all 48 ids in data/objects/ and the landmarks in yard_dressing.gd: all generic | |
 | Y-17 | S10 | The yard's cow is Patience, the library cow (D53 a) | missing | the barn cow is still data/objects/cow.tres, a plain yard object with a generic face | Follows from C-18. Waits for Patience to leave proposals on characters main (body, voice). Gary to confirm it is wanted in this game |
-
-## Goal cards
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | G-01 | S1 Goal cards | Picture-card stack on the front fence; the top card is the current goal | built | frame goal (board by the gate) | |
 | G-02 | S1 Goal cards | Walk up to the fence to see it big | built | scripts/levels/fence_card.gd (VIEW_DIST pop-up), frame goal | |
 | G-03 | S1 Goal cards | Also small in a corner of the HUD | built | frames goal, combo, wide (top-right card) | |
@@ -136,12 +88,7 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | G-16 | S7 | Every card has a test that completes it in a real yard through the guns | built | test_goal_deck.gd (one test per new card), test_greybox.gd::test_the_five_playtest_cards_complete | |
 | G-17 | S7 | New cards' pictures baked from code; the first ten use Pictos | superseded | scripts/goals/card_art.gd, assets/sprites/goals/ (20 PNGs), frame goal (Pictos card) | S9 item 3 replaces the card art (and the trophy shelf's): G-19; PT10-3: every card is now drawn live by CardArt.draw_goal (crisp at any size); the 20 PNGs are no longer shown for those ids (kept as the content lane's fallback) |
 | G-18 | S7 | Rules: "taller than the barn" = 7 m walls; gun touch = zap or hold; piano may be shoved; deck checks every 0.1 s; chain ball counts below 2.5 m; every card hints | built | test_goal_deck.gd::test_b2_stack_three, ::test_b3_chain_ball, ::test_b3_chain_ball_does_not_count_a_zapped_ball, ::test_b3_piano_pipe_pond, ::test_b2_car_over_fence, ::test_every_card_hints_at_real_yard_objects_and_has_a_picture | |
-| G-19 | S9 3 | Goal cards redesigned: the goal as a clear picture (objects + result), big from the couch, one layout, obvious done/skip; view/done/skip feel like events; trophy shelf uses the same art | missing | GAME.md "Playtest 2026-11-10 changes" item 3 | Lane `jyz-ui-1`. Supersedes G-17. The flip/fireworks/raspberry sounds exist (A-07) |
-
-## Systems, camera, controls, save
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
+| G-19 | S9 3 | Goal cards redesigned: the goal as a clear picture (objects + result), big from the couch, one layout, obvious done/skip; view/done/skip feel like events; trophy shelf uses the same art | built | CardArt.draw_goal (scripts/goals/card_art.gd), handoff frames (cards, trophy shelf) | Built by jyz-ui-1 (playtest 2026-11-10) |
 | S-01 | S1 Camera | 2.5D side view; players and aiming locked to one plane | built | test_physics_proto.gd::test_plane_spring_keeps_z_small, frames | |
 | S-02 | S1 Controls | Left stick moves and aims; right stick also aims, never required | built | zapper.gd:266 ("right stick wins, then the left stick") | |
 | S-03 | S1 Controls | B: jump, low, floaty, forgiving; hop onto objects | superseded | test_playtest1.gd::test_both_players_walk_and_jump | S9 item 5 (Kaden: "Jumping was weird"): variable jump, S-28. The single fixed jump is built and tested |
@@ -170,22 +117,12 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | S-26 | S6 | The belt lives in `assets/gear/`, not `assets/characters/` | built | assets/gear/belt.glb | |
 | S-27 | S9 4 | "There definitely needs to be a reset zone button": hold Select 1.5 s with a filling ring (a tap does nothing), a Reset yard entry in the pause menu, a far more visible in-world sign; whoosh + bell every time; never clashes with Select+Start solo | missing | GAME.md "Playtest 2026-11-10 changes" item 4 | Lane `jyz-controls-1` (worktree open, no commits beyond dev yet). Today: only the sign (S-06) |
 | S-28 | S9 5 | Variable jump: "tapping is short jump, holding is long jump", capped, still floaty | missing | GAME.md "Playtest 2026-11-10 changes" item 5 | Lane `jyz-controls-1`. Supersedes S-03 |
-
-## Menus
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | M-01 | S5 | Showtime kit skinned by `data/menu_skin.tres` (accent #ffb21f, title "Junk Yard Zap") | built | test_jyz_menus.gd::test_skin_loads_with_the_game_look, frame lobby | |
 | M-02 | S5 | Backdrop `SCREEN`: blurs the yard already drawn | built | test_showtime.gd::test_backdrop_modes, frame lobby | |
 | M-03 | S5 | Podiums: the picked Jarlings hold the size gun in their tape, three-quarter view | built | test_polish.gd::test_the_podium_gun_points_up_not_over_the_legs, scenes/ui/lobby_jarling.gd `raise_gun()`, frames handoff/frames/m03_lobby_before.png, m03_lobby_after.png | The gun is held up and out by the shoulder ("guns up!"), so legs and hips show; it stays up after a chooser swap |
 | M-04 | S5 | Round card "ZAP TIME!" with a "THE YARD IS OPEN" strip | built | test_jyz_menus.gd::test_round_card_says_the_yard_is_open | |
 | M-05 | S6 | Lobby character chooser | built | test_chooser.gd, test_jyz_chooser.gd::test_lobby_swap_rebuilds_the_podium_rig_with_the_gun | |
 | M-06 | S8 | Chooser says the character's catchphrase once (Kaden 2026-11-10) | built | test_chooser_voice.gd (12 tests: ::test_three_fast_steps_say_only_the_last_after_the_settle, ::test_standing_still_never_repeats, ::test_scrolling_back_says_it_again, ::test_joining_says_the_pick_once, ::test_two_players_each_on_their_own_voice, ::test_leaving_cancels_a_pending_line, ::test_catchphrase_falls_back_to_bark, ...), test_sync_characters.gd::test_vendors_the_catchphrase, real run handoff/chooser-run.log | Ported from openjar-template. Each step plays `char_swap` at once; 0.3 s (`SAY_SETTLE`) after the last step or a join, the podium's character says `voice/catchphrase.ogg` once, on that player's own panned voice. No catchphrase: a random bark; neither (Jeff, Chuck, Bloom, Old Reel, still in v0.5.1): just the swap sound |
-
-## Visuals
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | V-01 | S1 Art | Low-poly **flat-shaded** 3D with **thick outlines** | superseded | Kaden's D44 a "Golden Afternoon **smooth**" (`~/openjar/HANDOFF-2026-11-10-morning.md`); art_kit.gd:3, :33 (smooth shading, thin ink outline on props) | Recorded in GAME.md "Decisions made without Kaden" 2026-11-10 (S10) |
 | V-02 | S1 Art | One warm key light, soft shadows, painted sky, parallax clouds, camera slightly above eye level | built | scripts/art/yard_light.gd, scripts/art/sky.gdshader, frames wide, apart | |
 | V-03 | S1 Art | Palette constraints: rusty warm junk, cool sky and pond, gun colours never green or red | built | test_art.gd::test_gun_hues_stay_clear_of_the_players, frames | |
@@ -197,11 +134,6 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | V-09 | S1 Art | Juice: fireworks on a finished card | built | fx.gd:90, yard_level.gd:194, test_greybox.gd::test_deck_completes_skips_and_cheers | |
 | V-10 | S1 Art | Store grid: Jeff zapping a cow to giant size while Chuck rides a ballooned bathtub | built | store/grid.png (looked at it) | |
 | V-11 | S1 Art | Store hero: the whole yard **at golden hour** | built | store/hero.png (looked at it), art/preview/store.gd `_golden_hour` (store shot only), art/tools/render_store.sh hero, test_store_hero.gd::test_store_hero_exists_at_920x430 | Front gate to tower in frame; low warm sun behind the tower. The yard reads smaller than the old crop because all 96 m fit in 920 px |
-
-## Audio
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | A-01 | S1 Audio | `zap_<gun>`, 7 distinct cues (boing, hum, twang, squeak, crack, squelch, buzz) | built | test_audio.gd::test_every_gun_has_its_own_zap_cue, ::test_every_game_cue_has_a_file, test_gap_close.gd::test_every_gun_fires_its_own_sound; assets/audio/sfx/zap_<gun>_1..3.ogg (21 files) | Designed per gun in scripts/audio/make_cues.py (CREDITS.md line 34), three variants each, no repeat. Size fires grow/shrink and Grab fires grab, so zap_size and zap_grab only play in the demo combo beat. Audio fill 2026-11-10: all at -16 LUFS, every one under card_done (handoff/REPORT.md) |
 | A-02 | S1 Audio | `grow`/`shrink` rising and falling boing; object voice pitch follows size | built | test_audio.gd::test_pitch_follows_scale, ::test_grow_and_shrink_boing_pitch_follows_size; zapper.gd _size_step; assets/audio/sfx/grow_1..3, shrink_1..3.ogg | Rising and falling boings (make_cues.py). Voice, landing and the grow / shrink boing all use `Audio.size_pitch` (1/sqrt(scale), clamped 0.5..2): a tiny thing sounds higher. Audio fill 2026-11-10: the boing now follows the new size too |
 | A-03 | S1 Audio | `grab` hum up, `throw` whoosh | built | assets/audio/sfx/grab_1..2, throw_1..3.ogg; test_audio.gd::test_every_game_cue_has_a_file; zapper.gd:394, :498 | Hum up and whoosh, designed files |
@@ -216,11 +148,6 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | A-12 | S1 Audio | Barks: Jeff delights at big impacts; Chuck narrates his zaps and blames Jeff; at most one bark per zap | built | test_comedy.gd::test_one_bark_per_zap, ::test_bark_rate_cap_holds_back_a_burst_of_impacts, test_audio.gd::test_bark_gate_one_at_a_time | Every bark passes `Audio.can_bark` (1.6 s per speaker, 0.7 s for anyone), and a zap asks for at most one. Voices come through the fallback: own cue, then voice pack, then generic. Since roster v0.5.1, 18 of 22 characters ship a voice pack (assets/characters/<id>/voice/, 9 files each); Jeff, Chuck, Bloom and Old Reel still use the generic `bark_*` files. A gated reaction does nothing, so there is no silent pose |
 | A-13 | S1 Audio | Piano plays a chord when it lands | built | test_polish.gd::test_the_piano_plays_its_chord_when_it_lands_even_tiny, physics_object.gd `LANDING_GAGS` / `_landing_gag()`, frame handoff/frames/a13_piano_lands.png | The chord file (voice_piano_landed.ogg) existed but only played for medium+ landings and could be held back by the voice rate cap. Now it always plays on a real drop, any size, with a gold ring and black-and-white sparks |
 | A-14 | S1 Audio, K | No scary sounds; even the biggest crash is a cartoon crash | built | test_gap_close.gd::test_no_sound_effect_is_a_long_rumble, test_audio.gd::test_buses_limiter_and_ducking; scripts/audio/make_cues.py line 17 | Audit 2026-11-10 (gap-close-1, ffmpeg ebur128 over all 291 SFX): every file -15 to -20 LUFS, true peak at most -1.1 dBTP, longest 3.5 s (reset_yard), nothing above 9.5 kHz by recipe; the biggest crash (impact_huge) is crash + clattering cans + a boing + stars; hard limiter on Master. Still worth one listen on the TV at full volume |
-
-## Kid-design checks (S1 "Kid-design checks specific to this game")
-
-| ID | Source | Item | Status | Proof | Notes |
-| --- | --- | --- | --- | --- | --- |
 | K-01 | S1 Kid | Every gun does something visible and audible on the first zap, with no setup | built | test_greybox.gd::test_toggle_guns_zap_and_undo_with_a_sound, ::test_size_gun_tap_grows_stick_down_shrinks_hold_repeats, ::test_grab_carries_at_arms_length_and_drops_on_release | Audible = designed SFX (A-01). Playtest #1: Kaden found it "hard to know what gun did what": visible yes, readable no (U-20, U-21) |
 | K-02 | S1 Kid | Every effect undoes with another zap | built | test_playtest1.gd::test_ten_objects_stack_every_effect_and_undo_cleanly, test_more_objects.gd::test_new_types_stack_every_effect_and_undo_cleanly | |
 | K-03 | S1 Kid | Aim assist: pointing roughly at a thing hits it | built | test_physics_proto.gd::test_aim_cone_snaps_to_nearest | |
@@ -231,24 +158,3 @@ Area prefixes: C core loop, build phases, open questions · P players · U guns 
 | K-08 | S1 Kid | Nothing launched off the map or stuck; recall to the gate **with a parachute** | built | test_polish.gd::test_a_recalled_object_floats_down_at_the_gate_under_a_parachute, test_playtest1.gd::test_objects_leaving_the_yard_come_back_at_the_gate, physics_object.gd `open_chute()`, frame handoff/frames/k08_parachute.png | A striped canopy on four cords; falls at 2.6 m/s, folds away on touchdown or after 1.9 s at most. One canopy per glued island |
 | K-09 | S1 Kid | Giant and tiny extremes capped | built | test_playtest1.gd::test_giant_and_tiny_caps_hold | |
 | K-10 | S1 Kid | Every object has a face **and a voice**; nothing is mute | built | test_gap_close.gd::test_vehicles_and_machines_have_no_face_everything_else_does, test_audio.gd::test_every_object_has_a_voice_set | Nothing is mute: 48/48 voice sets. Faces on 39 types; the 9 vehicles and machines rattle instead of pulling a face (see Y-12) |
-
-## Totals
-
-159 rows: **built 136 · partial 2 · missing 7 · superseded 11 · later 3 · dropped 0**. Counted from the Status column by the plan-status lane (jyz-plan-sync-2), 2026-11-10 evening. Before this sync: 153 rows, built 137 · partial 3 · missing 2 · superseded 8 · later 3 · dropped 0.
-
-## Next up
-
-Stable release: **`v0.1.0` is on `main`** (tag on ac8f438) and Kaden played it on 2026-11-10 (`playtests/2026-11-10.md`). Next stable after the S9 changes land and playtest #2.
-
-Open rows (missing and partial), ranked by how much Kaden and his son will notice them in play. Size: S = under an hour, M = half a day, L = a day or more.
-
-1. **U-20, U-21: gun icons that show what each gun does, and guns that teach themselves** (switch preview, first-fire beat). Kaden's first complaint; his son can't read the guns today. Lane `jyz-ui-1`. **L**
-2. **S-27: reset-yard button** (hold Select 1.5 s with a ring, pause menu entry, a bigger lit sign). "There definitely needs to be a reset zone button." Lane `jyz-controls-1`. **M**
-3. **S-28: variable jump** (tap = hop, hold = high). Every few seconds of play; "Jumping was weird." Lane `jyz-controls-1`. **S**
-4. **G-19: goal cards redesigned** as clear pictures, readable from the couch (trophy shelf too). Lane `jyz-ui-1`. **L**
-5. **C-14: playtest #2, then tuning** from it. Closes once S9 is in and Kaden has played again. **S** (Gary)
-6. **Y-17: the barn cow becomes Patience** (D53). A named cow he'll see in other games; waits on Patience leaving proposals on characters main, and Gary's OK. **M**
-7. **S-18: measure 60 fps on the GTX 1060** on the TV box (F3), whole yard awake. No playtest complaint about speed. **S**
-8. **S-22: log the physics findings in `~/openjar/WORM-READINESS.md`** (Jolt scaling, mass^0.5, glue pull-in, plane spring). Invisible in play. **S** (Gary)
-
-Housekeeping (not a row): `origin/feature/yard-trophy` (83870fe, unmerged) is a second G-13 trophy shelf (`trophy_pile.gd`, its own `trophy_shelf.gd`, `test_trophy.gd`). G-13 is already built on dev from gap-close-1 (scripts/levels/trophy_shelf.gd), and G-19 will redo the shelf art. Gary: do not merge that branch as it stands (if a PR is open, close it), or the two shelves collide in `scripts/levels/trophy_shelf.gd`.
