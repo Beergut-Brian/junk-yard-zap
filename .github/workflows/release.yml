@@ -29,7 +29,9 @@ jobs:
       - name: Import project
         run: godot --headless --path . --import || true
       - name: Run tests
-        run: godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode
+        # --continue: gdUnit stops a suite at its first failure by default, which hid the rest of the
+        # suite (231 of 247 counted). Run them all so a red run lists every failure and the count matches.
+        run: godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue
       - name: Headless boot screenshot
         run: |
           godot --headless --path . -- --screenshot-after=3 || true
