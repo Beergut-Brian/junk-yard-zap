@@ -2,8 +2,8 @@
 
 Kaden, 2026-11-10: "I would like to have Spaceballs, Junk Yard Zap, and the Launcher done besides
 running it on the TV hardware." Checked by the launch-readiness lane (launch-ready-1) on
-2026-11-11; details and numbers in `handoff/REPORT.md` of that lane, rows L-01..L-13 in
-`PLAN-STATUS.md`.
+2026-11-11, and again against dev after PRs #34-#37 (roster v0.5.3) by launch-ready-2 on
+2026-11-12; numbers in `handoff/REPORT.md`, rows L-01..L-17 in `PLAN-STATUS.md`.
 
 ## Verified (on the producer box)
 
@@ -16,6 +16,9 @@ running it on the TV hardware." Checked by the launch-readiness lane (launch-rea
       two players, play, drop-out and drop-in, pause, settings, Reset Yard, Restart, solo on / swap
       / off, back to Open Jar. A window close on every screen quits cleanly (exit code 0). No softlock;
       every screen has a way back (B).
+- [x] The chooser laps the whole roster v0.5.3: every Jarling comes up and says its own
+      catchphrase (21 / 21 free, all 22 have one); Select tap does nothing, Select hold resets
+      (second pass, frames `handoff/frames/flow/`).
 - [x] Menus move with the stick **and the D-pad**.
 - [x] 30-minute demo soak: no script errors, no orphans, node / object / memory counts level off,
       audio voices stay within the pool.
@@ -27,7 +30,8 @@ running it on the TV hardware." Checked by the launch-readiness lane (launch-rea
 - [x] Credits: every file in `assets/` has a line in `assets/CREDITS.md`; the ElevenLabs music is
       cleared for release (Kaden confirmed his plan covers it).
 - [x] README has this game's play instructions.
-- [x] No personal info or real places in the game's text, objects or art.
+- [x] No personal info or real places in the game's text, objects or art; `GAME.md` (the
+      family's first name, notes) no longer ships inside the exported build (second pass).
 - [x] Export (`--export-release "Linux"`) builds and the binary boots headless with zero script errors.
 - [x] gdUnit4 suite green.
 
@@ -49,9 +53,6 @@ running it on the TV hardware." Checked by the launch-readiness lane (launch-rea
 
 ## Needs Gary
 
-- [ ] Merge `feature/launch-ready-1` into `dev`, tag the next dev build, promote after the TV check.
-- [ ] S-22: log the physics findings in `~/openjar/WORM-READINESS.md` (outside the repo).
-- [ ] `GAME.md` ships inside the exported build (`export_presets.cfg` include filter, from the
-      template). It holds the family's first name and planning notes. Drop it from the filter unless
-      the launcher reads it.
-- [ ] Do not merge `origin/feature/yard-trophy` (a second trophy shelf).
+- [ ] Merge `feature/launch-ready-2` into `dev`, tag the next dev build, boot it, promote after
+      the TV check.
+- [x] S-22: `~/openjar/WORM-READINESS.md` has the Junk Yard Zap rows (checked 2026-11-12).

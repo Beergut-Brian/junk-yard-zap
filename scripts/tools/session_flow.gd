@@ -1,6 +1,6 @@
 ## Scripted full session, driven by synthetic pad events (the same path a real pad takes):
-## boot -> lobby -> chooser (catchphrase) -> lobby settings -> lobby door (stay) -> ready -> play
-## (zap, gun wheel, jump) -> drop-out / drop-in -> pause -> settings -> back -> Reset Yard ->
+## boot -> lobby -> chooser (catchphrase, a full lap of the roster) -> lobby settings -> lobby door (stay) -> ready -> play
+## (zap, gun wheel, jump, Select tap / hold reset) -> drop-out / drop-in -> pause -> settings -> back -> Reset Yard ->
 ## Restart -> solo (Select+Start 2 s, swap, play, off) -> pause door (leave) and a window close
 ## at every screen. Each step records ok / note and, with a renderer, a real frame.
 ##   scripts/tools/session_flow.sh <out_dir>        (real frames + flow.txt)
@@ -152,6 +152,37 @@ func run(main_scene: Node) -> void:
 			"P1 %s -> %s, said %s" % [first, Roster.pick(Players.P1), str(said).get_file()])
 	await close_window("chooser")
 
+	# The whole roster, one D-pad step at a time: every playable Jarling comes up once and says its
+	# own catchphrase; the lap comes back round to where it started (roster v0.5.3: 22 Jarlings).
+	var start := Roster.pick(Players.P1)
+	var seen := {}
+	var spoke := 0
+	var has_none := 0   # fixture Jarlings with no catchphrase file (the real roster has none of these)
+	var wrong := PackedStringArray()
+	var free := Roster.roster().filter(func(r: String) -> bool: return not Roster.taken(r, Players.P1))
+	for i in Roster.roster().size() + 1:
+		Roster.last_said.erase(Players.P1)
+		await pad(PAD1, JOY_BUTTON_DPAD_RIGHT)
+		await until(func() -> bool: return str(Roster.last_said.get(Players.P1, "")) != "", 3.0)
+		var id := Roster.pick(Players.P1)
+		var line := str(Roster.last_said.get(Players.P1, ""))
+		var phrase := str(Roster.info(id).get("catchphrase", ""))
+		if phrase != "" and ResourceLoader.exists(phrase):
+			# Has a catchphrase file: it must be the line (else the chooser falls back to a bark).
+			if line == phrase:
+				spoke += 1
+			else:
+				wrong.append(id)
+		else:
+			has_none += 1
+		seen[id] = true
+		if id == start:
+			break
+	await check("chooser_full_lap", seen.size() == free.size() and spoke + has_none == seen.size()
+			and wrong.is_empty() and Roster.pick(Players.P1) == start,
+			"%d / %d Jarlings, %d catchphrases, %d without one, wrong voice %s"
+			% [seen.size(), free.size(), spoke, has_none, wrong])
+
 	# Lobby settings and back.
 	await pad(PAD1, JOY_BUTTON_DPAD_DOWN)
 	await pad(PAD1, JOY_BUTTON_A)
@@ -197,6 +228,23 @@ func run(main_scene: Node) -> void:
 	await pad(PAD1, JOY_BUTTON_B, 0.3)
 	await _wait(0.4)
 	await check("zap_and_jump", Game.state == Game.State.PLAYING)
+
+	# Select: a tap does nothing; held 1.5 s the ring fills and the yard resets (whoosh and bell).
+	Audio.history.clear()
+	await pad(PAD1, JOY_BUTTON_BACK)
+	await _wait(0.3)
+	await check("select_tap_no_reset", not Audio.played("reset_yard"))
+	_button(PAD1, JOY_BUTTON_BACK, true)
+	await until(func() -> bool: return z1.reset_held >= Zapper.RESET_HOLD * 0.5, 5.0)
+	await check("select_hold_ring", z1.reset_held > 0.0 and not Audio.played("reset_yard"),
+			"held %.2f s" % z1.reset_held)
+	await until(func() -> bool: return Audio.played("reset_yard"), 5.0)
+	_button(PAD1, JOY_BUTTON_BACK, false)
+	# Players polls Input.get_connected_joypads() for the Select release, which a synthetic pad is
+	# not in: feed it the way that poll does, or the spent Select would block the solo hold below.
+	Players.hold_step(PAD1, false, 0.0, false)
+	await _frames(2)
+	await check("select_hold_resets", Audio.played("reset_yard") and Game.state == Game.State.PLAYING)
 
 	# Drop-out (pad unplugged) and drop-in (press on it again).
 	Players._on_joy_connection_changed(PAD2, false)
