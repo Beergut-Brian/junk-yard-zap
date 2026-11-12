@@ -76,6 +76,9 @@ def pixel_png(c, dest):
 
 
 roster, chars, credits = [], {}, []
+# Every library voice pack is ElevenLabs output (each character's CREDITS.md in openjar-characters).
+voice_lic = ("Generated with ElevenLabs (paid plan; commercial release covered, Kaden confirmed 2026-11-11), "
+             "Open Jar Games")
 for cid in index.get("roster", []):
     c = by_id.get(cid)
     if not c or not c.get("playable"):
@@ -107,13 +110,13 @@ for cid in index.get("roster", []):
         entry["voice"] = res + "voice/"
         entry["barks"] = [os.path.splitext(os.path.basename(f))[0] for f in oggs]
         credits.append((f"characters/{cid}/voice/*.ogg", f"`openjar-characters` `{tag}`, `{voice}`",
-                        f"{c['name']} voice barks: {', '.join(entry['barks'])}; see the library's CREDITS.md"))
+                        f"{c['name']} voice barks: {', '.join(entry['barks'])}; see the library's CREDITS.md", voice_lic))
     phrase = voice + "lib/catchphrase_big.ogg"
     if voice != "/" and phrase in files:
         show(phrase, os.path.join(d, "voice", "catchphrase.ogg"))
         entry["catchphrase"] = res + "voice/catchphrase.ogg"
         credits.append((f"characters/{cid}/voice/catchphrase.ogg", f"`openjar-characters` `{tag}`, `{phrase}`",
-                        f"{c['name']} catchphrase (the chooser says it); see the library's CREDITS.md"))
+                        f"{c['name']} catchphrase (the chooser says it); see the library's CREDITS.md", voice_lic))
     roster.append(cid)
     chars[cid] = entry
 
@@ -140,7 +143,7 @@ lic = "Open Jar Games, in-house (same terms as openjar-characters)"
 block = ["<!-- characters:begin (scripts/tools/sync_characters.sh writes this block) -->", "",
          f"## Characters (synced from openjar-characters {tag})", "",
          "| File | Source / tool | Prompt or notes | License |", "| --- | --- | --- | --- |"]
-block += [f"| `{a}` | {b} | {n} | {lic} |" for a, b, n in credits]
+block += [f"| `{r[0]}` | {r[1]} | {r[2]} | {r[3] if len(r) > 3 else lic} |" for r in credits]
 block += ["", "<!-- characters:end -->"]
 cp = os.path.join(root, "assets", "CREDITS.md")
 text = open(cp).read()
