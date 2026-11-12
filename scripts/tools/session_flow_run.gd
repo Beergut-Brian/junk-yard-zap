@@ -13,6 +13,8 @@ func _ready() -> void:
 	Save.settings_path = "user://session_flow_settings.json"
 	Save.wipe_settings()
 	Roster.picks_path = "user://session_flow_picks.json"
+	# A run that was killed never reached the wipe at the end: start from the defaults every time.
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Roster.picks_path))
 	Roster.reload()
 	Game.quit_exits = false
 	var main: Node = load("res://scenes/main.tscn").instantiate()
