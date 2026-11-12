@@ -78,7 +78,7 @@ Godot 4 by a producer agent (Hermes) and parallel agent lanes, played on the fam
 | `project.godot` | 1080p, Forward+, input map for P1/P2 (Xbox layout, 0.15 dead zone), autoloads |
 | `scripts/autoload/` | `Players` (join, green/red), `Roster` (who you play as), `Game` (state machine), `Save`, `Audio`, `Debug` |
 | `scenes/main.tscn` | Boot scene: press any button → spawn → round |
-| `scenes/players/player.tscn` | Placeholder coloured-box player with move/jump/action + squash |
+| `scenes/players/zapper.tscn` | The player: a Jarling from the roster with the gun belt (move, variable jump, zap) |
 | `tests/test_smoke.gd` | gdUnit4: scene loads, input map complete, round cycle, save roundtrip |
 | `export_presets.cfg` | Linux x86-64, embedded pck |
 | `.github/workflows/release.yml` | Tests on PR; on `v*` tag, export + zip + GitHub Release (pre-release for `-dev`) |
