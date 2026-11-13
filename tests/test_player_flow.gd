@@ -167,3 +167,55 @@ func test_pause_card_shows_the_controls() -> void:
 	for tok in ["a", "b", "lb", "rb", "select"]:
 		assert_bool(UiStyle._parts(line).has([tok])).override_failure_message("no [%s] glyph" % tok).is_true()
 	assert_float(UiStyle.glyph_width("rb", 30)).is_greater(UiStyle.glyph_width("a", 30))
+
+
+func _lobby_main() -> Node:
+	Game.quit_exits = false
+	Game._set_state(Game.State.LOBBY)
+	var main: Node = load("res://scenes/main.tscn").instantiate()
+	main.get_node("Arena").use_save = false
+	world.add_child(main)
+	return main
+
+
+# PF-5: a lone player presses Start on the title screen: the first press joins and readies them,
+# the second starts the countdown (the hold on A still works too).
+func test_start_on_the_title_screen_starts_a_lone_player() -> void:
+	var lobby: Node = _lobby_main().get_node("UI/Lobby")
+	await _press(PAD_A, JOY_BUTTON_START)
+	assert_int(Players.device_of(P1)).is_equal(PAD_A)
+	assert_bool(lobby.readied[P1]).is_true()
+	assert_bool(lobby.counting).is_false()   # a first press never starts: P2 may be picking up a pad
+	assert_str(lobby.status_text()).contains("[start]")
+	Audio.history.clear()
+	await _press(PAD_A, JOY_BUTTON_START)
+	assert_bool(lobby.counting).is_true()
+	assert_bool(Audio.played("count_tick")).is_true()
+	lobby.press_b(P1)   # B still cancels
+	assert_bool(lobby.counting).is_false()
+	Game.quit_exits = true
+
+
+# PF-5: with a partner joined and still choosing, Start waits for them; Select + Start is solo, not a start.
+func test_start_waits_for_a_joined_partner_and_select_start_is_not_a_start() -> void:
+	var lobby: Node = _lobby_main().get_node("UI/Lobby")
+	Players._assign(P1, PAD_A)
+	Players._assign(P2, PAD_B)
+	lobby.press_b(P2)   # P2 in, not ready
+	lobby.set_ready(P1, true)
+	await _press(PAD_A, JOY_BUTTON_START)
+	assert_bool(lobby.counting).is_false()
+	lobby.press_b(P2)
+	assert_bool(lobby.readied[P2]).is_false()
+	var sel := InputEventJoypadButton.new()
+	sel.device = PAD_B
+	sel.button_index = JOY_BUTTON_BACK
+	sel.pressed = true
+	Input.parse_input_event(sel)
+	Input.flush_buffered_events()
+	await _press(PAD_B, JOY_BUTTON_START)
+	assert_bool(lobby.readied[P2]).is_false()
+	sel.pressed = false
+	Input.parse_input_event(sel)
+	Input.flush_buffered_events()
+	Game.quit_exits = true

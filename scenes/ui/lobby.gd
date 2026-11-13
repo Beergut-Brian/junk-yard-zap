@@ -4,7 +4,7 @@
 ## A on any pad joins and readies that player, B un-readies. Both ready: a 3-step countdown; on its
 ## last beat the stamps flip to GO!, both characters jump, and the three-stripe wipe covers the
 ## screen as Game.finish_lobby() starts round 1 (with the skin's "ROUND 1" card). A ready player
-## holding A on Play for HOLD_TO_START s starts alone. Back to Open Jar asks "Leave the game?" first.
+## holding A on Play for HOLD_TO_START s starts alone, and so does their Start (PF-5). Back to Open Jar asks "Leave the game?" first.
 ## The character chooser: joined and not ready, left / right (stick or D-pad) cycles your Roster
 ## pick on your podium (swap sound, poof); taken characters are skipped. Ready locks it; B unlocks.
 ## Chooser voice (docs/ui.md): SAY_SETTLE s after the last step (or a join), the character now on
@@ -176,6 +176,44 @@ func _process(delta: float) -> void:
 	for p in [P1, P2]:
 		hold_step(p, Players.is_active(p) and Input.is_action_pressed(Players.action(p, "action")), delta)
 	count_step(delta)
+
+
+## PF-5: Start is the button people press to start a game. A joined player's Start readies them,
+## and a ready player's Start with nobody else waiting starts the countdown (B still cancels it).
+## Before Players sees it, so a pad's first press only joins (and readies), as it always has.
+## Select held with it is the solo toggle, never a start.
+func _input(event: InputEvent) -> void:
+	if not _live() or in_submenu() or _launched or not event.is_action_pressed("pause"):
+		return
+	var player := -1
+	for p in Players.active_players():
+		var dev := Players.device_of(p)
+		if event is InputEventJoypadButton:
+			if dev == event.device or (dev < 0 and not Players.solo) or (Players.solo and p == Players.solo_focus):
+				player = p
+				break
+		elif dev < 0:
+			player = p
+			break
+	if player == -1:
+		return
+	if event is InputEventJoypadButton and Input.is_joy_button_pressed(event.device, JOY_BUTTON_BACK):
+		return
+	press_start(player)
+
+
+func press_start(player: int) -> void:
+	if not _live() or in_submenu() or _launched or counting:
+		return
+	_set_focus(Choice.PLAY, false)
+	if not readied[player]:
+		set_ready(player, true)
+		return
+	var other: int = P2 if player == P1 else P1
+	if Players.is_active(other) and not readied[other]:
+		return   # the status already says who we are waiting for
+	_buttons[Choice.PLAY].press()
+	start_countdown()
 
 
 ## This frame's left / right for the chooser: the stick or keys (the move actions) or the D-pad.
@@ -464,7 +502,7 @@ func status_text() -> String:
 		var other: int = P2 if ready[0] == P1 else P1
 		if Players.is_active(other):
 			return "Waiting for %s, or hold [a] to start solo" % UiStyle.player_name(other)
-		return "Hold [a] on Play to start solo"
+		return "Press [start] or hold [a] to start solo"
 	return "Press [a] on Play when you're ready"
 
 
