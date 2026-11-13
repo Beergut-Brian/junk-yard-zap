@@ -1,144 +1,107 @@
-# Launch-readiness, second pass: report
+# Gap-close lane 2: Junk Yard Zap (`feature/jyz-gap-close-2`)
 
-Branch `feature/launch-ready-2`, based on `origin/dev` @ `cc2dec3` (after PR #37, roster v0.5.3).
-`git merge origin/dev`: already up to date (fetch not needed; local origin/dev is current).
-Resumed run (Gary, 2026-11-12 13:00): the first run of this pass stopped with uncommitted work; it was
-checked, one flow bug fixed, and committed as `54932e7`.
+2026-11-12. Based on `origin/dev` @ `438e8ad` (after PR #38; `git fetch` + merge: already up to date).
+Four commits, not pushed.
 
-## Audit (every PLAN-STATUS row against dev as it is now)
+## Sync first (commit `a58cd34`)
 
-Dev since launch-ready-1 (f9ec4e4): PR #34 worm findings (docs), PR #35 yard-trophy (a PLAN-STATUS
-reconcile only; dev still has one trophy shelf), PR #36 / #37 roster v0.5.2 and v0.5.3 (all 22
-Jarlings now have a voice pack and a catchphrase; Chuck's "hey!" is his own voice).
+- **Partial rows:** only C-14 (playtest #2) and S-18 (GTX 1060 fps). Both still need Kaden or the TV
+  box, so they stay partial. No `missing` rows. No stick-only rows exist, so there was nothing to drop.
+- **The brief's priority rows were already built on dev.** I re-checked each one against the code
+  and against real frames:
+  - **Y-12, K-10, A-06:** 49 object types. 40 have faces; the 9 vehicles and machines rattle
+    instead. 48 voice sets cover all 49 types (the loose balloon borrows the beach ball's).
+  - **U-15:** the 7 guns have distinct silhouettes, colours and sounds (`guns.png`).
+  - **Y-11:** every listed loose object is in `data/objects/`.
+  - **G-13:** the trophy shelf flips through done cards (`trophy.png`).
+  - **V-11:** `store/hero.png` exists.
+- **Stale notes fixed:**
+  - Y-12 had a duplicated paragraph and an out-of-date "the HUD car still has a face".
+  - K-10 said 39 faced types; it is 40.
+  - A-06 said 48 types; it is 49.
 
-| Row | Status | What this pass did / why it stays open |
-| --- | --- | --- |
-| C-14 | partial | Everything in the brief and playtest #1 is built and re-checked in real frames (below). Stays partial until playtest #2: **needs Kaden on the TV** |
-| S-18 | partial | Soak on this machine below; the GTX 1060 number **needs the TV box** |
-| C-15 | later | `v1.0.0` on the main tile after playtest #2 (**Kaden**) |
-| C-20, G-12 | later | Out of scope for v1 (GAME.md) |
-| L-11 | later | **Needs the TV box**: 60 fps on the GTX 1060, real pads, the real TV |
-| P-11, M-06, A-12 | built | Notes were stale (roster v0.5.1, "18 of 22 voiced"); rewritten for v0.5.3: all 22 voiced, with proof |
-| L-14 | built (new) | `GAME.md` (the family's first name, notes) no longer ships in the exported .pck; the launcher never reads it |
-| L-15 | built (new) | The template's coloured-box placeholder player removed (never used); README updated |
-| L-16 | built (new) | Chooser laps the whole v0.5.3 roster in the session flow: each Jarling says its own catchphrase |
-| L-17 | built (new) | Session flow covers Select tap / hold reset; starts from default picks every run |
-| Housekeeping | | The "do not merge yard-trophy" warning was stale (it merged as a reconcile); replaced |
-| All other rows | built / superseded | Proofs still on dev: the full suite (below) runs every named test |
+## Built: what Kaden will hear
 
-Playtest #1 rows re-checked in real frames this pass (`handoff/frames/`):
-- U-20 gun icons and wheel: `playtest/wheel.png`, `flow/10_gun_wheel.png`
-- U-21 switch preview and beams: `playtest/beams.png`
-- G-19 goal cards and trophy shelf: `playtest/goal.png`, `playtest/trophy.png`
-- S-27 Select-hold reset: `flow/12_select_tap_no_reset.png`, `flow/13_select_hold_ring.png`, `flow/14_select_hold_resets.png`, lit sign in every play frame
-- S-28 variable jump: `playtest/jump.png`
-Nothing looked rough.
+Every character's in-game voice was the generic synth. That is the most noticeable gap I found.
 
-## Session flow (scripted with synthetic pad events, real frames)
+1. **Delight and zap barks now use the character's own voice** (A-12, P-05, P-06; `bfff955`).
+   - **The bug:** `Audio.bark("delight")` and `bark("zap")` looked for `delight.ogg` and `zap.ogg`
+     in the voice packs. The library packs don't ship those (they ship cheer, win, oops, ready,
+     join, swap_in, wait, lose and catchphrase). So Jeff's clap, Chuck's "that was me" and every
+     other pick's reactions fell back to the same generic formant beep.
+   - **The fix:** `Audio.PACK_KINDS` maps delight to cheer or win, and zap to win or cheer.
+   - **Overlap:** a spoken line is 2-3 s, so it now holds the bark gate until it ends. Nobody
+     talks over anybody.
+   - **Proof:** the same real-roster 55 s `--demo` run, probed with a scratch script.
+     - Before: `{bark_zap: 8, bark_delight: 1}`, all generic synth.
+     - After: `{roster:chuck: 3, roster:jeff: 1}`, all their own voices.
+2. **Drop-in says hello, and the solo swap says "I'm in"** (`b106be2`). Both use the pack's
+   `join` and `swap_in` lines.
+   - P2 waking in the tire pile still snorts first, then says the `join` line about 0.55 s later.
+   - A character with no pack gets the plain generic bark.
+3. **Refused zaps say "oops", and a long idle gets one "wait" line** (`4050e0a`).
+   - **Chuck's blame:** it was a random plain line, which could be a cheer on a failure. It is now
+     his `oops` line ("Oh! That wasn't me.").
+   - **Jeff on a refused zap:** he tilts his head and says his own `oops`, at most once every 8 s
+     so mashing at the size cap never nags.
+   - **Idle:** after standing still for 12 s, a character says one `wait` line per still stretch
+     ("I'll just look at this rock."). It is idle chatter, never a hurry-up.
 
-`scripts/tools/session_flow.sh handoff/frames/flow` (Forward+ on llvmpipe, 1920x1080):
-**36 / 36 steps PASS, exit 0, 0 script errors**, 28 frames in `handoff/frames/flow/`, all looked at.
-Boot -> lobby -> chooser (pick + catchphrase, then a full lap: 21 / 21 free Jarlings, 21 own
-catchphrases, 0 wrong) -> lobby settings -> back -> lobby door (asks, stay) -> two players ready,
-countdown -> play -> gun wheel -> zap and jump -> Select tap (nothing) -> Select hold (ring, reset)
--> P2 unplugged (tire pile) -> P2 back -> pause -> settings -> back -> resume (B) -> Reset Yard ->
-Restart (to lobby) -> solo on (Select + Start 2 s) -> solo play -> swap -> solo off -> pause door
-(asks) -> leave (quits). A window close on every screen (lobby, chooser, lobby settings, lobby door,
-play, pause, pause settings, solo play) quits cleanly. No softlock; every screen has a way back.
+All lines come from the vendored library packs through `Audio.bark` and `Roster`. No audio was
+generated. `docs/contracts.md` is updated for `bark`, `can_bark` and the new `Zapper.say`.
 
-Bugs found and fixed (both in the flow script, not the game):
-- After the Select-hold reset, solo could not start: a synthetic pad is not in
-  `Input.get_connected_joypads()`, so the Select release never reached `Players.hold_step` and the
-  "this Select already reset" flag stayed set. The flow now feeds the release like the poll does.
-  On a real pad the poll sees the release (test_controls covers the real rule).
-- The full-lap check demanded a catchphrase from fixture Jarlings that have none (the game falls
-  back to a bark, as designed). The check now follows the game's rule.
-- The flow's own picks file survived a killed run, so the next run started from a leftover pick; the
-  runner now wipes it first.
+## IDs moved
 
-## Soak (30 real minutes, demo + stress)
+No status changes; all 177 rows keep their status (built 160, partial 2, superseded 11, later 4).
+Notes were updated on these rows:
+- **Sync:** Y-12, K-10, A-06.
+- **Voice work:** A-12, P-06, P-07.
 
-`godot --headless --path . --max-fps 60 --profile=soak_lr2 -- --demo --soak` (scripts/tools/soak.gd:
-two demo bots, a random zap every 0.4 s, glue / unglue now and then), 13:16-13:50, this machine
-(6 cores, CPU only, no GPU). Log: `.scratch/soak.log` (lines below copied from it).
+## Tests
 
-| t (s) | objects | nodes | orphans | ObjectDB | joints | effects on | zaps | frame ms (mean / worst) | process ms | physics ms | voices | memory MB |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 30 | 56 | 2934 | 0 | 7014 | 3 | 55 | 67 | 16.66 / 28.5 | 4.19 | 7.66 | 8 | 197.2 |
-| 270 | 56 | 3342 | 0 | 7960 | 6 | 137 | 546 | 16.67 / 32.2 | 3.91 | 7.15 | 1 | 203.9 |
-| 570 | 56 | 3334 | 0 | 8085 | 6 | 149 | 1125 | 16.67 / 36.8 | 3.86 | 9.25 | 0 | 205.6 |
-| 870 | 56 | 3257 | 0 | 8016 | 6 | 149 | 1701 | 17.07 / 159.9 | 7.20 | 16.02 | 1 | 205.5 |
-| 1170 | 56 | 3294 | 0 | 8096 | 6 | 149 | 2274 | 18.09 / 118.7 | 17.49 | 26.96 | 5 | 205.7 |
-| 1470 | 55 | 3289 | 0 | 8092 | 6 | 140 | 2819 | 17.03 / 73.4 | 13.41 | 21.12 | 4 | 205.8 |
-| 1770 | 56 | 3305 | 0 | 8144 | 6 | 151 | 3411 | 18.43 / 118.7 | 21.69 | 34.43 | 6 | 206.0 |
-| 1981 | 56 | 3337 | 0 | 8160 | 6 | 150 | 3810 | 17.57 / 80.0 | 18.56 | 28.86 | 6 | 206.1 |
-
-- **No errors**: 0 script errors, 0 engine errors or warnings in the whole log. 0 recalls.
-- **No leaks**: 0 orphans throughout; nodes, ObjectDB, joints and memory level off after the yard
-  fills with effects (nodes 3257-3350 from minute 4 on, memory +0.5 MB over the last 20 minutes);
-  audio voices 0-9, inside the pool.
-- **Frame time**: mean 16.7-18.4 ms (60 fps cap). The process / physics cost rose from minute 14,
-  with the yard's state flat. The box was shared: other lanes' renders and soaks ran beside it (load
-  average 13-23 on 6 cores). **Control**: a fresh 5-minute soak run straight after, under the
-  same load, showed 13-18 ms process and 24-30 ms physics from minute 1 (`.scratch/soak_control.log`),
-  against 4 / 7 ms in the quiet first part. So the rise is the shared box, not the game. The clean
-  number is the quiet part: about 4 ms process and 7-9 ms physics per frame with 150 effects on. The
-  GTX 1060 number is S-18 / L-11 (TV box).
-
-## Tests and boot
-
-- Clean import: 0 script errors.
-- gdUnit4 (`--ignoreHeadlessMode --continue`), full suite: **317 test cases, 0 errors, 0 failures,
-  0 orphans**, exit 0 (`handoff/test-output.txt`). The suite logs `Parameter "material" is null`
-  from Godot's dummy (headless) renderer in test_jyz_chooser; it never shows up with a renderer (session
-  flow and shots logs are clean).
-- Headless boot (`--quit-after 600`): exit 0, 0 script errors.
-- Tests use their own settings and picks files; the session flow uses `user://session_flow_*`
-  and the soak its own `--profile`. The shared picks file (`~/.local/share/openjar/players.json`)
-  was never written.
+- **New file:** `tests/test_gap_close_2.gd`, 9 cases.
+- **Fixtures only:** `tests/fixtures/roster_comedy.json`, plus copies of Zorp's join, swap_in,
+  oops and wait lines in `tests/fixtures/voice/` (documented in its README). Settings go to
+  `user://test_settings_gap_close_2.json`.
+- **Changed suite:** `test_comedy.gd` now runs on the fixture roster instead of the real one, and
+  its expectations moved from generic barks to the characters' own lines.
+- **Command:**
+  `godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode`
+- **Result:** exit 0, **326 test cases, 0 errors, 0 failures, 0 orphans**
+  (`handoff/test-output.txt`).
+- **Before every commit:** clean `--import`, the full suite, and a headless `--demo` boot with zero
+  script errors.
 
 ## Export
 
-`godot --headless --path . --export-release "Linux" build/junk-yard-zap.x86_64`: exit 0, 121 MB,
-embedded pck. The pack holds no `.md`, `tests/`, `playtests/` or `docs/` file (export log), and does
-hold `store/*` and `data/roster.json`. Zipped the way `release.yml` does (one file at the zip root;
-`zip` isn't installed here, so Python's zipfile built it), unzipped into `.scratch/zipcheck/out/`,
-booted headless for 30 s of demo: exit 0, **0 errors, 0 warnings**. An earlier export in this run
-aborted at exit right after writing the pack, while a software render ran beside it; the rerun was
-clean and the binary from the aborted run booted fine too. Gary: if the CI export ever aborts at exit,
-rerun it.
+- `godot --headless --path . --export-release "Linux" .scratch/build/game.x86_64`:
+  - The first run aborted at exit after `savepack DONE`. This is the known abort the previous lane
+    reported.
+  - The rerun exited 0 (113 MB).
+- `RUN_SECS=40 run-export .scratch/build/game.x86_64 -- --demo`: ran the full 40 s
+  (`exit 124` = the timeout) with **no output at all: 0 script errors, 0 errors**.
 
-## Placeholders left
+## Frames (`handoff/frames/sync/`, gitignored, real Forward+ frames via `scripts/tools/shots.sh`)
 
-None reach the shipped game.
-- `scripts/autoload/synth.gd` (code beep) and `Audio.gd` fallback: only when a cue has no file;
-  every cue the game plays has one (test_audio, test_launch_ready::test_every_menu_cue_is_a_designed_file_not_the_synth).
-- `scenes/ui/lobby_character.gd` (the template's lobby figure): only when a pick has no model and no
-  pixel form; every v0.5.3 Jarling has both (test_launch_ready_2::test_every_roster_character_has_its_files).
-- No TODO / FIXME in scenes/ or scripts/. No audio for Gary to make.
+- `wide.png`: the whole yard from fence to fence. Every zone is dressed.
+- `zone-pond.png`: ducks, the swim ring, the surfboard and the fish all have faces; the washing
+  machine has none.
+- `zone-barn.png`: the cow (Patience), pig, sheep, chickens, hay and pumpkin all have faces.
+- `zone-tower.png`: the anvil, bowling pin, armchair, kettle and piano have faces; the tractor and
+  cannon have none.
+- `rattle.png`: the faceless TV, fridge and car next to faced objects (the bathtub and toolbox).
+- `trophy.png`: the trophy shelf flipped up with a done card. G-13 is built.
+- `guns.png`: the 7 guns side by side, each with its own nozzle and colour (U-15).
+- `objects.png`: all 49 object types.
 
-## Ship hygiene
+The voice work is audio. Its only visual is a small head tilt (oops and wait), which has no demo
+beat to frame. The proof is the tests plus the before/after probe above.
 
-- Version: lobby footer shows `v0.1.0` (`application/config/version`), stamped from the tag by
-  `.github/workflows/release.yml` (seen in every lobby frame).
-- Store: `store/grid.png`, `hero.png`, `jar.glb`, `clip.mp4` present.
-- Credits: every file under `assets/` has a line in `assets/CREDITS.md` (script check: 0 missing).
-  The 22 character voice packs and catchphrases are now credited as ElevenLabs output (as each
-  character's own CREDITS.md in openjar-characters v0.5.3 says), via `sync_characters.sh`, so the next
-  resync keeps it; the music was already. Kaden confirmed his plan covers release.
-- README "How to play" matches the controls (Select hold, variable jump, solo, D-pad menus).
-- Personal info: none in data, scenes or shipped text. Two code comments name Kaden (art_kit.gd,
-  pictos.gd); scripts export as compressed binary tokens, which drop comments. `GAME.md` no longer
-  ships (L-14). A strings search of the exported binary finds no name or email.
+## Needs other lanes
 
-## Needs Kaden
-- Playtest #2 of the S9 changes on the TV (closes C-14), then `v1.0.0` on the main tile (C-15).
-- Optional: GAME.md "Decisions made without Kaden" still open for him to confirm.
-
-## Needs the TV box (weekend)
-- 60 fps at 1920x1080 on the GTX 1060, whole yard awake, F3 (S-18, L-11).
-- Both real pads: first press is P1 green; unplug / replug P2; Select hold vs Select + Start on real pads.
-- Launch from the launcher tile and Back to Open Jar; sound levels on the TV; cards readable from the sofa.
-
-## Gary
-Ship: merge `feature/launch-ready-2` into `dev`, tag the next dev build, boot it, promote after the TV check.
+- **Characters (openjar-characters):** Patience has no voice yet (`proposals/cow/voice/` is empty),
+  so the yard cow still moos with the synth (Y-17).
+- **TV box:** S-18 and L-11 (60 fps on the GTX 1060 with F3). C-14 needs playtest #2 with Kaden.
+- **Systems lane, heads-up:** this lane edited `scripts/autoload/Audio.gd`, `scripts/players/`
+  and one line in `scenes/main.gd` (the solo swap line). The contract change is in
+  `docs/contracts.md`.
