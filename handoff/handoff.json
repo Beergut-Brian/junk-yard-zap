@@ -1,1 +1,24 @@
-{"packet":"maker/openjar jyz-gap-close-1","ended":"done","did":["Synced PLAN-STATUS against dev @ ad2ddec: only C-14 and S-18 partial (TV box); priority rows Y-12, K-10, A-06, U-15, Y-11, G-13, V-11 re-checked built in code and real frames; added Y-19 for GAME.md's 'the fridge door flaps' (faceless machines only rattled)","Y-19 built: the 9 faceless vehicles and machines move a part on every zap (fridge door opens on a lit inside, washer porthole, car door, TV antennae, toast pops, tractor cap + smoke, cannon nod + puff, oar rows, wheelbarrow tips); still no faces","Y-12/K-10: calm object faces' eyes follow the nearest player within 7 m","Tried a 3/4 perspective store hero (V-11); rejected (diorama edges dominate), hero unchanged","tests/test_gap_close_3.gd (8 cases); full suite 334/334 green; export + 40 s demo boot with 0 errors"],"next_action":"Gary: review the 4 commits on feature/jyz-gap-close-3 and open a PR to dev; on the TV, zap the fridge and toaster in the scrap heap and walk Jeff past the crates to see their eyes follow","blocked":[],"evidence":["handoff/REPORT.md","handoff/test-output.txt (334 test cases, 0 failures, exit 0)","handoff/frames/gap3/*.png"]}
+{
+  "packet": "maker/openjar jyz-player-flow-1",
+  "ended": "partial",
+  "did": [
+    "Played the exported build as a new and a returning player via --session-flow and the new --player-flow=<phase> runs, scratch XDG_DATA_HOME, every frame looked at (handoff/PLAYER-FLOW.md, handoff/shots/)",
+    "PF-5: Start on the title screen readies, then starts a lone player",
+    "PF-3: pause bar to the lobby says Main Menu, not Restart",
+    "PF-4: pause card shows the play controls (A, B, LB/RB, hold Select) with new LB/RB glyphs",
+    "PF-1: a second pad takes P2 out of solo mode",
+    "PF-2: a zap saves the yard within 3 s (a hard stop lost up to 30 s)",
+    "PLAN-STATUS: S14, PF-1..PF-6 (PF-1..PF-5 built, PF-6 missing), totals 184 rows"
+  ],
+  "next_action": "Gary: review, ship, tag",
+  "blocked": [
+    "PF-6: exported game hangs at exit after a window close on the title screen seconds after launch (save already written); seen only on the software renderer; needs the TV box to confirm before a fix"
+  ],
+  "evidence": [
+    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue", "exit": 0, "ref": "handoff/test-output.txt"},
+    {"kind": "import", "command": "godot --headless --path . --import", "exit": 0, "ref": "0 script errors"},
+    {"kind": "export", "command": "godot --headless --path . --export-release Linux .scratch/b/game.x86_64", "exit": 0, "ref": "handoff/REPORT.md#checks"},
+    {"kind": "boot", "command": "RUN_SECS=60 run-export .scratch/b/game.x86_64 -- --demo", "exit": 124, "ref": "ran the full 60 s, 0 script errors, 0 errors"},
+    {"kind": "frames", "command": "run-export .scratch/b2/game.x86_64 --resolution 1920x1080 -- --player-flow=<phase> --flow-out=.scratch/pf", "exit": 0, "ref": "handoff/PLAYER-FLOW.md, handoff/shots/"}
+  ]
+}

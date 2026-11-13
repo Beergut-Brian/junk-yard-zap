@@ -5,6 +5,7 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 GdUnit4 Comandline Tool
 --------------------------------------------------------------------------------------------------
 The option '--ignoreHeadlessMode' is deprecated and has no effect anymore, headless mode is supported by default.
+Disabled fail fast!
 
 Running in headless mode, Godot does not render anything.
 Tests that depend on rendered output, e.g. screenshots or viewport textures, will not work.
@@ -15,10 +16,10 @@ Session hook 'GdUnitHtmlTestReporter' installed.
 Session hook 'GdUnitXMLTestReporter' installed.
 Run Test Suite: res://tests/test_vehicle_faces.gd
   res://tests/test_vehicle_faces.gd > test_vehicle_and_machine_data_has_no_face_and_the_rest_keep_theirs STARTED
-  res://tests/test_vehicle_faces.gd > test_vehicle_and_machine_data_has_no_face_and_the_rest_keep_theirs PASSED 12ms
+  res://tests/test_vehicle_faces.gd > test_vehicle_and_machine_data_has_no_face_and_the_rest_keep_theirs PASSED 26ms
 
   res://tests/test_vehicle_faces.gd > test_the_built_yard_has_no_face_on_any_vehicle_or_machine STARTED
-  res://tests/test_vehicle_faces.gd > test_the_built_yard_has_no_face_on_any_vehicle_or_machine PASSED 938ms
+  res://tests/test_vehicle_faces.gd > test_the_built_yard_has_no_face_on_any_vehicle_or_machine PASSED 1s 789ms
 
   res://tests/test_vehicle_faces.gd > test_pictograms_draw_no_face_on_vehicles_and_machines STARTED
   res://tests/test_vehicle_faces.gd > test_pictograms_draw_no_face_on_vehicles_and_machines PASSED 15ms
@@ -26,33 +27,78 @@ Run Test Suite: res://tests/test_vehicle_faces.gd
   res://tests/test_vehicle_faces.gd > test_the_pictos_car_still_draws_without_errors STARTED
   res://tests/test_vehicle_faces.gd > test_the_pictos_car_still_draws_without_errors PASSED 2ms
 
-Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 987ms
+Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1s 880ms
+
+
+Run Test Suite: res://tests/test_player_flow.gd
+  res://tests/test_player_flow.gd > test_a_second_pad_takes_p2_out_of_solo STARTED
+  res://tests/test_player_flow.gd > test_a_second_pad_takes_p2_out_of_solo PASSED 22ms
+
+  res://tests/test_player_flow.gd > test_a_second_pad_takes_p2_after_cli_solo STARTED
+  res://tests/test_player_flow.gd > test_a_second_pad_takes_p2_after_cli_solo PASSED 16ms
+
+  res://tests/test_player_flow.gd > test_the_solo_pad_pressing_a_stays_solo STARTED
+  res://tests/test_player_flow.gd > test_the_solo_pad_pressing_a_stays_solo PASSED 14ms
+
+  res://tests/test_player_flow.gd > test_a_second_pad_wakes_p2_during_solo_play STARTED
+  res://tests/test_player_flow.gd > test_a_second_pad_wakes_p2_during_solo_play PASSED 1s 25ms
+
+  res://tests/test_player_flow.gd > test_a_zap_saves_the_yard_within_seconds STARTED
+  res://tests/test_player_flow.gd > test_a_zap_saves_the_yard_within_seconds PASSED 222ms
+
+  res://tests/test_player_flow.gd > test_player_flow_phase_from_args STARTED
+  res://tests/test_player_flow.gd > test_player_flow_phase_from_args PASSED 3ms
+
+  res://tests/test_player_flow.gd > test_pause_main_menu_bar_says_main_menu_and_goes_to_the_lobby STARTED
+  res://tests/test_player_flow.gd > test_pause_main_menu_bar_says_main_menu_and_goes_to_the_lobby PASSED 35ms
+
+  res://tests/test_player_flow.gd > test_pause_card_shows_the_controls STARTED
+  res://tests/test_player_flow.gd > test_pause_card_shows_the_controls PASSED 17ms
+
+  res://tests/test_player_flow.gd > test_start_on_the_title_screen_starts_a_lone_player STARTED
+  res://tests/test_player_flow.gd > test_start_on_the_title_screen_starts_a_lone_player PASSED 363ms
+
+  res://tests/test_player_flow.gd > test_start_waits_for_a_joined_partner_and_select_start_is_not_a_start STARTED
+  res://tests/test_player_flow.gd > test_start_waits_for_a_joined_partner_and_select_start_is_not_a_start PASSED 266ms
+
+Statistics: 10 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 2s 28ms
 
 
 Run Test Suite: res://tests/test_chooser_voice.gd
   res://tests/test_chooser_voice.gd > test_catchphrase_plays_the_file STARTED
-  res://tests/test_chooser_voice.gd > test_catchphrase_plays_the_file PASSED 18ms
+  res://tests/test_chooser_voice.gd > test_catchphrase_plays_the_file PASSED 13ms
 
   res://tests/test_chooser_voice.gd > test_catchphrase_falls_back_to_bark STARTED
-  res://tests/test_chooser_voice.gd > test_catchphrase_falls_back_to_bark PASSED 5ms
+  res://tests/test_chooser_voice.gd > test_catchphrase_falls_back_to_bark PASSED 13ms
 
   res://tests/test_chooser_voice.gd > test_catchphrase_false_with_no_voice STARTED
-  res://tests/test_chooser_voice.gd > test_catchphrase_false_with_no_voice PASSED 2ms
+  res://tests/test_chooser_voice.gd > test_catchphrase_false_with_no_voice PASSED 4ms
 
   res://tests/test_chooser_voice.gd > test_catchphrase_is_not_a_bark STARTED
-  res://tests/test_chooser_voice.gd > test_catchphrase_is_not_a_bark PASSED 3ms
+  res://tests/test_chooser_voice.gd > test_catchphrase_is_not_a_bark PASSED 4ms
 
   res://tests/test_chooser_voice.gd > test_each_slot_has_its_own_voice STARTED
-  res://tests/test_chooser_voice.gd > test_each_slot_has_its_own_voice PASSED 4ms
+  res://tests/test_chooser_voice.gd > test_each_slot_has_its_own_voice PASSED 5ms
 
   res://tests/test_chooser_voice.gd > test_three_fast_steps_say_only_the_last_after_the_settle STARTED
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=5.10 s)
-Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=5.10 s)
-  res://tests/test_chooser_voice.gd > test_three_fast_steps_say_only_the_last_after_the_settle PASSED 297ms
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=11.80 s)
+Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=11.81 s)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
+   GDScript backtrace (most recent call first):
+       [0] after_test (res://tests/test_chooser_voice.gd:76)
+       [1] _execute (res://addons/gdUnit4/src/core/execution/stages/GdUnitTestCaseAfterStage.gd:18)
+       [2] execute (res://addons/gdUnit4/src/core/execution/stages/IGdUnitExecutionStage.gd:19)
+       [3] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleExecutionStage.gd:17)
+       [4] execute (res://addons/gdUnit4/src/core/execution/stages/IGdUnitExecutionStage.gd:19)
+       [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
+       [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
+       [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
+  res://tests/test_chooser_voice.gd > test_three_fast_steps_say_only_the_last_after_the_settle PASSED 166ms
 
   res://tests/test_chooser_voice.gd > test_standing_still_never_repeats STARTED
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=5.26 s)
-Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=5.26 s)
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=12.02 s)
+Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=12.02 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -64,13 +110,13 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_chooser_voice.gd > test_standing_still_never_repeats PASSED 152ms
+  res://tests/test_chooser_voice.gd > test_standing_still_never_repeats PASSED 213ms
 
   res://tests/test_chooser_voice.gd > test_scrolling_back_says_it_again STARTED
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=5.41 s)
-Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=5.41 s)
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=5.41 s)
-Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=5.42 s)
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=12.22 s)
+Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=12.22 s)
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=12.22 s)
+Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=12.22 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -82,15 +128,15 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_chooser_voice.gd > test_scrolling_back_says_it_again PASSED 150ms
+  res://tests/test_chooser_voice.gd > test_scrolling_back_says_it_again PASSED 220ms
 
   res://tests/test_chooser_voice.gd > test_a_head_shake_says_nothing STARTED
-Chooser voice: P1 jeff (no voice) (t=5.57 s)
-Chooser voice: P2 chuck (no voice) (t=5.57 s)
-  res://tests/test_chooser_voice.gd > test_a_head_shake_says_nothing PASSED 160ms
+Chooser voice: P1 jeff (no voice) (t=12.59 s)
+Chooser voice: P2 chuck (no voice) (t=12.59 s)
+  res://tests/test_chooser_voice.gd > test_a_head_shake_says_nothing PASSED 355ms
 
   res://tests/test_chooser_voice.gd > test_joining_says_the_pick_once STARTED
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=5.72 s)
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=12.77 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -102,13 +148,13 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_chooser_voice.gd > test_joining_says_the_pick_once PASSED 149ms
+  res://tests/test_chooser_voice.gd > test_joining_says_the_pick_once PASSED 168ms
 
   res://tests/test_chooser_voice.gd > test_two_players_each_on_their_own_voice STARTED
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=5.88 s)
-Chooser voice: P2 bo res://tests/fixtures/voice/cheer.ogg (t=5.88 s)
-Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=5.88 s)
-Chooser voice: P2 eve res://tests/fixtures/voice/catchphrase.ogg (t=5.88 s)
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=13.06 s)
+Chooser voice: P2 bo res://tests/fixtures/voice/cheer.ogg (t=13.08 s)
+Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=13.09 s)
+Chooser voice: P2 eve res://tests/fixtures/voice/catchphrase.ogg (t=13.09 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -120,10 +166,10 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_chooser_voice.gd > test_two_players_each_on_their_own_voice PASSED 159ms
+  res://tests/test_chooser_voice.gd > test_two_players_each_on_their_own_voice PASSED 375ms
 
   res://tests/test_chooser_voice.gd > test_leaving_cancels_a_pending_line STARTED
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=6.03 s)
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=13.32 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -135,177 +181,177 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_chooser_voice.gd > test_leaving_cancels_a_pending_line PASSED 146ms
+  res://tests/test_chooser_voice.gd > test_leaving_cancels_a_pending_line PASSED 172ms
 
-Statistics: 12 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1s 284ms
+Statistics: 12 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1s 811ms
 
 
 Run Test Suite: res://tests/test_goal_deck.gd
   res://tests/test_goal_deck.gd > test_thirty_cards_in_three_bands_easy_first STARTED
-  res://tests/test_goal_deck.gd > test_thirty_cards_in_three_bands_easy_first PASSED 112ms
+  res://tests/test_goal_deck.gd > test_thirty_cards_in_three_bands_easy_first PASSED 185ms
 
   res://tests/test_goal_deck.gd > test_every_card_hints_at_real_yard_objects_and_has_a_picture STARTED
-  res://tests/test_goal_deck.gd > test_every_card_hints_at_real_yard_objects_and_has_a_picture PASSED 113ms
+  res://tests/test_goal_deck.gd > test_every_card_hints_at_real_yard_objects_and_has_a_picture PASSED 320ms
 
   res://tests/test_goal_deck.gd > test_every_gun_and_zone_has_a_card STARTED
-  res://tests/test_goal_deck.gd > test_every_gun_and_zone_has_a_card PASSED 105ms
+  res://tests/test_goal_deck.gd > test_every_gun_and_zone_has_a_card PASSED 316ms
 
   res://tests/test_goal_deck.gd > test_no_card_is_already_done_in_a_fresh_yard STARTED
-  res://tests/test_goal_deck.gd > test_no_card_is_already_done_in_a_fresh_yard PASSED 469ms
+  res://tests/test_goal_deck.gd > test_no_card_is_already_done_in_a_fresh_yard PASSED 831ms
 
   res://tests/test_goal_deck.gd > test_all_thirty_skip_through_and_wrap STARTED
-  res://tests/test_goal_deck.gd > test_all_thirty_skip_through_and_wrap PASSED 127ms
+  res://tests/test_goal_deck.gd > test_all_thirty_skip_through_and_wrap PASSED 176ms
 
   res://tests/test_goal_deck.gd > test_card_spots_sit_on_the_real_landmarks STARTED
-  res://tests/test_goal_deck.gd > test_card_spots_sit_on_the_real_landmarks PASSED 103ms
+  res://tests/test_goal_deck.gd > test_card_spots_sit_on_the_real_landmarks PASSED 290ms
 
   res://tests/test_goal_deck.gd > test_sequence_steps_in_order_and_a_gun_touch_starts_over STARTED
-  res://tests/test_goal_deck.gd > test_sequence_steps_in_order_and_a_gun_touch_starts_over PASSED 7ms
+  res://tests/test_goal_deck.gd > test_sequence_steps_in_order_and_a_gun_touch_starts_over PASSED 18ms
 
   res://tests/test_goal_deck.gd > test_touched_in_needs_the_last_touch_inside STARTED
-  res://tests/test_goal_deck.gd > test_touched_in_needs_the_last_touch_inside PASSED 67ms
+  res://tests/test_goal_deck.gd > test_touched_in_needs_the_last_touch_inside PASSED 77ms
 
   res://tests/test_goal_deck.gd > test_touched_in_forgives_an_arms_reach_past_the_edge STARTED
-  res://tests/test_goal_deck.gd > test_touched_in_forgives_an_arms_reach_past_the_edge PASSED 89ms
+  res://tests/test_goal_deck.gd > test_touched_in_forgives_an_arms_reach_past_the_edge PASSED 80ms
 
   res://tests/test_goal_deck.gd > test_a_heap_in_the_tub_counts_past_the_rim STARTED
-  res://tests/test_goal_deck.gd > test_a_heap_in_the_tub_counts_past_the_rim PASSED 1s 527ms
+  res://tests/test_goal_deck.gd > test_a_heap_in_the_tub_counts_past_the_rim PASSED 1s 698ms
 
   res://tests/test_goal_deck.gd > test_stack_height_counts_a_resting_column STARTED
-  res://tests/test_goal_deck.gd > test_stack_height_counts_a_resting_column PASSED 1s 483ms
+  res://tests/test_goal_deck.gd > test_stack_height_counts_a_resting_column PASSED 1s 460ms
 
   res://tests/test_goal_deck.gd > test_a_standing_stack_reads_done_on_every_tick STARTED
-  res://tests/test_goal_deck.gd > test_a_standing_stack_reads_done_on_every_tick PASSED 5s 980ms
+  res://tests/test_goal_deck.gd > test_a_standing_stack_reads_done_on_every_tick PASSED 6s 18ms
 
   res://tests/test_goal_deck.gd > test_all_of_and_count_and_group STARTED
-  res://tests/test_goal_deck.gd > test_all_of_and_count_and_group PASSED 662ms
+  res://tests/test_goal_deck.gd > test_all_of_and_count_and_group PASSED 636ms
 
   res://tests/test_goal_deck.gd > test_b1_tiny_car STARTED
-  res://tests/test_goal_deck.gd > test_b1_tiny_car PASSED 531ms
+  res://tests/test_goal_deck.gd > test_b1_tiny_car PASSED 522ms
 
   res://tests/test_goal_deck.gd > test_b1_tiny_tractor STARTED
-  res://tests/test_goal_deck.gd > test_b1_tiny_tractor PASSED 421ms
+  res://tests/test_goal_deck.gd > test_b1_tiny_tractor PASSED 431ms
 
   res://tests/test_goal_deck.gd > test_b1_magnet_fridge STARTED
-  res://tests/test_goal_deck.gd > test_b1_magnet_fridge PASSED 127ms
+  res://tests/test_goal_deck.gd > test_b1_magnet_fridge PASSED 133ms
 
   res://tests/test_goal_deck.gd > test_b1_pig_in_pond STARTED
-  res://tests/test_goal_deck.gd > test_b1_pig_in_pond PASSED 5s 296ms
+  res://tests/test_goal_deck.gd > test_b1_pig_in_pond PASSED 5s 291ms
 
   res://tests/test_goal_deck.gd > test_b1_sheep_to_gate STARTED
-  res://tests/test_goal_deck.gd > test_b1_sheep_to_gate PASSED 8s 988ms
+  res://tests/test_goal_deck.gd > test_b1_sheep_to_gate PASSED 9s 26ms
 
   res://tests/test_goal_deck.gd > test_b2_three_in_tub STARTED
-  res://tests/test_goal_deck.gd > test_b2_three_in_tub PASSED 13s 687ms
+  res://tests/test_goal_deck.gd > test_b2_three_in_tub PASSED 13s 691ms
 
   res://tests/test_goal_deck.gd > test_b2_chicken_stairs STARTED
-  res://tests/test_goal_deck.gd > test_b2_chicken_stairs PASSED 821ms
+  res://tests/test_goal_deck.gd > test_b2_chicken_stairs PASSED 869ms
 
   res://tests/test_goal_deck.gd > test_b2_duck_on_tower STARTED
-  res://tests/test_goal_deck.gd > test_b2_duck_on_tower PASSED 7s 31ms
+  res://tests/test_goal_deck.gd > test_b2_duck_on_tower PASSED 7s 109ms
 
   res://tests/test_goal_deck.gd > test_b2_tub_from_loft STARTED
-  res://tests/test_goal_deck.gd > test_b2_tub_from_loft PASSED 23s 421ms
+  res://tests/test_goal_deck.gd > test_b2_tub_from_loft PASSED 23s 413ms
 
   res://tests/test_goal_deck.gd > test_b2_tub_from_loft_needs_the_loft STARTED
-  res://tests/test_goal_deck.gd > test_b2_tub_from_loft_needs_the_loft PASSED 5s 844ms
+  res://tests/test_goal_deck.gd > test_b2_tub_from_loft_needs_the_loft PASSED 5s 944ms
 
   res://tests/test_goal_deck.gd > test_b2_egg_off_loft STARTED
-  res://tests/test_goal_deck.gd > test_b2_egg_off_loft PASSED 5s 111ms
+  res://tests/test_goal_deck.gd > test_b2_egg_off_loft PASSED 6s 665ms
 
   res://tests/test_goal_deck.gd > test_b2_car_over_fence STARTED
-  res://tests/test_goal_deck.gd > test_b2_car_over_fence PASSED 1s 119ms
+  res://tests/test_goal_deck.gd > test_b2_car_over_fence PASSED 1s 476ms
 
   res://tests/test_goal_deck.gd > test_b2_stack_three STARTED
-  res://tests/test_goal_deck.gd > test_b2_stack_three PASSED 28s 69ms
+  res://tests/test_goal_deck.gd > test_b2_stack_three PASSED 28s 100ms
 
   res://tests/test_goal_deck.gd > test_b3_fast_duck STARTED
-  res://tests/test_goal_deck.gd > test_b3_fast_duck PASSED 3s 916ms
+  res://tests/test_goal_deck.gd > test_b3_fast_duck PASSED 4s 138ms
 
   res://tests/test_goal_deck.gd > test_b3_tractor_loft STARTED
-  res://tests/test_goal_deck.gd > test_b3_tractor_loft PASSED 3s 815ms
+  res://tests/test_goal_deck.gd > test_b3_tractor_loft PASSED 3s 973ms
 
   res://tests/test_goal_deck.gd > test_b3_cow_over_tower STARTED
-  res://tests/test_goal_deck.gd > test_b3_cow_over_tower PASSED 7s 820ms
+  res://tests/test_goal_deck.gd > test_b3_cow_over_tower PASSED 7s 847ms
 
   res://tests/test_goal_deck.gd > test_b3_stack_five STARTED
-  res://tests/test_goal_deck.gd > test_b3_stack_five PASSED 31s 600ms
+  res://tests/test_goal_deck.gd > test_b3_stack_five PASSED 31s 647ms
 
   res://tests/test_goal_deck.gd > test_b3_cannonball_pond STARTED
-  res://tests/test_goal_deck.gd > test_b3_cannonball_pond PASSED 7s 818ms
+  res://tests/test_goal_deck.gd > test_b3_cannonball_pond PASSED 7s 794ms
 
   res://tests/test_goal_deck.gd > test_b3_raft STARTED
-  res://tests/test_goal_deck.gd > test_b3_raft PASSED 10s 112ms
+  res://tests/test_goal_deck.gd > test_b3_raft PASSED 10s 191ms
 
   res://tests/test_goal_deck.gd > test_b3_chain_ball STARTED
-  res://tests/test_goal_deck.gd > test_b3_chain_ball PASSED 16s 808ms
+  res://tests/test_goal_deck.gd > test_b3_chain_ball PASSED 16s 865ms
 
   res://tests/test_goal_deck.gd > test_b3_chain_ball_does_not_count_a_zapped_ball STARTED
-  res://tests/test_goal_deck.gd > test_b3_chain_ball_does_not_count_a_zapped_ball PASSED 15s 294ms
+  res://tests/test_goal_deck.gd > test_b3_chain_ball_does_not_count_a_zapped_ball PASSED 15s 843ms
 
   res://tests/test_goal_deck.gd > test_b3_piano_pipe_pond STARTED
-  res://tests/test_goal_deck.gd > test_b3_piano_pipe_pond PASSED 14s 744ms
+  res://tests/test_goal_deck.gd > test_b3_piano_pipe_pond PASSED 15s 452ms
 
-Statistics: 35 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 3min 43s 313ms
+Statistics: 35 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 3min 48s 639ms
 
 
 Run Test Suite: res://tests/test_balloons.gd
   res://tests/test_balloons.gd > test_settings_file_is_not_the_real_one STARTED
-  res://tests/test_balloons.gd > test_settings_file_is_not_the_real_one PASSED 2ms
+  res://tests/test_balloons.gd > test_settings_file_is_not_the_real_one PASSED 10ms
 
   res://tests/test_balloons.gd > test_balloon_is_object_data_with_art_face_and_a_voice_from_the_set STARTED
-  res://tests/test_balloons.gd > test_balloon_is_object_data_with_art_face_and_a_voice_from_the_set PASSED 2ms
+  res://tests/test_balloons.gd > test_balloon_is_object_data_with_art_face_and_a_voice_from_the_set PASSED 13ms
 
   res://tests/test_balloons.gd > test_balloons_placed_and_zones_stay_six_to_eleven STARTED
-  res://tests/test_balloons.gd > test_balloons_placed_and_zones_stay_six_to_eleven PASSED 14ms
+  res://tests/test_balloons.gd > test_balloons_placed_and_zones_stay_six_to_eleven PASSED 55ms
 
   res://tests/test_balloons.gd > test_balloon_floats_within_its_zone STARTED
-  res://tests/test_balloons.gd > test_balloon_floats_within_its_zone PASSED 6s 458ms
+  res://tests/test_balloons.gd > test_balloon_floats_within_its_zone PASSED 6s 809ms
 
   res://tests/test_balloons.gd > test_balloon_can_be_grabbed_and_thrown_without_popping STARTED
-  res://tests/test_balloons.gd > test_balloon_can_be_grabbed_and_thrown_without_popping PASSED 2s 506ms
+  res://tests/test_balloons.gd > test_balloon_can_be_grabbed_and_thrown_without_popping PASSED 2s 689ms
 
   res://tests/test_balloons.gd > test_light_touch_does_not_pop STARTED
-  res://tests/test_balloons.gd > test_light_touch_does_not_pop PASSED 2s 521ms
+  res://tests/test_balloons.gd > test_light_touch_does_not_pop PASSED 2s 552ms
 
   res://tests/test_balloons.gd > test_hard_hit_pops_into_a_puff_then_respawns STARTED
-  res://tests/test_balloons.gd > test_hard_hit_pops_into_a_puff_then_respawns PASSED 4s 751ms
+  res://tests/test_balloons.gd > test_hard_hit_pops_into_a_puff_then_respawns PASSED 4s 844ms
 
   res://tests/test_balloons.gd > test_sharp_poke_pops STARTED
-  res://tests/test_balloons.gd > test_sharp_poke_pops PASSED 522ms
+  res://tests/test_balloons.gd > test_sharp_poke_pops PASSED 763ms
 
   res://tests/test_balloons.gd > test_balloon_reacts_to_every_gun_and_floats_again_after_undo STARTED
-  res://tests/test_balloons.gd > test_balloon_reacts_to_every_gun_and_floats_again_after_undo PASSED 37s 834ms
+  res://tests/test_balloons.gd > test_balloon_reacts_to_every_gun_and_floats_again_after_undo PASSED 38s 108ms
 
   res://tests/test_balloons.gd > test_the_three_balloons_wear_three_party_colours STARTED
-  res://tests/test_balloons.gd > test_the_three_balloons_wear_three_party_colours PASSED 103ms
+  res://tests/test_balloons.gd > test_the_three_balloons_wear_three_party_colours PASSED 332ms
 
   res://tests/test_balloons.gd > test_stress_frame_time_within_budget STARTED
 balloons awake per frame: without 52.0, with 55.0
-balloon poke scan: 33.0 us
-  res://tests/test_balloons.gd > test_stress_frame_time_within_budget PASSED 9s 120ms
+balloon poke scan: 38.0 us
+  res://tests/test_balloons.gd > test_stress_frame_time_within_budget PASSED 9s 509ms
 
-Statistics: 11 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1min 3s 873ms
+Statistics: 11 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1min 5s 836ms
 
 
 Run Test Suite: res://tests/test_gap_close_2.gd
   res://tests/test_gap_close_2.gd > test_delight_and_zap_use_the_characters_own_voice_pack STARTED
-  res://tests/test_gap_close_2.gd > test_delight_and_zap_use_the_characters_own_voice_pack PASSED 9ms
+  res://tests/test_gap_close_2.gd > test_delight_and_zap_use_the_characters_own_voice_pack PASSED 52ms
 
   res://tests/test_gap_close_2.gd > test_aliases_only_name_lines_the_library_packs_ship STARTED
-  res://tests/test_gap_close_2.gd > test_aliases_only_name_lines_the_library_packs_ship PASSED 3ms
+  res://tests/test_gap_close_2.gd > test_aliases_only_name_lines_the_library_packs_ship PASSED 8ms
 
   res://tests/test_gap_close_2.gd > test_nobody_talks_over_a_spoken_line STARTED
-  res://tests/test_gap_close_2.gd > test_nobody_talks_over_a_spoken_line PASSED 4ms
+  res://tests/test_gap_close_2.gd > test_nobody_talks_over_a_spoken_line PASSED 12ms
 
   res://tests/test_gap_close_2.gd > test_a_drop_in_snorts_then_says_hello_in_their_own_voice STARTED
-  res://tests/test_gap_close_2.gd > test_a_drop_in_snorts_then_says_hello_in_their_own_voice PASSED 779ms
+  res://tests/test_gap_close_2.gd > test_a_drop_in_snorts_then_says_hello_in_their_own_voice PASSED 709ms
 
   res://tests/test_gap_close_2.gd > test_a_drop_in_with_no_voice_pack_still_says_something STARTED
-  res://tests/test_gap_close_2.gd > test_a_drop_in_with_no_voice_pack_still_says_something PASSED 791ms
+  res://tests/test_gap_close_2.gd > test_a_drop_in_with_no_voice_pack_still_says_something PASSED 797ms
 
   res://tests/test_gap_close_2.gd > test_the_solo_swap_says_im_in STARTED
-  res://tests/test_gap_close_2.gd > test_the_solo_swap_says_im_in PASSED 24ms
+  res://tests/test_gap_close_2.gd > test_the_solo_swap_says_im_in PASSED 37ms
 
   res://tests/test_gap_close_2.gd > test_the_solo_swap_in_the_yard_speaks_the_new_players_line STARTED
 ERROR: Parameter "material" is null.
@@ -319,78 +365,78 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_gap_close_2.gd > test_the_solo_swap_in_the_yard_speaks_the_new_players_line PASSED 204ms
+  res://tests/test_gap_close_2.gd > test_the_solo_swap_in_the_yard_speaks_the_new_players_line PASSED 406ms
 
   res://tests/test_gap_close_2.gd > test_a_refused_zap_gets_a_gentle_oops_in_their_own_voice STARTED
-  res://tests/test_gap_close_2.gd > test_a_refused_zap_gets_a_gentle_oops_in_their_own_voice PASSED 24ms
+  res://tests/test_gap_close_2.gd > test_a_refused_zap_gets_a_gentle_oops_in_their_own_voice PASSED 42ms
 
   res://tests/test_gap_close_2.gd > test_a_long_stand_still_gets_one_wait_line_in_their_own_voice STARTED
-  res://tests/test_gap_close_2.gd > test_a_long_stand_still_gets_one_wait_line_in_their_own_voice PASSED 32ms
+  res://tests/test_gap_close_2.gd > test_a_long_stand_still_gets_one_wait_line_in_their_own_voice PASSED 66ms
 
-Statistics: 9 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1s 900ms
+Statistics: 9 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 2s 291ms
 
 
 Run Test Suite: res://tests/test_greybox.gd
   res://tests/test_greybox.gd > test_belt_has_seven_guns_in_belt_order STARTED
-  res://tests/test_greybox.gd > test_belt_has_seven_guns_in_belt_order PASSED 3ms
+  res://tests/test_greybox.gd > test_belt_has_seven_guns_in_belt_order PASSED 4ms
 
   res://tests/test_greybox.gd > test_belt_cycles_both_ways_with_a_click STARTED
-  res://tests/test_greybox.gd > test_belt_cycles_both_ways_with_a_click PASSED 132ms
+  res://tests/test_greybox.gd > test_belt_cycles_both_ways_with_a_click PASSED 167ms
 
   res://tests/test_greybox.gd > test_toggle_guns_zap_and_undo_with_a_sound STARTED
 Audio: no file for cue 'voice_box' in res://assets/audio/sfx/, using a synth beep
-  res://tests/test_greybox.gd > test_toggle_guns_zap_and_undo_with_a_sound PASSED 652ms
+  res://tests/test_greybox.gd > test_toggle_guns_zap_and_undo_with_a_sound PASSED 634ms
 
   res://tests/test_greybox.gd > test_size_gun_tap_grows_stick_down_shrinks_hold_repeats STARTED
-  res://tests/test_greybox.gd > test_size_gun_tap_grows_stick_down_shrinks_hold_repeats PASSED 1s 359ms
+  res://tests/test_greybox.gd > test_size_gun_tap_grows_stick_down_shrinks_hold_repeats PASSED 1s 360ms
 
   res://tests/test_greybox.gd > test_glue_gun_sticks_two_things_and_the_blob_splits_them STARTED
-  res://tests/test_greybox.gd > test_glue_gun_sticks_two_things_and_the_blob_splits_them PASSED 1s 654ms
+  res://tests/test_greybox.gd > test_glue_gun_sticks_two_things_and_the_blob_splits_them PASSED 1s 646ms
 
   res://tests/test_greybox.gd > test_zapping_nothing_sparkles STARTED
-  res://tests/test_greybox.gd > test_zapping_nothing_sparkles PASSED 57ms
+  res://tests/test_greybox.gd > test_zapping_nothing_sparkles PASSED 125ms
 
   res://tests/test_greybox.gd > test_partner_zaps_are_funny_and_last_at_most_a_second STARTED
-  res://tests/test_greybox.gd > test_partner_zaps_are_funny_and_last_at_most_a_second PASSED 13s 873ms
+  res://tests/test_greybox.gd > test_partner_zaps_are_funny_and_last_at_most_a_second PASSED 13s 823ms
 
   res://tests/test_greybox.gd > test_frozen_partner_is_a_statue_then_moves_again STARTED
-  res://tests/test_greybox.gd > test_frozen_partner_is_a_statue_then_moves_again PASSED 1s 631ms
+  res://tests/test_greybox.gd > test_frozen_partner_is_a_statue_then_moves_again PASSED 1s 672ms
 
   res://tests/test_greybox.gd > test_grab_carries_at_arms_length_and_drops_on_release STARTED
-  res://tests/test_greybox.gd > test_grab_carries_at_arms_length_and_drops_on_release PASSED 1s 446ms
+  res://tests/test_greybox.gd > test_grab_carries_at_arms_length_and_drops_on_release PASSED 1s 481ms
 
   res://tests/test_greybox.gd > test_flick_throws STARTED
-  res://tests/test_greybox.gd > test_flick_throws PASSED 612ms
+  res://tests/test_greybox.gd > test_flick_throws PASSED 593ms
 
   res://tests/test_greybox.gd > test_a_dropped_object_lands_with_a_thud STARTED
-  res://tests/test_greybox.gd > test_a_dropped_object_lands_with_a_thud PASSED 1s 168ms
+  res://tests/test_greybox.gd > test_a_dropped_object_lands_with_a_thud PASSED 1s 182ms
 
   res://tests/test_greybox.gd > test_yard_spawns_the_layout_with_faces STARTED
-  res://tests/test_greybox.gd > test_yard_spawns_the_layout_with_faces PASSED 120ms
+  res://tests/test_greybox.gd > test_yard_spawns_the_layout_with_faces PASSED 352ms
 
   res://tests/test_greybox.gd > test_reset_yard_puts_everything_back STARTED
-  res://tests/test_greybox.gd > test_reset_yard_puts_everything_back PASSED 158ms
+  res://tests/test_greybox.gd > test_reset_yard_puts_everything_back PASSED 711ms
 
   res://tests/test_greybox.gd > test_holding_a_on_the_sign_resets STARTED
-  res://tests/test_greybox.gd > test_holding_a_on_the_sign_resets PASSED 2s 309ms
+  res://tests/test_greybox.gd > test_holding_a_on_the_sign_resets PASSED 2s 840ms
 
   res://tests/test_greybox.gd > test_water_floats_light_things_and_sinks_heavy_ones STARTED
-  res://tests/test_greybox.gd > test_water_floats_light_things_and_sinks_heavy_ones PASSED 3s 17ms
+  res://tests/test_greybox.gd > test_water_floats_light_things_and_sinks_heavy_ones PASSED 3s 126ms
 
   res://tests/test_greybox.gd > test_goal_checker_knows_all_five_band_one_cards STARTED
-  res://tests/test_greybox.gd > test_goal_checker_knows_all_five_band_one_cards PASSED 1s 79ms
+  res://tests/test_greybox.gd > test_goal_checker_knows_all_five_band_one_cards PASSED 1s 214ms
 
   res://tests/test_greybox.gd > test_the_five_playtest_cards_complete STARTED
-  res://tests/test_greybox.gd > test_the_five_playtest_cards_complete PASSED 4s 432ms
+  res://tests/test_greybox.gd > test_the_five_playtest_cards_complete PASSED 4s 807ms
 
   res://tests/test_greybox.gd > test_ten_cards_all_skip_through_and_come_back STARTED
-  res://tests/test_greybox.gd > test_ten_cards_all_skip_through_and_come_back PASSED 147ms
+  res://tests/test_greybox.gd > test_ten_cards_all_skip_through_and_come_back PASSED 664ms
 
   res://tests/test_greybox.gd > test_deck_completes_skips_and_cheers STARTED
-  res://tests/test_greybox.gd > test_deck_completes_skips_and_cheers PASSED 971ms
+  res://tests/test_greybox.gd > test_deck_completes_skips_and_cheers PASSED 1s 205ms
 
   res://tests/test_greybox.gd > test_save_load_round_trip STARTED
-  res://tests/test_greybox.gd > test_save_load_round_trip PASSED 928ms
+  res://tests/test_greybox.gd > test_save_load_round_trip PASSED 1s 949ms
 
   res://tests/test_greybox.gd > test_chuck_sleeps_in_the_tire_pile_and_wakes_with_a_snort STARTED
 ERROR: Parameter "material" is null.
@@ -404,7 +450,7 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_greybox.gd > test_chuck_sleeps_in_the_tire_pile_and_wakes_with_a_snort PASSED 922ms
+  res://tests/test_greybox.gd > test_chuck_sleeps_in_the_tire_pile_and_wakes_with_a_snort PASSED 1s 774ms
 
   res://tests/test_greybox.gd > test_players_who_ready_in_the_lobby_start_awake STARTED
 ERROR: Parameter "material" is null.
@@ -418,7 +464,7 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_greybox.gd > test_players_who_ready_in_the_lobby_start_awake PASSED 192ms
+  res://tests/test_greybox.gd > test_players_who_ready_in_the_lobby_start_awake PASSED 838ms
 
   res://tests/test_greybox.gd > test_solo_swap_moves_the_pad_to_the_other_player STARTED
 ERROR: Parameter "material" is null.
@@ -432,24 +478,24 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_greybox.gd > test_solo_swap_moves_the_pad_to_the_other_player PASSED 191ms
+  res://tests/test_greybox.gd > test_solo_swap_moves_the_pad_to_the_other_player PASSED 678ms
 
   res://tests/test_greybox.gd > test_missing_cues_play_a_synth_beep STARTED
 Audio: no file for cue 'zap_definitely_not_a_file' in res://assets/audio/sfx/, using a synth beep
-  res://tests/test_greybox.gd > test_missing_cues_play_a_synth_beep PASSED 6ms
+  res://tests/test_greybox.gd > test_missing_cues_play_a_synth_beep PASSED 50ms
 
-Statistics: 24 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 37s 115ms
+Statistics: 24 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 43s 32ms
 
 
 Run Test Suite: res://tests/test_art.gd
   res://tests/test_art.gd > test_about_forty_object_types_all_with_art_and_faces STARTED
-  res://tests/test_art.gd > test_about_forty_object_types_all_with_art_and_faces PASSED 133ms
+  res://tests/test_art.gd > test_about_forty_object_types_all_with_art_and_faces PASSED 563ms
 
   res://tests/test_art.gd > test_layout_uses_every_object_type STARTED
-  res://tests/test_art.gd > test_layout_uses_every_object_type PASSED 15ms
+  res://tests/test_art.gd > test_layout_uses_every_object_type PASSED 58ms
 
   res://tests/test_art.gd > test_dressing_is_looks_only STARTED
-  res://tests/test_art.gd > test_dressing_is_looks_only PASSED 95ms
+  res://tests/test_art.gd > test_dressing_is_looks_only PASSED 210ms
 
   res://tests/test_art.gd > test_every_gun_is_gear_with_a_muzzle_and_player_tape STARTED
   res://tests/test_art.gd > test_every_gun_is_gear_with_a_muzzle_and_player_tape PASSED 4ms
@@ -457,29 +503,36 @@ Run Test Suite: res://tests/test_art.gd
   res://tests/test_art.gd > test_gun_hues_stay_clear_of_the_players STARTED
   res://tests/test_art.gd > test_gun_hues_stay_clear_of_the_players PASSED 3ms
 
-Statistics: 5 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 271ms
+Statistics: 5 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 951ms
 
 
 Run Test Suite: res://tests/test_patience.gd
   res://tests/test_patience.gd > test_the_barn_cow_keeps_her_id_and_body STARTED
-  res://tests/test_patience.gd > test_the_barn_cow_keeps_her_id_and_body PASSED 25ms
+  res://tests/test_patience.gd > test_the_barn_cow_keeps_her_id_and_body PASSED 39ms
 
   res://tests/test_patience.gd > test_the_barn_cow_is_patience_from_the_library STARTED
-  res://tests/test_patience.gd > test_the_barn_cow_is_patience_from_the_library PASSED 20ms
+  res://tests/test_patience.gd > test_the_barn_cow_is_patience_from_the_library PASSED 104ms
 
   res://tests/test_patience.gd > test_she_has_a_face_that_follows_the_face_rig STARTED
-  res://tests/test_patience.gd > test_she_has_a_face_that_follows_the_face_rig PASSED 33ms
+  res://tests/test_patience.gd > test_she_has_a_face_that_follows_the_face_rig PASSED 42ms
 
   res://tests/test_patience.gd > test_two_cows_do_not_share_a_face STARTED
-  res://tests/test_patience.gd > test_two_cows_do_not_share_a_face PASSED 32ms
+  res://tests/test_patience.gd > test_two_cows_do_not_share_a_face PASSED 96ms
 
-Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 130ms
+Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 307ms
 
 
 Run Test Suite: res://tests/test_launch_ready.gd
   res://tests/test_launch_ready.gd > test_the_whole_session_flows_with_a_way_back_from_every_screen STARTED
 flow: PASS 01_boot_lobby state LOBBY, lobby shown
 flow: PASS close@lobby
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
+   GDScript backtrace (most recent call first):
+       [0] set_character (res://scripts/players/jarling_rig.gd:56)
+       [1] set_character (res://scenes/ui/lobby_jarling.gd:43)
+       [2] _become (res://scenes/ui/kit/character_slot.gd:175)
+       [3] <anonymous lambda> (res://scenes/ui/kit/character_slot.gd:148)
 flow: PASS 02_chooser_pick_and_catchphrase P1 ana -> cy, said catchphrase.ogg
 flow: PASS close@chooser
 ERROR: Parameter "material" is null.
@@ -489,7 +542,7 @@ ERROR: Parameter "material" is null.
        [1] set_character (res://scenes/ui/lobby_jarling.gd:43)
        [2] _become (res://scenes/ui/kit/character_slot.gd:175)
        [3] <anonymous lambda> (res://scenes/ui/kit/character_slot.gd:148)
-Chooser voice: P1 dee (no voice) (t=333.29 s)
+Chooser voice: P1 dee (no voice) (t=356.15 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -497,7 +550,7 @@ ERROR: Parameter "material" is null.
        [1] set_character (res://scenes/ui/lobby_jarling.gd:43)
        [2] _become (res://scenes/ui/kit/character_slot.gd:175)
        [3] <anonymous lambda> (res://scenes/ui/kit/character_slot.gd:148)
-Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=336.36 s)
+Chooser voice: P1 eve res://tests/fixtures/voice/catchphrase.ogg (t=359.52 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -505,7 +558,7 @@ ERROR: Parameter "material" is null.
        [1] set_character (res://scenes/ui/lobby_jarling.gd:43)
        [2] _become (res://scenes/ui/kit/character_slot.gd:175)
        [3] <anonymous lambda> (res://scenes/ui/kit/character_slot.gd:148)
-Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=336.68 s)
+Chooser voice: P1 ana res://tests/fixtures/voice/catchphrase.ogg (t=359.96 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -513,7 +566,7 @@ ERROR: Parameter "material" is null.
        [1] set_character (res://scenes/ui/lobby_jarling.gd:43)
        [2] _become (res://scenes/ui/kit/character_slot.gd:175)
        [3] <anonymous lambda> (res://scenes/ui/kit/character_slot.gd:148)
-Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=337.00 s)
+Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=360.49 s)
 flow: PASS 03_chooser_full_lap 4 / 4 Jarlings, 2 catchphrases, 2 without one, wrong voice []
 flow: PASS 04_lobby_settings_open 
 flow: PASS close@lobby_settings
@@ -522,7 +575,7 @@ flow: PASS 06_lobby_door_asks
 flow: PASS close@lobby_door
 flow: PASS 07_lobby_door_stay 
 flow: PASS 08_two_ready_countdown P2 joined on A and readied
-Chooser voice: P2 bo res://tests/fixtures/voice/cheer.ogg (t=338.74 s)
+Chooser voice: P2 bo res://tests/fixtures/voice/cheer.ogg (t=363.39 s)
 flow: PASS 09_playing_two 
 flow: PASS close@play
 flow: PASS 10_gun_wheel gun 0 -> 1
@@ -540,7 +593,7 @@ flow: PASS 19_pause_settings_back
 flow: PASS 20_resume_with_b 
 flow: PASS 21_pause_reset_yard 
 flow: PASS 22_restart_to_lobby 
-Chooser voice: P2 bo res://tests/fixtures/voice/cheer.ogg (t=349.63 s)
+Chooser voice: P2 bo res://tests/fixtures/voice/cheer.ogg (t=375.40 s)
 flow: PASS 23_solo_on 
 flow: PASS 24_solo_playing solo readies both
 flow: PASS 25_solo_swap 
@@ -548,14 +601,14 @@ flow: PASS close@solo_play
 flow: PASS 26_solo_off 
 flow: PASS 27_pause_door_asks 
 flow: PASS 28_pause_door_leave_quits 
-  res://tests/test_launch_ready.gd > test_the_whole_session_flows_with_a_way_back_from_every_screen PASSED 22s 870ms
+  res://tests/test_launch_ready.gd > test_the_whole_session_flows_with_a_way_back_from_every_screen PASSED 27s 48ms
 
   res://tests/test_launch_ready.gd > test_the_d_pad_moves_the_lobby_cursor_and_the_pause_menu STARTED
-Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=355.83 s)
-  res://tests/test_launch_ready.gd > test_the_d_pad_moves_the_lobby_cursor_and_the_pause_menu PASSED 382ms
+Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=381.90 s)
+  res://tests/test_launch_ready.gd > test_the_d_pad_moves_the_lobby_cursor_and_the_pause_menu PASSED 587ms
 
   res://tests/test_launch_ready.gd > test_a_held_d_pad_moves_once_not_every_frame STARTED
-Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=356.22 s)
+Chooser voice: P1 cy res://tests/fixtures/voice/cheer.ogg (t=382.54 s)
 ERROR: Parameter "material" is null.
    at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:264)
    GDScript backtrace (most recent call first):
@@ -567,13 +620,13 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_launch_ready.gd > test_a_held_d_pad_moves_once_not_every_frame PASSED 325ms
+  res://tests/test_launch_ready.gd > test_a_held_d_pad_moves_once_not_every_frame PASSED 459ms
 
   res://tests/test_launch_ready.gd > test_every_menu_cue_is_a_designed_file_not_the_synth STARTED
-  res://tests/test_launch_ready.gd > test_every_menu_cue_is_a_designed_file_not_the_synth PASSED 4ms
+  res://tests/test_launch_ready.gd > test_every_menu_cue_is_a_designed_file_not_the_synth PASSED 10ms
 
   res://tests/test_launch_ready.gd > test_the_release_stamps_the_tag_into_the_version_before_export STARTED
-  res://tests/test_launch_ready.gd > test_the_release_stamps_the_tag_into_the_version_before_export PASSED 3ms
+  res://tests/test_launch_ready.gd > test_the_release_stamps_the_tag_into_the_version_before_export PASSED 4ms
 
   res://tests/test_launch_ready.gd > test_the_lobby_footer_shows_the_project_version STARTED
 ERROR: Parameter "material" is null.
@@ -587,267 +640,267 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_launch_ready.gd > test_the_lobby_footer_shows_the_project_version PASSED 178ms
+  res://tests/test_launch_ready.gd > test_the_lobby_footer_shows_the_project_version PASSED 222ms
 
   res://tests/test_launch_ready.gd > test_a_full_cue_rebuild_never_writes_over_the_elevenlabs_music STARTED
-  res://tests/test_launch_ready.gd > test_a_full_cue_rebuild_never_writes_over_the_elevenlabs_music PASSED 3ms
+  res://tests/test_launch_ready.gd > test_a_full_cue_rebuild_never_writes_over_the_elevenlabs_music PASSED 6ms
 
   res://tests/test_launch_ready.gd > test_gun_icons_skip_shapes_squashed_to_nothing STARTED
   res://tests/test_launch_ready.gd > test_gun_icons_skip_shapes_squashed_to_nothing PASSED 6ms
 
-Statistics: 8 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 23s 802ms
+Statistics: 8 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 28s 403ms
 
 
 Run Test Suite: res://tests/test_roster.gd
   res://tests/test_roster.gd > test_real_roster_is_jeff_and_chuck STARTED
-  res://tests/test_roster.gd > test_real_roster_is_jeff_and_chuck PASSED 7ms
+  res://tests/test_roster.gd > test_real_roster_is_jeff_and_chuck PASSED 19ms
 
   res://tests/test_roster.gd > test_shared_path_is_outside_user STARTED
-  res://tests/test_roster.gd > test_shared_path_is_outside_user PASSED 2ms
+  res://tests/test_roster.gd > test_shared_path_is_outside_user PASSED 6ms
 
   res://tests/test_roster.gd > test_defaults_when_nothing_else STARTED
-  res://tests/test_roster.gd > test_defaults_when_nothing_else PASSED 2ms
+  res://tests/test_roster.gd > test_defaults_when_nothing_else PASSED 7ms
 
   res://tests/test_roster.gd > test_file_beats_defaults STARTED
-  res://tests/test_roster.gd > test_file_beats_defaults PASSED 2ms
+  res://tests/test_roster.gd > test_file_beats_defaults PASSED 8ms
 
   res://tests/test_roster.gd > test_args_beat_file STARTED
-  res://tests/test_roster.gd > test_args_beat_file PASSED 3ms
+  res://tests/test_roster.gd > test_args_beat_file PASSED 7ms
 
   res://tests/test_roster.gd > test_file_is_keyed_by_profile STARTED
-  res://tests/test_roster.gd > test_file_is_keyed_by_profile PASSED 3ms
+  res://tests/test_roster.gd > test_file_is_keyed_by_profile PASSED 6ms
 
   res://tests/test_roster.gd > test_unknown_ids_fall_back STARTED
-  res://tests/test_roster.gd > test_unknown_ids_fall_back PASSED 3ms
+  res://tests/test_roster.gd > test_unknown_ids_fall_back PASSED 10ms
 
   res://tests/test_roster.gd > test_broken_file_reads_as_empty STARTED
-  res://tests/test_roster.gd > test_broken_file_reads_as_empty PASSED 3ms
+  res://tests/test_roster.gd > test_broken_file_reads_as_empty PASSED 6ms
 
   res://tests/test_roster.gd > test_no_duplicates_at_start STARTED
-  res://tests/test_roster.gd > test_no_duplicates_at_start PASSED 3ms
+  res://tests/test_roster.gd > test_no_duplicates_at_start PASSED 7ms
 
   res://tests/test_roster.gd > test_set_pick_refuses_the_other_players_character STARTED
-  res://tests/test_roster.gd > test_set_pick_refuses_the_other_players_character PASSED 2ms
+  res://tests/test_roster.gd > test_set_pick_refuses_the_other_players_character PASSED 7ms
 
   res://tests/test_roster.gd > test_next_free_skips_taken_and_wraps STARTED
-  res://tests/test_roster.gd > test_next_free_skips_taken_and_wraps PASSED 3ms
+  res://tests/test_roster.gd > test_next_free_skips_taken_and_wraps PASSED 8ms
 
   res://tests/test_roster.gd > test_next_free_with_nobody_free_stays STARTED
-  res://tests/test_roster.gd > test_next_free_with_nobody_free_stays PASSED 3ms
+  res://tests/test_roster.gd > test_next_free_with_nobody_free_stays PASSED 6ms
 
   res://tests/test_roster.gd > test_set_pick_writes_the_shared_file_and_keeps_other_keys STARTED
-  res://tests/test_roster.gd > test_set_pick_writes_the_shared_file_and_keeps_other_keys PASSED 4ms
+  res://tests/test_roster.gd > test_set_pick_writes_the_shared_file_and_keeps_other_keys PASSED 11ms
 
   res://tests/test_roster.gd > test_write_creates_the_folder STARTED
-  res://tests/test_roster.gd > test_write_creates_the_folder PASSED 3ms
+  res://tests/test_roster.gd > test_write_creates_the_folder PASSED 9ms
 
   res://tests/test_roster.gd > test_pick_survives_a_relaunch STARTED
-  res://tests/test_roster.gd > test_pick_survives_a_relaunch PASSED 3ms
+  res://tests/test_roster.gd > test_pick_survives_a_relaunch PASSED 13ms
 
   res://tests/test_roster.gd > test_args_parse_both_forms STARTED
-  res://tests/test_roster.gd > test_args_parse_both_forms PASSED 2ms
+  res://tests/test_roster.gd > test_args_parse_both_forms PASSED 7ms
 
   res://tests/test_roster.gd > test_does_not_touch_the_games_saves STARTED
-  res://tests/test_roster.gd > test_does_not_touch_the_games_saves PASSED 3ms
+  res://tests/test_roster.gd > test_does_not_touch_the_games_saves PASSED 6ms
 
-Statistics: 17 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 97ms
+Statistics: 17 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 200ms
 
 
 Run Test Suite: res://tests/test_gap_close_3.gd
   res://tests/test_gap_close_3.gd > test_every_faceless_machine_has_a_moving_part_and_faced_objects_do_not STARTED
-  res://tests/test_gap_close_3.gd > test_every_faceless_machine_has_a_moving_part_and_faced_objects_do_not PASSED 42ms
+  res://tests/test_gap_close_3.gd > test_every_faceless_machine_has_a_moving_part_and_faced_objects_do_not PASSED 44ms
 
   res://tests/test_gap_close_3.gd > test_the_fridge_door_flies_open_and_shuts_again STARTED
-  res://tests/test_gap_close_3.gd > test_the_fridge_door_flies_open_and_shuts_again PASSED 2s 304ms
+  res://tests/test_gap_close_3.gd > test_the_fridge_door_flies_open_and_shuts_again PASSED 2s 285ms
 
   res://tests/test_gap_close_3.gd > test_zapping_a_machine_with_a_gun_plays_its_moving_part STARTED
-  res://tests/test_gap_close_3.gd > test_zapping_a_machine_with_a_gun_plays_its_moving_part PASSED 2s 174ms
+  res://tests/test_gap_close_3.gd > test_zapping_a_machine_with_a_gun_plays_its_moving_part PASSED 2s 178ms
 
   res://tests/test_gap_close_3.gd > test_the_toast_pops_up_and_drops_back_in STARTED
-  res://tests/test_gap_close_3.gd > test_the_toast_pops_up_and_drops_back_in PASSED 2s 336ms
+  res://tests/test_gap_close_3.gd > test_the_toast_pops_up_and_drops_back_in PASSED 2s 337ms
 
   res://tests/test_gap_close_3.gd > test_the_tractor_puffs_smoke_once_per_reaction STARTED
-  res://tests/test_gap_close_3.gd > test_the_tractor_puffs_smoke_once_per_reaction PASSED 674ms
+  res://tests/test_gap_close_3.gd > test_the_tractor_puffs_smoke_once_per_reaction PASSED 663ms
 
   res://tests/test_gap_close_3.gd > test_gag_poses_start_and_end_at_rest STARTED
-  res://tests/test_gap_close_3.gd > test_gag_poses_start_and_end_at_rest PASSED 3ms
+  res://tests/test_gap_close_3.gd > test_gag_poses_start_and_end_at_rest PASSED 12ms
 
   res://tests/test_gap_close_3.gd > test_a_face_watches_the_nearest_player_walk_past STARTED
   res://tests/test_gap_close_3.gd > test_a_face_watches_the_nearest_player_walk_past PASSED 1s 997ms
 
   res://tests/test_gap_close_3.gd > test_a_wide_eyed_reaction_still_wins_over_watching STARTED
-  res://tests/test_gap_close_3.gd > test_a_wide_eyed_reaction_still_wins_over_watching PASSED 1s 38ms
+  res://tests/test_gap_close_3.gd > test_a_wide_eyed_reaction_still_wins_over_watching PASSED 1s 30ms
 
-Statistics: 8 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 10s 607ms
+Statistics: 8 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 10s 628ms
 
 
 Run Test Suite: res://tests/test_showtime.gd
   res://tests/test_showtime.gd > test_default_skin_and_use_skin STARTED
-  res://tests/test_showtime.gd > test_default_skin_and_use_skin PASSED 174ms
+  res://tests/test_showtime.gd > test_default_skin_and_use_skin PASSED 566ms
 
   res://tests/test_showtime.gd > test_title_text_on_the_lobby_wins_over_the_skin STARTED
-  res://tests/test_showtime.gd > test_title_text_on_the_lobby_wins_over_the_skin PASSED 154ms
+  res://tests/test_showtime.gd > test_title_text_on_the_lobby_wins_over_the_skin PASSED 444ms
 
   res://tests/test_showtime.gd > test_character_slot_hosts_every_kind STARTED
-  res://tests/test_showtime.gd > test_character_slot_hosts_every_kind PASSED 154ms
+  res://tests/test_showtime.gd > test_character_slot_hosts_every_kind PASSED 645ms
 
   res://tests/test_showtime.gd > test_backdrop_modes STARTED
-  res://tests/test_showtime.gd > test_backdrop_modes PASSED 206ms
+  res://tests/test_showtime.gd > test_backdrop_modes PASSED 381ms
 
   res://tests/test_showtime.gd > test_last_beat_launches_and_cannot_cancel STARTED
-  res://tests/test_showtime.gd > test_last_beat_launches_and_cannot_cancel PASSED 197ms
+  res://tests/test_showtime.gd > test_last_beat_launches_and_cannot_cancel PASSED 390ms
 
   res://tests/test_showtime.gd > test_play_chip_counts_players STARTED
-  res://tests/test_showtime.gd > test_play_chip_counts_players PASSED 179ms
+  res://tests/test_showtime.gd > test_play_chip_counts_players PASSED 275ms
 
   res://tests/test_showtime.gd > test_wipe_covers_then_finishes STARTED
-  res://tests/test_showtime.gd > test_wipe_covers_then_finishes PASSED 1s 864ms
+  res://tests/test_showtime.gd > test_wipe_covers_then_finishes PASSED 1s 825ms
 
   res://tests/test_showtime.gd > test_long_labels_shrink_to_fit STARTED
-  res://tests/test_showtime.gd > test_long_labels_shrink_to_fit PASSED 8ms
+  res://tests/test_showtime.gd > test_long_labels_shrink_to_fit PASSED 10ms
 
   res://tests/test_showtime.gd > test_every_menu_cue_has_a_sound STARTED
-  res://tests/test_showtime.gd > test_every_menu_cue_has_a_sound PASSED 9ms
+  res://tests/test_showtime.gd > test_every_menu_cue_has_a_sound PASSED 10ms
 
-Statistics: 9 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 3s 1ms
+Statistics: 9 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 4s 706ms
 
 
 Run Test Suite: res://tests/test_sync_characters.gd
   res://tests/test_sync_characters.gd > test_vendors_the_catchphrase STARTED
-  res://tests/test_sync_characters.gd > test_vendors_the_catchphrase PASSED 105ms
+  res://tests/test_sync_characters.gd > test_vendors_the_catchphrase PASSED 229ms
 
-Statistics: 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 132ms
+Statistics: 1 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 298ms
 
 
 Run Test Suite: res://tests/test_controls.gd
   res://tests/test_controls.gd > test_jump_numbers_live_in_data STARTED
-  res://tests/test_controls.gd > test_jump_numbers_live_in_data PASSED 22ms
+  res://tests/test_controls.gd > test_jump_numbers_live_in_data PASSED 29ms
 
   res://tests/test_controls.gd > test_tap_is_a_short_hop_and_hold_goes_higher STARTED
-  res://tests/test_controls.gd > test_tap_is_a_short_hop_and_hold_goes_higher PASSED 2s 844ms
+  res://tests/test_controls.gd > test_tap_is_a_short_hop_and_hold_goes_higher PASSED 2s 851ms
 
   res://tests/test_controls.gd > test_letting_go_halfway_is_in_between STARTED
-  res://tests/test_controls.gd > test_letting_go_halfway_is_in_between PASSED 2s 833ms
+  res://tests/test_controls.gd > test_letting_go_halfway_is_in_between PASSED 2s 814ms
 
   res://tests/test_controls.gd > test_hold_is_capped_and_both_characters_match STARTED
-  res://tests/test_controls.gd > test_hold_is_capped_and_both_characters_match PASSED 4s 33ms
+  res://tests/test_controls.gd > test_hold_is_capped_and_both_characters_match PASSED 4s 21ms
 
   res://tests/test_controls.gd > test_buffered_tap_before_landing_still_hops STARTED
-  res://tests/test_controls.gd > test_buffered_tap_before_landing_still_hops PASSED 1s 673ms
+  res://tests/test_controls.gd > test_buffered_tap_before_landing_still_hops PASSED 1s 670ms
 
   res://tests/test_controls.gd > test_variable_jump_works_on_objects STARTED
-  res://tests/test_controls.gd > test_variable_jump_works_on_objects PASSED 3s 655ms
+  res://tests/test_controls.gd > test_variable_jump_works_on_objects PASSED 3s 675ms
 
   res://tests/test_controls.gd > test_select_is_a_player_action_on_the_back_button STARTED
-  res://tests/test_controls.gd > test_select_is_a_player_action_on_the_back_button PASSED 4ms
+  res://tests/test_controls.gd > test_select_is_a_player_action_on_the_back_button PASSED 12ms
 
   res://tests/test_controls.gd > test_a_select_tap_does_nothing STARTED
-  res://tests/test_controls.gd > test_a_select_tap_does_nothing PASSED 663ms
+  res://tests/test_controls.gd > test_a_select_tap_does_nothing PASSED 766ms
 
   res://tests/test_controls.gd > test_holding_select_resets_once_with_whoosh_and_bell STARTED
-  res://tests/test_controls.gd > test_holding_select_resets_once_with_whoosh_and_bell PASSED 5s 759ms
+  res://tests/test_controls.gd > test_holding_select_resets_once_with_whoosh_and_bell PASSED 6s 46ms
 
   res://tests/test_controls.gd > test_solo_swap_combo_never_resets STARTED
-  res://tests/test_controls.gd > test_solo_swap_combo_never_resets PASSED 2s 576ms
+  res://tests/test_controls.gd > test_solo_swap_combo_never_resets PASSED 2s 573ms
 
   res://tests/test_controls.gd > test_select_then_start_toggles_solo_and_never_resets STARTED
-  res://tests/test_controls.gd > test_select_then_start_toggles_solo_and_never_resets PASSED 6s 1ms
+  res://tests/test_controls.gd > test_select_then_start_toggles_solo_and_never_resets PASSED 6s 366ms
 
   res://tests/test_controls.gd > test_start_then_select_toggles_solo_and_never_resets STARTED
-  res://tests/test_controls.gd > test_start_then_select_toggles_solo_and_never_resets PASSED 5s 89ms
+  res://tests/test_controls.gd > test_start_then_select_toggles_solo_and_never_resets PASSED 5s 143ms
 
   res://tests/test_controls.gd > test_a_reset_never_turns_into_solo STARTED
-  res://tests/test_controls.gd > test_a_reset_never_turns_into_solo PASSED 6s 797ms
+  res://tests/test_controls.gd > test_a_reset_never_turns_into_solo PASSED 6s 842ms
 
   res://tests/test_controls.gd > test_pause_menu_has_a_reset_yard_entry_that_resets_at_once STARTED
-  res://tests/test_controls.gd > test_pause_menu_has_a_reset_yard_entry_that_resets_at_once PASSED 164ms
+  res://tests/test_controls.gd > test_pause_menu_has_a_reset_yard_entry_that_resets_at_once PASSED 227ms
 
   res://tests/test_controls.gd > test_the_sign_is_big_lit_and_by_the_start STARTED
-  res://tests/test_controls.gd > test_the_sign_is_big_lit_and_by_the_start PASSED 2s 213ms
+  res://tests/test_controls.gd > test_the_sign_is_big_lit_and_by_the_start PASSED 2s 221ms
 
-Statistics: 15 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 44s 375ms
+Statistics: 15 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 45s 325ms
 
 
 Run Test Suite: res://tests/test_jyz_menus.gd
   res://tests/test_jyz_menus.gd > test_skin_loads_with_the_game_look STARTED
-  res://tests/test_jyz_menus.gd > test_skin_loads_with_the_game_look PASSED 3ms
+  res://tests/test_jyz_menus.gd > test_skin_loads_with_the_game_look PASSED 4ms
 
   res://tests/test_jyz_menus.gd > test_lobby_shows_jeff_and_chuck STARTED
-  res://tests/test_jyz_menus.gd > test_lobby_shows_jeff_and_chuck PASSED 172ms
+  res://tests/test_jyz_menus.gd > test_lobby_shows_jeff_and_chuck PASSED 210ms
 
   res://tests/test_jyz_menus.gd > test_round_card_says_the_yard_is_open STARTED
-  res://tests/test_jyz_menus.gd > test_round_card_says_the_yard_is_open PASSED 146ms
+  res://tests/test_jyz_menus.gd > test_round_card_says_the_yard_is_open PASSED 183ms
 
-Statistics: 3 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 346ms
+Statistics: 3 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 426ms
 
 
 Run Test Suite: res://tests/test_physics_proto.gd
   res://tests/test_physics_proto.gd > test_jolt_is_the_3d_physics_engine STARTED
-  res://tests/test_physics_proto.gd > test_jolt_is_the_3d_physics_engine PASSED 3ms
+  res://tests/test_physics_proto.gd > test_jolt_is_the_3d_physics_engine PASSED 4ms
 
   res://tests/test_physics_proto.gd > test_grow_shrink_limits_and_mass_by_volume STARTED
-  res://tests/test_physics_proto.gd > test_grow_shrink_limits_and_mass_by_volume PASSED 3s 600ms
+  res://tests/test_physics_proto.gd > test_grow_shrink_limits_and_mass_by_volume PASSED 3s 601ms
 
   res://tests/test_physics_proto.gd > test_undo_restores_exactly STARTED
-  res://tests/test_physics_proto.gd > test_undo_restores_exactly PASSED 2s 89ms
+  res://tests/test_physics_proto.gd > test_undo_restores_exactly PASSED 2s 81ms
 
   res://tests/test_physics_proto.gd > test_magnet_switches_itself_off STARTED
-  res://tests/test_physics_proto.gd > test_magnet_switches_itself_off PASSED 199ms
+  res://tests/test_physics_proto.gd > test_magnet_switches_itself_off PASSED 202ms
 
   res://tests/test_physics_proto.gd > test_giant_landing_on_a_crate_does_not_sink_it STARTED
-  res://tests/test_physics_proto.gd > test_giant_landing_on_a_crate_does_not_sink_it PASSED 2s 502ms
+  res://tests/test_physics_proto.gd > test_giant_landing_on_a_crate_does_not_sink_it PASSED 2s 499ms
 
   res://tests/test_physics_proto.gd > test_tiny_magnet_under_a_giant_is_not_crushed STARTED
-  res://tests/test_physics_proto.gd > test_tiny_magnet_under_a_giant_is_not_crushed PASSED 3s 652ms
+  res://tests/test_physics_proto.gd > test_tiny_magnet_under_a_giant_is_not_crushed PASSED 3s 675ms
 
   res://tests/test_physics_proto.gd > test_glue_and_split STARTED
-  res://tests/test_physics_proto.gd > test_glue_and_split PASSED 404ms
+  res://tests/test_physics_proto.gd > test_glue_and_split PASSED 378ms
 
   res://tests/test_physics_proto.gd > test_glue_pulls_distant_objects_together STARTED
-  res://tests/test_physics_proto.gd > test_glue_pulls_distant_objects_together PASSED 5s 877ms
+  res://tests/test_physics_proto.gd > test_glue_pulls_distant_objects_together PASSED 5s 883ms
 
   res://tests/test_physics_proto.gd > test_grow_on_frozen_object_does_not_crush_through_floor STARTED
-  res://tests/test_physics_proto.gd > test_grow_on_frozen_object_does_not_crush_through_floor PASSED 3s 1ms
+  res://tests/test_physics_proto.gd > test_grow_on_frozen_object_does_not_crush_through_floor PASSED 3s 4ms
 
   res://tests/test_physics_proto.gd > test_grow_with_no_room_is_refused STARTED
-  res://tests/test_physics_proto.gd > test_grow_with_no_room_is_refused PASSED 1s 840ms
+  res://tests/test_physics_proto.gd > test_grow_with_no_room_is_refused PASSED 1s 819ms
 
   res://tests/test_physics_proto.gd > test_glue_stable_across_mass_and_scale_and_grow STARTED
-  res://tests/test_physics_proto.gd > test_glue_stable_across_mass_and_scale_and_grow PASSED 3s 664ms
+  res://tests/test_physics_proto.gd > test_glue_stable_across_mass_and_scale_and_grow PASSED 3s 671ms
 
   res://tests/test_physics_proto.gd > test_grow_in_a_stack_is_stable STARTED
-  res://tests/test_physics_proto.gd > test_grow_in_a_stack_is_stable PASSED 4s 498ms
+  res://tests/test_physics_proto.gd > test_grow_in_a_stack_is_stable PASSED 4s 495ms
 
   res://tests/test_physics_proto.gd > test_every_pair_of_effects_composes STARTED
-  res://tests/test_physics_proto.gd > test_every_pair_of_effects_composes PASSED 1s 15ms
+  res://tests/test_physics_proto.gd > test_every_pair_of_effects_composes PASSED 1s 60ms
 
   res://tests/test_physics_proto.gd > test_plane_spring_keeps_z_small STARTED
   res://tests/test_physics_proto.gd > test_plane_spring_keeps_z_small PASSED 4s 987ms
 
   res://tests/test_physics_proto.gd > test_gravity_comes_from_yard_gravity_at STARTED
-  res://tests/test_physics_proto.gd > test_gravity_comes_from_yard_gravity_at PASSED 910ms
+  res://tests/test_physics_proto.gd > test_gravity_comes_from_yard_gravity_at PASSED 914ms
 
   res://tests/test_physics_proto.gd > test_recall_when_out_of_bounds STARTED
-  res://tests/test_physics_proto.gd > test_recall_when_out_of_bounds PASSED 89ms
+  res://tests/test_physics_proto.gd > test_recall_when_out_of_bounds PASSED 80ms
 
   res://tests/test_physics_proto.gd > test_aim_cone_snaps_to_nearest STARTED
-  res://tests/test_physics_proto.gd > test_aim_cone_snaps_to_nearest PASSED 14ms
+  res://tests/test_physics_proto.gd > test_aim_cone_snaps_to_nearest PASSED 12ms
 
   res://tests/test_physics_proto.gd > test_proto_scene_loads STARTED
-  res://tests/test_physics_proto.gd > test_proto_scene_loads PASSED 22ms
+  res://tests/test_physics_proto.gd > test_proto_scene_loads PASSED 27ms
 
-Statistics: 18 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 38s 414ms
+Statistics: 18 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 38s 470ms
 
 
 Run Test Suite: res://tests/test_lobby.gd
   res://tests/test_lobby.gd > test_boots_into_lobby STARTED
-  res://tests/test_lobby.gd > test_boots_into_lobby PASSED 148ms
+  res://tests/test_lobby.gd > test_boots_into_lobby PASSED 212ms
 
   res://tests/test_lobby.gd > test_join_readies_and_b_unreadies STARTED
-  res://tests/test_lobby.gd > test_join_readies_and_b_unreadies PASSED 149ms
+  res://tests/test_lobby.gd > test_join_readies_and_b_unreadies PASSED 216ms
 
   res://tests/test_lobby.gd > test_real_pad_a_joins_ready_b_unreadies STARTED
-  res://tests/test_lobby.gd > test_real_pad_a_joins_ready_b_unreadies PASSED 189ms
+  res://tests/test_lobby.gd > test_real_pad_a_joins_ready_b_unreadies PASSED 277ms
 
   res://tests/test_lobby.gd > test_both_ready_counts_down_then_starts STARTED
 ERROR: Parameter "material" is null.
@@ -861,10 +914,10 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_both_ready_counts_down_then_starts PASSED 191ms
+  res://tests/test_lobby.gd > test_both_ready_counts_down_then_starts PASSED 229ms
 
   res://tests/test_lobby.gd > test_unready_cancels_countdown STARTED
-  res://tests/test_lobby.gd > test_unready_cancels_countdown PASSED 163ms
+  res://tests/test_lobby.gd > test_unready_cancels_countdown PASSED 168ms
 
   res://tests/test_lobby.gd > test_hold_a_starts_alone STARTED
 ERROR: Parameter "material" is null.
@@ -878,34 +931,34 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_hold_a_starts_alone PASSED 184ms
+  res://tests/test_lobby.gd > test_hold_a_starts_alone PASSED 201ms
 
   res://tests/test_lobby.gd > test_hold_does_nothing_until_ready STARTED
-  res://tests/test_lobby.gd > test_hold_does_nothing_until_ready PASSED 161ms
+  res://tests/test_lobby.gd > test_hold_does_nothing_until_ready PASSED 169ms
 
   res://tests/test_lobby.gd > test_solo_readies_both STARTED
-  res://tests/test_lobby.gd > test_solo_readies_both PASSED 160ms
+  res://tests/test_lobby.gd > test_solo_readies_both PASSED 171ms
 
   res://tests/test_lobby.gd > test_lobby_door_asks_then_quits STARTED
-  res://tests/test_lobby.gd > test_lobby_door_asks_then_quits PASSED 157ms
+  res://tests/test_lobby.gd > test_lobby_door_asks_then_quits PASSED 179ms
 
   res://tests/test_lobby.gd > test_lobby_menu_has_text_labels STARTED
-  res://tests/test_lobby.gd > test_lobby_menu_has_text_labels PASSED 146ms
+  res://tests/test_lobby.gd > test_lobby_menu_has_text_labels PASSED 178ms
 
   res://tests/test_lobby.gd > test_focus_moves_with_either_pad STARTED
-  res://tests/test_lobby.gd > test_focus_moves_with_either_pad PASSED 261ms
+  res://tests/test_lobby.gd > test_focus_moves_with_either_pad PASSED 302ms
 
   res://tests/test_lobby.gd > test_b_goes_back STARTED
-  res://tests/test_lobby.gd > test_b_goes_back PASSED 228ms
+  res://tests/test_lobby.gd > test_b_goes_back PASSED 306ms
 
   res://tests/test_lobby.gd > test_settings_persist STARTED
-  res://tests/test_lobby.gd > test_settings_persist PASSED 155ms
+  res://tests/test_lobby.gd > test_settings_persist PASSED 179ms
 
   res://tests/test_lobby.gd > test_settings_solo_toggle_saves_and_readies_on_close STARTED
-  res://tests/test_lobby.gd > test_settings_solo_toggle_saves_and_readies_on_close PASSED 157ms
+  res://tests/test_lobby.gd > test_settings_solo_toggle_saves_and_readies_on_close PASSED 176ms
 
   res://tests/test_lobby.gd > test_saved_solo_stays_off_at_boot STARTED
-  res://tests/test_lobby.gd > test_saved_solo_stays_off_at_boot PASSED 161ms
+  res://tests/test_lobby.gd > test_saved_solo_stays_off_at_boot PASSED 191ms
 
   res://tests/test_lobby.gd > test_pause_shows_menu_and_resume STARTED
 ERROR: Parameter "material" is null.
@@ -919,7 +972,7 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_pause_shows_menu_and_resume PASSED 195ms
+  res://tests/test_lobby.gd > test_pause_shows_menu_and_resume PASSED 236ms
 
   res://tests/test_lobby.gd > test_pause_door_asks_then_quits STARTED
 ERROR: Parameter "material" is null.
@@ -933,7 +986,7 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_pause_door_asks_then_quits PASSED 194ms
+  res://tests/test_lobby.gd > test_pause_door_asks_then_quits PASSED 271ms
 
   res://tests/test_lobby.gd > test_pause_b_backs_out_then_resumes STARTED
 ERROR: Parameter "material" is null.
@@ -947,7 +1000,7 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_pause_b_backs_out_then_resumes PASSED 187ms
+  res://tests/test_lobby.gd > test_pause_b_backs_out_then_resumes PASSED 268ms
 
   res://tests/test_lobby.gd > test_pause_shows_who_paused STARTED
 ERROR: Parameter "material" is null.
@@ -961,10 +1014,10 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_pause_shows_who_paused PASSED 214ms
+  res://tests/test_lobby.gd > test_pause_shows_who_paused PASSED 248ms
 
   res://tests/test_lobby.gd > test_restart_returns_to_lobby STARTED
-  res://tests/test_lobby.gd > test_restart_returns_to_lobby PASSED 238ms
+  res://tests/test_lobby.gd > test_restart_returns_to_lobby PASSED 286ms
 
   res://tests/test_lobby.gd > test_late_joiner_wakes_up_in_the_tire_pile STARTED
 ERROR: Parameter "material" is null.
@@ -978,7 +1031,7 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_late_joiner_wakes_up_in_the_tire_pile PASSED 180ms
+  res://tests/test_lobby.gd > test_late_joiner_wakes_up_in_the_tire_pile PASSED 253ms
 
   res://tests/test_lobby.gd > test_demo_skips_lobby STARTED
 ERROR: Parameter "material" is null.
@@ -992,18 +1045,18 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_lobby.gd > test_demo_skips_lobby PASSED 208ms
+  res://tests/test_lobby.gd > test_demo_skips_lobby PASSED 243ms
 
   res://tests/test_lobby.gd > test_solo_flag_parsing STARTED
   res://tests/test_lobby.gd > test_solo_flag_parsing PASSED 3ms
 
   res://tests/test_lobby.gd > test_select_start_hold_toggles_solo STARTED
-  res://tests/test_lobby.gd > test_select_start_hold_toggles_solo PASSED 5ms
+  res://tests/test_lobby.gd > test_select_start_hold_toggles_solo PASSED 7ms
 
   res://tests/test_lobby.gd > test_solo_focus_moves_the_pad STARTED
-  res://tests/test_lobby.gd > test_solo_focus_moves_the_pad PASSED 5ms
+  res://tests/test_lobby.gd > test_solo_focus_moves_the_pad PASSED 6ms
 
-Statistics: 25 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 4s 106ms
+Statistics: 25 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 5s 57ms
 
 
 Run Test Suite: res://tests/test_smoke.gd
@@ -1011,156 +1064,156 @@ Run Test Suite: res://tests/test_smoke.gd
   res://tests/test_smoke.gd > test_main_scene_loads PASSED 23ms
 
   res://tests/test_smoke.gd > test_players_colors_are_green_and_red STARTED
-  res://tests/test_smoke.gd > test_players_colors_are_green_and_red PASSED 3ms
+  res://tests/test_smoke.gd > test_players_colors_are_green_and_red PASSED 2ms
 
   res://tests/test_smoke.gd > test_input_map_has_every_player_action STARTED
   res://tests/test_smoke.gd > test_input_map_has_every_player_action PASSED 3ms
 
   res://tests/test_smoke.gd > test_game_round_cycle STARTED
-  res://tests/test_smoke.gd > test_game_round_cycle PASSED 4ms
+  res://tests/test_smoke.gd > test_game_round_cycle PASSED 11ms
 
   res://tests/test_smoke.gd > test_save_roundtrip STARTED
-  res://tests/test_smoke.gd > test_save_roundtrip PASSED 4ms
+  res://tests/test_smoke.gd > test_save_roundtrip PASSED 6ms
 
   res://tests/test_smoke.gd > test_profile_from_args_accepts_both_forms STARTED
-  res://tests/test_smoke.gd > test_profile_from_args_accepts_both_forms PASSED 2ms
+  res://tests/test_smoke.gd > test_profile_from_args_accepts_both_forms PASSED 6ms
 
-Statistics: 6 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 65ms
+Statistics: 6 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 91ms
 
 
 Run Test Suite: res://tests/test_chooser.gd
   res://tests/test_chooser.gd > test_cycles_and_skips_the_other_players_pick STARTED
-  res://tests/test_chooser.gd > test_cycles_and_skips_the_other_players_pick PASSED 159ms
+  res://tests/test_chooser.gd > test_cycles_and_skips_the_other_players_pick PASSED 183ms
 
   res://tests/test_chooser.gd > test_ready_locks_and_b_unlocks STARTED
-  res://tests/test_chooser.gd > test_ready_locks_and_b_unlocks PASSED 147ms
+  res://tests/test_chooser.gd > test_ready_locks_and_b_unlocks PASSED 182ms
 
   res://tests/test_chooser.gd > test_not_joined_cannot_choose STARTED
-  res://tests/test_chooser.gd > test_not_joined_cannot_choose PASSED 144ms
+  res://tests/test_chooser.gd > test_not_joined_cannot_choose PASSED 167ms
 
   res://tests/test_chooser.gd > test_stick_and_keys_drive_it STARTED
-  res://tests/test_chooser.gd > test_stick_and_keys_drive_it PASSED 143ms
+  res://tests/test_chooser.gd > test_stick_and_keys_drive_it PASSED 171ms
 
   res://tests/test_chooser.gd > test_nobody_free_bumps STARTED
-  res://tests/test_chooser.gd > test_nobody_free_bumps PASSED 142ms
+  res://tests/test_chooser.gd > test_nobody_free_bumps PASSED 217ms
 
   res://tests/test_chooser.gd > test_swap_changes_the_3d_character_in_place STARTED
-  res://tests/test_chooser.gd > test_swap_changes_the_3d_character_in_place PASSED 157ms
+  res://tests/test_chooser.gd > test_swap_changes_the_3d_character_in_place PASSED 182ms
 
   res://tests/test_chooser.gd > test_pixel_mode_uses_the_pixel_form STARTED
-  res://tests/test_chooser.gd > test_pixel_mode_uses_the_pixel_form PASSED 116ms
+  res://tests/test_chooser.gd > test_pixel_mode_uses_the_pixel_form PASSED 134ms
 
   res://tests/test_chooser.gd > test_skin_scene_with_set_character_is_told_the_pick STARTED
-  res://tests/test_chooser.gd > test_skin_scene_with_set_character_is_told_the_pick PASSED 139ms
+  res://tests/test_chooser.gd > test_skin_scene_with_set_character_is_told_the_pick PASSED 159ms
 
   res://tests/test_chooser.gd > test_fixed_name_in_the_skin_wins STARTED
-  res://tests/test_chooser.gd > test_fixed_name_in_the_skin_wins PASSED 2ms
+  res://tests/test_chooser.gd > test_fixed_name_in_the_skin_wins PASSED 3ms
 
   res://tests/test_chooser.gd > test_solo_select_switches_the_podium STARTED
-  res://tests/test_chooser.gd > test_solo_select_switches_the_podium PASSED 153ms
+  res://tests/test_chooser.gd > test_solo_select_switches_the_podium PASSED 184ms
 
   res://tests/test_chooser.gd > test_pick_persists_across_a_relaunch STARTED
 ERROR: Error calling deferred method: 'GDScript::run': Cannot convert argument 1 from Object to Object.
    at: _call_function (core/object/message_queue.cpp:220)
-  res://tests/test_chooser.gd > test_pick_persists_across_a_relaunch PASSED 293ms
+  res://tests/test_chooser.gd > test_pick_persists_across_a_relaunch PASSED 382ms
 
-Statistics: 11 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1s 640ms
+Statistics: 11 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 2s 28ms
 
 
 Run Test Suite: res://tests/test_comedy.gd
   res://tests/test_comedy.gd > test_bark_rate_cap_holds_back_a_burst_of_impacts STARTED
-  res://tests/test_comedy.gd > test_bark_rate_cap_holds_back_a_burst_of_impacts PASSED 53ms
+  res://tests/test_comedy.gd > test_bark_rate_cap_holds_back_a_burst_of_impacts PASSED 55ms
 
   res://tests/test_comedy.gd > test_one_bark_per_zap STARTED
-  res://tests/test_comedy.gd > test_one_bark_per_zap PASSED 1s 941ms
+  res://tests/test_comedy.gd > test_one_bark_per_zap PASSED 1s 945ms
 
   res://tests/test_comedy.gd > test_chuck_blames_the_partner_when_a_zap_is_refused STARTED
-  res://tests/test_comedy.gd > test_chuck_blames_the_partner_when_a_zap_is_refused PASSED 2s 679ms
+  res://tests/test_comedy.gd > test_chuck_blames_the_partner_when_a_zap_is_refused PASSED 2s 675ms
 
   res://tests/test_comedy.gd > test_jeff_claps_at_a_big_impact_and_everyone_wobbles STARTED
-  res://tests/test_comedy.gd > test_jeff_claps_at_a_big_impact_and_everyone_wobbles PASSED 1s 304ms
+  res://tests/test_comedy.gd > test_jeff_claps_at_a_big_impact_and_everyone_wobbles PASSED 1s 315ms
 
   res://tests/test_comedy.gd > test_a_sleeping_partner_does_not_react STARTED
-  res://tests/test_comedy.gd > test_a_sleeping_partner_does_not_react PASSED 48ms
+  res://tests/test_comedy.gd > test_a_sleeping_partner_does_not_react PASSED 47ms
 
   res://tests/test_comedy.gd > test_idle_bits_follow_the_character STARTED
-  res://tests/test_comedy.gd > test_idle_bits_follow_the_character PASSED 61ms
+  res://tests/test_comedy.gd > test_idle_bits_follow_the_character PASSED 66ms
 
   res://tests/test_comedy.gd > test_jeff_pokes_the_junk_and_it_answers STARTED
-  res://tests/test_comedy.gd > test_jeff_pokes_the_junk_and_it_answers PASSED 1s 163ms
+  res://tests/test_comedy.gd > test_jeff_pokes_the_junk_and_it_answers PASSED 1s 150ms
 
   res://tests/test_comedy.gd > test_chuck_kicks_a_tire_with_his_own_kick STARTED
-  res://tests/test_comedy.gd > test_chuck_kicks_a_tire_with_his_own_kick PASSED 1s 194ms
+  res://tests/test_comedy.gd > test_chuck_kicks_a_tire_with_his_own_kick PASSED 1s 191ms
 
   res://tests/test_comedy.gd > test_a_missing_action_falls_back_to_idle STARTED
-  res://tests/test_comedy.gd > test_a_missing_action_falls_back_to_idle PASSED 1s 160ms
+  res://tests/test_comedy.gd > test_a_missing_action_falls_back_to_idle PASSED 1s 170ms
 
   res://tests/test_comedy.gd > test_nothing_in_reach_turns_into_the_other_bit STARTED
-  res://tests/test_comedy.gd > test_nothing_in_reach_turns_into_the_other_bit PASSED 163ms
+  res://tests/test_comedy.gd > test_nothing_in_reach_turns_into_the_other_bit PASSED 161ms
 
   res://tests/test_comedy.gd > test_a_still_player_idles_on_his_own_and_moving_stops_it STARTED
-  res://tests/test_comedy.gd > test_a_still_player_idles_on_his_own_and_moving_stops_it PASSED 4s 359ms
+  res://tests/test_comedy.gd > test_a_still_player_idles_on_his_own_and_moving_stops_it PASSED 4s 348ms
 
-Statistics: 11 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 14s 161ms
+Statistics: 11 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 14s 169ms
 
 
 Run Test Suite: res://tests/test_store_jar.gd
   res://tests/test_store_jar.gd > test_jar_fits_the_launcher_budget STARTED
-  res://tests/test_store_jar.gd > test_jar_fits_the_launcher_budget PASSED 20ms
+  res://tests/test_store_jar.gd > test_jar_fits_the_launcher_budget PASSED 37ms
 
   res://tests/test_store_jar.gd > test_jar_stands_on_its_floor_at_the_origin STARTED
-  res://tests/test_store_jar.gd > test_jar_stands_on_its_floor_at_the_origin PASSED 16ms
+  res://tests/test_store_jar.gd > test_jar_stands_on_its_floor_at_the_origin PASSED 20ms
 
-Statistics: 2 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 55ms
+Statistics: 2 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 99ms
 
 
 Run Test Suite: res://tests/test_store_hero.gd
   res://tests/test_store_hero.gd > test_store_hero_exists_at_920x430 STARTED
-  res://tests/test_store_hero.gd > test_store_hero_exists_at_920x430 PASSED 8ms
+  res://tests/test_store_hero.gd > test_store_hero_exists_at_920x430 PASSED 10ms
 
   res://tests/test_store_hero.gd > test_store_grid_still_600x900 STARTED
-  res://tests/test_store_hero.gd > test_store_grid_still_600x900 PASSED 9ms
+  res://tests/test_store_hero.gd > test_store_grid_still_600x900 PASSED 10ms
 
-Statistics: 2 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 34ms
+Statistics: 2 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 48ms
 
 
 Run Test Suite: res://tests/test_audio.gd
   res://tests/test_audio.gd > test_every_cue_in_cues_md_resolves_to_a_file STARTED
-  res://tests/test_audio.gd > test_every_cue_in_cues_md_resolves_to_a_file PASSED 20ms
+  res://tests/test_audio.gd > test_every_cue_in_cues_md_resolves_to_a_file PASSED 46ms
 
   res://tests/test_audio.gd > test_every_game_cue_has_a_file STARTED
-  res://tests/test_audio.gd > test_every_game_cue_has_a_file PASSED 6ms
+  res://tests/test_audio.gd > test_every_game_cue_has_a_file PASSED 14ms
 
   res://tests/test_audio.gd > test_every_object_has_a_voice_set STARTED
-  res://tests/test_audio.gd > test_every_object_has_a_voice_set PASSED 25ms
+  res://tests/test_audio.gd > test_every_object_has_a_voice_set PASSED 57ms
 
   res://tests/test_audio.gd > test_music_files_exist STARTED
   res://tests/test_audio.gd > test_music_files_exist PASSED 3ms
 
   res://tests/test_audio.gd > test_variants_rotate_never_repeat STARTED
-  res://tests/test_audio.gd > test_variants_rotate_never_repeat PASSED 34ms
+  res://tests/test_audio.gd > test_variants_rotate_never_repeat PASSED 42ms
 
   res://tests/test_audio.gd > test_pitch_follows_scale STARTED
-  res://tests/test_audio.gd > test_pitch_follows_scale PASSED 23ms
+  res://tests/test_audio.gd > test_pitch_follows_scale PASSED 29ms
 
   res://tests/test_audio.gd > test_voice_rate_cap_one_per_object_per_half_second STARTED
-  res://tests/test_audio.gd > test_voice_rate_cap_one_per_object_per_half_second PASSED 6ms
+  res://tests/test_audio.gd > test_voice_rate_cap_one_per_object_per_half_second PASSED 13ms
 
   res://tests/test_audio.gd > test_voice_falls_back_to_react_then_base STARTED
 Audio: no file for cue 'voice_zz_nothing' in res://assets/audio/sfx/, using a synth beep
   res://tests/test_audio.gd > test_voice_falls_back_to_react_then_base PASSED 4ms
 
   res://tests/test_audio.gd > test_music_crossfades_and_brightens_for_ten_seconds STARTED
-  res://tests/test_audio.gd > test_music_crossfades_and_brightens_for_ten_seconds PASSED 2s 758ms
+  res://tests/test_audio.gd > test_music_crossfades_and_brightens_for_ten_seconds PASSED 2s 750ms
 
   res://tests/test_audio.gd > test_buses_limiter_and_ducking STARTED
-  res://tests/test_audio.gd > test_buses_limiter_and_ducking PASSED 1s 351ms
+  res://tests/test_audio.gd > test_buses_limiter_and_ducking PASSED 1s 349ms
 
   res://tests/test_audio.gd > test_bark_gate_one_at_a_time STARTED
-  res://tests/test_audio.gd > test_bark_gate_one_at_a_time PASSED 5ms
+  res://tests/test_audio.gd > test_bark_gate_one_at_a_time PASSED 12ms
 
   res://tests/test_audio.gd > test_pool_stays_bounded_under_spam STARTED
-  res://tests/test_audio.gd > test_pool_stays_bounded_under_spam PASSED 300ms
+  res://tests/test_audio.gd > test_pool_stays_bounded_under_spam PASSED 317ms
 
   res://tests/test_audio.gd > test_every_gun_has_its_own_zap_cue STARTED
   res://tests/test_audio.gd > test_every_gun_has_its_own_zap_cue PASSED 3ms
@@ -1169,121 +1222,121 @@ Audio: no file for cue 'voice_zz_nothing' in res://assets/audio/sfx/, using a sy
   res://tests/test_audio.gd > test_impact_band_follows_mass PASSED 3ms
 
   res://tests/test_audio.gd > test_light_and_heavy_objects_land_in_different_bands STARTED
-  res://tests/test_audio.gd > test_light_and_heavy_objects_land_in_different_bands PASSED 6ms
+  res://tests/test_audio.gd > test_light_and_heavy_objects_land_in_different_bands PASSED 9ms
 
   res://tests/test_audio.gd > test_grow_and_shrink_boing_pitch_follows_size STARTED
-  res://tests/test_audio.gd > test_grow_and_shrink_boing_pitch_follows_size PASSED 38ms
+  res://tests/test_audio.gd > test_grow_and_shrink_boing_pitch_follows_size PASSED 43ms
 
-Statistics: 16 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 4s 629ms
+Statistics: 16 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 4s 750ms
 
 
 Run Test Suite: res://tests/test_playtest1.gd
   res://tests/test_playtest1.gd > test_p1_is_jeff_and_green_p2_is_chuck_and_red STARTED
-  res://tests/test_playtest1.gd > test_p1_is_jeff_and_green_p2_is_chuck_and_red PASSED 113ms
+  res://tests/test_playtest1.gd > test_p1_is_jeff_and_green_p2_is_chuck_and_red PASSED 98ms
 
   res://tests/test_playtest1.gd > test_partner_aim_ring_circles_the_partner_not_his_feet STARTED
-  res://tests/test_playtest1.gd > test_partner_aim_ring_circles_the_partner_not_his_feet PASSED 209ms
+  res://tests/test_playtest1.gd > test_partner_aim_ring_circles_the_partner_not_his_feet PASSED 223ms
 
   res://tests/test_playtest1.gd > test_a_sleeping_partner_is_not_a_target STARTED
-  res://tests/test_playtest1.gd > test_a_sleeping_partner_is_not_a_target PASSED 92ms
+  res://tests/test_playtest1.gd > test_a_sleeping_partner_is_not_a_target PASSED 82ms
 
   res://tests/test_playtest1.gd > test_mouse_pointer_hidden_in_play_shown_only_after_mouse_use_in_menus STARTED
-  res://tests/test_playtest1.gd > test_mouse_pointer_hidden_in_play_shown_only_after_mouse_use_in_menus PASSED 4ms
+  res://tests/test_playtest1.gd > test_mouse_pointer_hidden_in_play_shown_only_after_mouse_use_in_menus PASSED 5ms
 
   res://tests/test_playtest1.gd > test_camera_never_looks_under_the_table STARTED
-  res://tests/test_playtest1.gd > test_camera_never_looks_under_the_table PASSED 90ms
+  res://tests/test_playtest1.gd > test_camera_never_looks_under_the_table PASSED 106ms
 
   res://tests/test_playtest1.gd > test_ten_objects_stack_every_effect_and_undo_cleanly STARTED
-  res://tests/test_playtest1.gd > test_ten_objects_stack_every_effect_and_undo_cleanly PASSED 12s 999ms
+  res://tests/test_playtest1.gd > test_ten_objects_stack_every_effect_and_undo_cleanly PASSED 13s 20ms
 
   res://tests/test_playtest1.gd > test_balloon_parks_in_reach_and_a_reload_keeps_it_there STARTED
-  res://tests/test_playtest1.gd > test_balloon_parks_in_reach_and_a_reload_keeps_it_there PASSED 12s 581ms
+  res://tests/test_playtest1.gd > test_balloon_parks_in_reach_and_a_reload_keeps_it_there PASSED 12s 612ms
 
   res://tests/test_playtest1.gd > test_objects_leaving_the_yard_come_back_at_the_gate STARTED
-  res://tests/test_playtest1.gd > test_objects_leaving_the_yard_come_back_at_the_gate PASSED 126ms
+  res://tests/test_playtest1.gd > test_objects_leaving_the_yard_come_back_at_the_gate PASSED 132ms
 
   res://tests/test_playtest1.gd > test_giant_and_tiny_caps_hold STARTED
-  res://tests/test_playtest1.gd > test_giant_and_tiny_caps_hold PASSED 14s 346ms
+  res://tests/test_playtest1.gd > test_giant_and_tiny_caps_hold PASSED 14s 321ms
 
   res://tests/test_playtest1.gd > test_both_players_walk_and_jump STARTED
-  res://tests/test_playtest1.gd > test_both_players_walk_and_jump PASSED 2s 484ms
+  res://tests/test_playtest1.gd > test_both_players_walk_and_jump PASSED 2s 482ms
 
   res://tests/test_playtest1.gd > test_a_whole_session_loops_cleanly_in_the_main_scene STARTED
-  res://tests/test_playtest1.gd > test_a_whole_session_loops_cleanly_in_the_main_scene PASSED 295ms
+  res://tests/test_playtest1.gd > test_a_whole_session_loops_cleanly_in_the_main_scene PASSED 324ms
 
   res://tests/test_playtest1.gd > test_a_long_grab_hold_by_the_sign_does_not_reset STARTED
-  res://tests/test_playtest1.gd > test_a_long_grab_hold_by_the_sign_does_not_reset PASSED 1s 579ms
+  res://tests/test_playtest1.gd > test_a_long_grab_hold_by_the_sign_does_not_reset PASSED 1s 662ms
 
-Statistics: 12 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 44s 959ms
+Statistics: 12 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 45s 113ms
 
 
 Run Test Suite: res://tests/test_music.gd
   res://tests/test_music.gd > test_the_yard_starts_the_looping_music STARTED
-  res://tests/test_music.gd > test_the_yard_starts_the_looping_music PASSED 774ms
+  res://tests/test_music.gd > test_the_yard_starts_the_looping_music PASSED 786ms
 
   res://tests/test_music.gd > test_a_skipped_card_does_not_brighten STARTED
-  res://tests/test_music.gd > test_a_skipped_card_does_not_brighten PASSED 1s 965ms
+  res://tests/test_music.gd > test_a_skipped_card_does_not_brighten PASSED 1s 975ms
 
   res://tests/test_music.gd > test_a_finished_card_lifts_the_music_in_sync STARTED
-  res://tests/test_music.gd > test_a_finished_card_lifts_the_music_in_sync PASSED 1s 56ms
+  res://tests/test_music.gd > test_a_finished_card_lifts_the_music_in_sync PASSED 1s 47ms
 
   res://tests/test_music.gd > test_the_lift_holds_ten_seconds_then_fades_back STARTED
-  res://tests/test_music.gd > test_the_lift_holds_ten_seconds_then_fades_back PASSED 12s 81ms
+  res://tests/test_music.gd > test_the_lift_holds_ten_seconds_then_fades_back PASSED 12s 72ms
 
   res://tests/test_music.gd > test_a_second_card_extends_the_lift STARTED
-  res://tests/test_music.gd > test_a_second_card_extends_the_lift PASSED 2s 366ms
+  res://tests/test_music.gd > test_a_second_card_extends_the_lift PASSED 2s 359ms
 
   res://tests/test_music.gd > test_the_music_ducks_under_a_bark STARTED
-  res://tests/test_music.gd > test_the_music_ducks_under_a_bark PASSED 1s 408ms
+  res://tests/test_music.gd > test_the_music_ducks_under_a_bark PASSED 1s 416ms
 
-Statistics: 6 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 19s 672ms
+Statistics: 6 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 19s 697ms
 
 
 Run Test Suite: res://tests/test_gap_close.gd
   res://tests/test_gap_close.gd > test_every_gun_fires_its_own_sound STARTED
-  res://tests/test_gap_close.gd > test_every_gun_fires_its_own_sound PASSED 5ms
+  res://tests/test_gap_close.gd > test_every_gun_fires_its_own_sound PASSED 12ms
 
   res://tests/test_gap_close.gd > test_vehicles_and_machines_have_no_face_everything_else_does STARTED
-  res://tests/test_gap_close.gd > test_vehicles_and_machines_have_no_face_everything_else_does PASSED 16ms
+  res://tests/test_gap_close.gd > test_vehicles_and_machines_have_no_face_everything_else_does PASSED 19ms
 
   res://tests/test_gap_close.gd > test_a_faceless_machine_rattles_and_speaks_when_zapped STARTED
-  res://tests/test_gap_close.gd > test_a_faceless_machine_rattles_and_speaks_when_zapped PASSED 1s 959ms
+  res://tests/test_gap_close.gd > test_a_faceless_machine_rattles_and_speaks_when_zapped PASSED 1s 939ms
 
   res://tests/test_gap_close.gd > test_a_cow_still_pulls_a_face_and_does_not_rattle STARTED
-  res://tests/test_gap_close.gd > test_a_cow_still_pulls_a_face_and_does_not_rattle PASSED 339ms
+  res://tests/test_gap_close.gd > test_a_cow_still_pulls_a_face_and_does_not_rattle PASSED 332ms
 
   res://tests/test_gap_close.gd > test_the_trophy_shelf_flips_through_done_cards_and_wraps STARTED
   res://tests/test_gap_close.gd > test_the_trophy_shelf_flips_through_done_cards_and_wraps PASSED 860ms
 
   res://tests/test_gap_close.gd > test_an_empty_shelf_still_answers_a_zap STARTED
-  res://tests/test_gap_close.gd > test_an_empty_shelf_still_answers_a_zap PASSED 44ms
+  res://tests/test_gap_close.gd > test_an_empty_shelf_still_answers_a_zap PASSED 34ms
 
   res://tests/test_gap_close.gd > test_a_zapper_aimed_at_the_shelf_flips_it_not_the_card STARTED
-  res://tests/test_gap_close.gd > test_a_zapper_aimed_at_the_shelf_flips_it_not_the_card PASSED 128ms
+  res://tests/test_gap_close.gd > test_a_zapper_aimed_at_the_shelf_flips_it_not_the_card PASSED 142ms
 
   res://tests/test_gap_close.gd > test_the_first_glue_pick_gets_a_voice_and_a_face STARTED
-  res://tests/test_gap_close.gd > test_the_first_glue_pick_gets_a_voice_and_a_face PASSED 730ms
+  res://tests/test_gap_close.gd > test_the_first_glue_pick_gets_a_voice_and_a_face PASSED 731ms
 
   res://tests/test_gap_close.gd > test_no_sound_effect_is_a_long_rumble STARTED
-  res://tests/test_gap_close.gd > test_no_sound_effect_is_a_long_rumble PASSED 55ms
+  res://tests/test_gap_close.gd > test_no_sound_effect_is_a_long_rumble PASSED 151ms
 
-Statistics: 9 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 4s 171ms
+Statistics: 9 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 4s 271ms
 
 
 Run Test Suite: res://tests/test_launch_ready_2.gd
   res://tests/test_launch_ready_2.gd > test_the_export_never_ships_the_design_doc_or_any_notes STARTED
-  res://tests/test_launch_ready_2.gd > test_the_export_never_ships_the_design_doc_or_any_notes PASSED 3ms
+  res://tests/test_launch_ready_2.gd > test_the_export_never_ships_the_design_doc_or_any_notes PASSED 7ms
 
   res://tests/test_launch_ready_2.gd > test_shipped_data_names_no_one_real STARTED
-  res://tests/test_launch_ready_2.gd > test_shipped_data_names_no_one_real PASSED 16ms
+  res://tests/test_launch_ready_2.gd > test_shipped_data_names_no_one_real PASSED 26ms
 
   res://tests/test_launch_ready_2.gd > test_the_template_placeholder_player_is_gone STARTED
-  res://tests/test_launch_ready_2.gd > test_the_template_placeholder_player_is_gone PASSED 2ms
+  res://tests/test_launch_ready_2.gd > test_the_template_placeholder_player_is_gone PASSED 3ms
 
   res://tests/test_launch_ready_2.gd > test_every_roster_character_has_its_files STARTED
-  res://tests/test_launch_ready_2.gd > test_every_roster_character_has_its_files PASSED 7ms
+  res://tests/test_launch_ready_2.gd > test_every_roster_character_has_its_files PASSED 11ms
 
-Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 47ms
+Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 101ms
 
 
 Run Test Suite: res://tests/test_generated_textures.gd
@@ -1291,69 +1344,69 @@ Run Test Suite: res://tests/test_generated_textures.gd
   res://tests/test_generated_textures.gd > test_project_default_embeds_gltf_images PASSED 2ms
 
   res://tests/test_generated_textures.gd > test_every_glb_imported_with_embedded_images STARTED
-  res://tests/test_generated_textures.gd > test_every_glb_imported_with_embedded_images PASSED 5ms
+  res://tests/test_generated_textures.gd > test_every_glb_imported_with_embedded_images PASSED 12ms
 
   res://tests/test_generated_textures.gd > test_no_extracted_textures_beside_glbs STARTED
-  res://tests/test_generated_textures.gd > test_no_extracted_textures_beside_glbs PASSED 5ms
+  res://tests/test_generated_textures.gd > test_no_extracted_textures_beside_glbs PASSED 6ms
 
   res://tests/test_generated_textures.gd > test_a_run_writes_nothing_into_res_assets_characters STARTED
-  res://tests/test_generated_textures.gd > test_a_run_writes_nothing_into_res_assets_characters PASSED 579ms
+  res://tests/test_generated_textures.gd > test_a_run_writes_nothing_into_res_assets_characters PASSED 763ms
 
-Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 612ms
+Statistics: 4 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 817ms
 
 
 Run Test Suite: res://tests/test_ui_clarity.gd
   res://tests/test_ui_clarity.gd > test_every_gun_kind_has_its_own_effect_story STARTED
-  res://tests/test_ui_clarity.gd > test_every_gun_kind_has_its_own_effect_story PASSED 3ms
+  res://tests/test_ui_clarity.gd > test_every_gun_kind_has_its_own_effect_story PASSED 4ms
 
   res://tests/test_ui_clarity.gd > test_beam_colours_are_seven_different_hues_never_player_colours STARTED
-  res://tests/test_ui_clarity.gd > test_beam_colours_are_seven_different_hues_never_player_colours PASSED 3ms
+  res://tests/test_ui_clarity.gd > test_beam_colours_are_seven_different_hues_never_player_colours PASSED 4ms
 
   res://tests/test_ui_clarity.gd > test_icons_and_previews_draw_at_every_stage STARTED
   res://tests/test_ui_clarity.gd > test_icons_and_previews_draw_at_every_stage PASSED 7ms
 
   res://tests/test_ui_clarity.gd > test_flicking_the_belt_pops_the_wheel_spins_from_the_old_gun_and_plays_the_preview STARTED
-  res://tests/test_ui_clarity.gd > test_flicking_the_belt_pops_the_wheel_spins_from_the_old_gun_and_plays_the_preview PASSED 194ms
+  res://tests/test_ui_clarity.gd > test_flicking_the_belt_pops_the_wheel_spins_from_the_old_gun_and_plays_the_preview PASSED 238ms
 
   res://tests/test_ui_clarity.gd > test_the_first_zap_of_each_gun_gets_a_beat_once_per_player STARTED
-  res://tests/test_ui_clarity.gd > test_the_first_zap_of_each_gun_gets_a_beat_once_per_player PASSED 209ms
+  res://tests/test_ui_clarity.gd > test_the_first_zap_of_each_gun_gets_a_beat_once_per_player PASSED 224ms
 
   res://tests/test_ui_clarity.gd > test_a_real_zap_from_the_zapper_reaches_the_beat STARTED
-  res://tests/test_ui_clarity.gd > test_a_real_zap_from_the_zapper_reaches_the_beat PASSED 208ms
+  res://tests/test_ui_clarity.gd > test_a_real_zap_from_the_zapper_reaches_the_beat PASSED 257ms
 
   res://tests/test_ui_clarity.gd > test_each_gun_has_its_own_beam_pattern_and_hit STARTED
-  res://tests/test_ui_clarity.gd > test_each_gun_has_its_own_beam_pattern_and_hit PASSED 230ms
+  res://tests/test_ui_clarity.gd > test_each_gun_has_its_own_beam_pattern_and_hit PASSED 254ms
 
   res://tests/test_ui_clarity.gd > test_gun_hits_play_for_every_kind_without_a_scene STARTED
-  res://tests/test_ui_clarity.gd > test_gun_hits_play_for_every_kind_without_a_scene PASSED 7ms
+  res://tests/test_ui_clarity.gd > test_gun_hits_play_for_every_kind_without_a_scene PASSED 11ms
 
   res://tests/test_ui_clarity.gd > test_every_card_names_a_real_gun_and_draws_as_a_picture STARTED
-  res://tests/test_ui_clarity.gd > test_every_card_names_a_real_gun_and_draws_as_a_picture PASSED 32ms
+  res://tests/test_ui_clarity.gd > test_every_card_names_a_real_gun_and_draws_as_a_picture PASSED 45ms
 
   res://tests/test_ui_clarity.gd > test_done_stamps_the_card_then_flips_to_the_next_on_the_fence_and_hud STARTED
   res://tests/test_ui_clarity.gd > test_done_stamps_the_card_then_flips_to_the_next_on_the_fence_and_hud PASSED 560ms
 
   res://tests/test_ui_clarity.gd > test_zapping_the_fence_card_skips_it_with_a_raspberry_and_a_drop_in STARTED
-  res://tests/test_ui_clarity.gd > test_zapping_the_fence_card_skips_it_with_a_raspberry_and_a_drop_in PASSED 205ms
+  res://tests/test_ui_clarity.gd > test_zapping_the_fence_card_skips_it_with_a_raspberry_and_a_drop_in PASSED 214ms
 
   res://tests/test_ui_clarity.gd > test_the_trophy_shelf_shows_a_done_card_in_the_same_art STARTED
-  res://tests/test_ui_clarity.gd > test_the_trophy_shelf_shows_a_done_card_in_the_same_art PASSED 220ms
+  res://tests/test_ui_clarity.gd > test_the_trophy_shelf_shows_a_done_card_in_the_same_art PASSED 247ms
 
-Statistics: 12 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 1s 918ms
+Statistics: 12 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 2s 109ms
 
 
 Run Test Suite: res://tests/test_jyz_chooser.gd
   res://tests/test_jyz_chooser.gd > test_defaults_are_jeff_p1_and_chuck_p2 STARTED
-  res://tests/test_jyz_chooser.gd > test_defaults_are_jeff_p1_and_chuck_p2 PASSED 49ms
+  res://tests/test_jyz_chooser.gd > test_defaults_are_jeff_p1_and_chuck_p2 PASSED 51ms
 
   res://tests/test_jyz_chooser.gd > test_spawn_follows_the_pick_with_the_stand_in STARTED
-  res://tests/test_jyz_chooser.gd > test_spawn_follows_the_pick_with_the_stand_in PASSED 22ms
+  res://tests/test_jyz_chooser.gd > test_spawn_follows_the_pick_with_the_stand_in PASSED 27ms
 
   res://tests/test_jyz_chooser.gd > test_swapped_picks_keep_the_slot_colours STARTED
-  res://tests/test_jyz_chooser.gd > test_swapped_picks_keep_the_slot_colours PASSED 43ms
+  res://tests/test_jyz_chooser.gd > test_swapped_picks_keep_the_slot_colours PASSED 53ms
 
   res://tests/test_jyz_chooser.gd > test_gear_equips_on_the_picked_body STARTED
-  res://tests/test_jyz_chooser.gd > test_gear_equips_on_the_picked_body PASSED 24ms
+  res://tests/test_jyz_chooser.gd > test_gear_equips_on_the_picked_body PASSED 26ms
 
   res://tests/test_jyz_chooser.gd > test_stand_in_zaps_and_is_zapped_like_anyone STARTED
   res://tests/test_jyz_chooser.gd > test_stand_in_zaps_and_is_zapped_like_anyone PASSED 1s 785ms
@@ -1370,30 +1423,30 @@ ERROR: Parameter "material" is null.
        [5] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
        [6] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
        [7] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_jyz_chooser.gd > test_main_spawns_the_picks_and_drop_in_sleeps_the_pick PASSED 208ms
+  res://tests/test_jyz_chooser.gd > test_main_spawns_the_picks_and_drop_in_sleeps_the_pick PASSED 311ms
 
   res://tests/test_jyz_chooser.gd > test_lobby_podiums_and_plates_follow_the_pick STARTED
-  res://tests/test_jyz_chooser.gd > test_lobby_podiums_and_plates_follow_the_pick PASSED 163ms
+  res://tests/test_jyz_chooser.gd > test_lobby_podiums_and_plates_follow_the_pick PASSED 194ms
 
   res://tests/test_jyz_chooser.gd > test_lobby_swap_rebuilds_the_podium_rig_with_the_gun STARTED
-  res://tests/test_jyz_chooser.gd > test_lobby_swap_rebuilds_the_podium_rig_with_the_gun PASSED 215ms
+  res://tests/test_jyz_chooser.gd > test_lobby_swap_rebuilds_the_podium_rig_with_the_gun PASSED 231ms
 
   res://tests/test_jyz_chooser.gd > test_skin_has_no_fixed_names STARTED
   res://tests/test_jyz_chooser.gd > test_skin_has_no_fixed_names PASSED 3ms
 
   res://tests/test_jyz_chooser.gd > test_barks_fall_back_to_generic_never_another_voice STARTED
-  res://tests/test_jyz_chooser.gd > test_barks_fall_back_to_generic_never_another_voice PASSED 50ms
+  res://tests/test_jyz_chooser.gd > test_barks_fall_back_to_generic_never_another_voice PASSED 48ms
 
   res://tests/test_jyz_chooser.gd > test_a_character_with_own_cue_uses_it STARTED
-  res://tests/test_jyz_chooser.gd > test_a_character_with_own_cue_uses_it PASSED 29ms
+  res://tests/test_jyz_chooser.gd > test_a_character_with_own_cue_uses_it PASSED 33ms
 
   res://tests/test_jyz_chooser.gd > test_the_stand_in_never_ships STARTED
-  res://tests/test_jyz_chooser.gd > test_the_stand_in_never_ships PASSED 6ms
+  res://tests/test_jyz_chooser.gd > test_the_stand_in_never_ships PASSED 7ms
 
   res://tests/test_jyz_chooser.gd > test_long_names_fit_on_the_plate STARTED
   res://tests/test_jyz_chooser.gd > test_long_names_fit_on_the_plate PASSED 3ms
 
-Statistics: 13 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 2s 643ms
+Statistics: 13 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 2s 821ms
 
 
 Run Test Suite: res://tests/test_more_objects.gd
@@ -1404,51 +1457,51 @@ Run Test Suite: res://tests/test_more_objects.gd
   res://tests/test_more_objects.gd > test_new_types_have_art_a_face_and_their_own_voice PASSED 7ms
 
   res://tests/test_more_objects.gd > test_new_types_stack_every_effect_and_undo_cleanly STARTED
-  res://tests/test_more_objects.gd > test_new_types_stack_every_effect_and_undo_cleanly PASSED 8s 300ms
+  res://tests/test_more_objects.gd > test_new_types_stack_every_effect_and_undo_cleanly PASSED 8s 335ms
 
   res://tests/test_more_objects.gd > test_new_types_every_pair_composes_and_caps_hold STARTED
-  res://tests/test_more_objects.gd > test_new_types_every_pair_composes_and_caps_hold PASSED 642ms
+  res://tests/test_more_objects.gd > test_new_types_every_pair_composes_and_caps_hold PASSED 803ms
 
   res://tests/test_more_objects.gd > test_stress_whole_yard_stays_clean STARTED
-  res://tests/test_more_objects.gd > test_stress_whole_yard_stays_clean PASSED 10s 461ms
+  res://tests/test_more_objects.gd > test_stress_whole_yard_stays_clean PASSED 10s 521ms
 
-Statistics: 5 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 19s 458ms
+Statistics: 5 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 19s 725ms
 
 
 Run Test Suite: res://tests/test_polish.gd
   res://tests/test_polish.gd > test_each_player_keeps_their_last_gun_after_the_lobby_and_a_reload STARTED
-  res://tests/test_polish.gd > test_each_player_keeps_their_last_gun_after_the_lobby_and_a_reload PASSED 467ms
+  res://tests/test_polish.gd > test_each_player_keeps_their_last_gun_after_the_lobby_and_a_reload PASSED 568ms
 
   res://tests/test_polish.gd > test_the_piano_plays_its_chord_when_it_lands_even_tiny STARTED
-  res://tests/test_polish.gd > test_the_piano_plays_its_chord_when_it_lands_even_tiny PASSED 3s 863ms
+  res://tests/test_polish.gd > test_the_piano_plays_its_chord_when_it_lands_even_tiny PASSED 3s 844ms
 
   res://tests/test_polish.gd > test_a_recalled_object_floats_down_at_the_gate_under_a_parachute STARTED
-  res://tests/test_polish.gd > test_a_recalled_object_floats_down_at_the_gate_under_a_parachute PASSED 2s 205ms
+  res://tests/test_polish.gd > test_a_recalled_object_floats_down_at_the_gate_under_a_parachute PASSED 2s 186ms
 
   res://tests/test_polish.gd > test_zapping_the_fan_blows_the_kite_off_the_tower STARTED
-  res://tests/test_polish.gd > test_zapping_the_fan_blows_the_kite_off_the_tower PASSED 1s 631ms
+  res://tests/test_polish.gd > test_zapping_the_fan_blows_the_kite_off_the_tower PASSED 1s 645ms
 
   res://tests/test_polish.gd > test_the_belt_button_runs_the_conveyor_and_carries_the_car STARTED
-  res://tests/test_polish.gd > test_the_belt_button_runs_the_conveyor_and_carries_the_car PASSED 2s 328ms
+  res://tests/test_polish.gd > test_the_belt_button_runs_the_conveyor_and_carries_the_car PASSED 2s 479ms
 
   res://tests/test_polish.gd > test_the_crane_hook_can_be_grabbed_and_carries_what_it_catches STARTED
-  res://tests/test_polish.gd > test_the_crane_hook_can_be_grabbed_and_carries_what_it_catches PASSED 4s 91ms
+  res://tests/test_polish.gd > test_the_crane_hook_can_be_grabbed_and_carries_what_it_catches PASSED 4s 300ms
 
   res://tests/test_polish.gd > test_the_trampoline_bounces_a_launched_object_and_a_player STARTED
-  res://tests/test_polish.gd > test_the_trampoline_bounces_a_launched_object_and_a_player PASSED 2s 919ms
+  res://tests/test_polish.gd > test_the_trampoline_bounces_a_launched_object_and_a_player PASSED 2s 983ms
 
   res://tests/test_polish.gd > test_the_podium_gun_points_up_not_over_the_legs STARTED
-  res://tests/test_polish.gd > test_the_podium_gun_points_up_not_over_the_legs PASSED 80ms
+  res://tests/test_polish.gd > test_the_podium_gun_points_up_not_over_the_legs PASSED 110ms
 
-Statistics: 8 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 17s 620ms
+Statistics: 8 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 18s 186ms
 
 
 Run Test Suite: res://tests/test_ui_sound.gd
   res://tests/test_ui_sound.gd > test_every_cue_synthesizes STARTED
-  res://tests/test_ui_sound.gd > test_every_cue_synthesizes PASSED 189ms
+  res://tests/test_ui_sound.gd > test_every_cue_synthesizes PASSED 192ms
 
   res://tests/test_ui_sound.gd > test_unknown_cue_has_no_stream STARTED
-  res://tests/test_ui_sound.gd > test_unknown_cue_has_no_stream PASSED 2ms
+  res://tests/test_ui_sound.gd > test_unknown_cue_has_no_stream PASSED 4ms
 
   res://tests/test_ui_sound.gd > test_play_does_not_crash STARTED
 WARNING: UiSound: unknown cue 'nope_not_a_cue'
@@ -1473,27 +1526,27 @@ WARNING: UiSound: unknown cue 'nope_not_a_cue'
          [16] _execute (res://addons/gdUnit4/src/core/execution/stages/single/GdUnitTestCaseSingleTestStage.gd:10)
          [17] execute (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:40)
          [18] test_completed (res://addons/gdUnit4/src/core/GdUnitTestCaseImpl.gd:85)
-  res://tests/test_ui_sound.gd > test_play_does_not_crash PASSED 25ms
+  res://tests/test_ui_sound.gd > test_play_does_not_crash PASSED 29ms
 
   res://tests/test_ui_sound.gd > test_play_twice_reuses_pool_node STARTED
-  res://tests/test_ui_sound.gd > test_play_twice_reuses_pool_node PASSED 2ms
+  res://tests/test_ui_sound.gd > test_play_twice_reuses_pool_node PASSED 3ms
 
   res://tests/test_ui_sound.gd > test_a_cue_with_a_file_plays_through_audio STARTED
-  res://tests/test_ui_sound.gd > test_a_cue_with_a_file_plays_through_audio PASSED 3ms
+  res://tests/test_ui_sound.gd > test_a_cue_with_a_file_plays_through_audio PASSED 4ms
 
-Statistics: 5 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 242ms
+Statistics: 5 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans | PASSED 255ms
 
 
-Overall Summary: 334 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |
-Executed test suites: (33/33)
-Executed test cases : (334/334)
-Total execution time: 9min 45s 679ms
- Open XML Report at: file:///home/maker/openjar/work/junk-yard-zap--feature_jyz-gap-close-3/reports/report_5/results.xml
-Open HTML Report at: file:///home/maker/openjar/work/junk-yard-zap--feature_jyz-gap-close-3/reports/report_5/index.html
+Overall Summary: 344 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |
+Executed test suites: (34/34)
+Executed test cases : (344/344)
+Total execution time: 10min 14s 568ms
+ Open XML Report at: file:///home/maker/openjar/work/junk-yard-zap--fix_jyz-player-flow-1/reports/report_5/results.xml
+Open HTML Report at: file:///home/maker/openjar/work/junk-yard-zap--fix_jyz-player-flow-1/reports/report_5/index.html
 Exit code: 0
 Run dispose test resources
 WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)
 ERROR: 1 resources still in use at exit (run with --verbose for details).
    at: clear (core/io/resource.cpp:822)
-EXIT 0
+suite exit 0
