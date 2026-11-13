@@ -13,6 +13,9 @@
 ##   killed  : after the SIGTERM: is the cow big?
 ##   close_early: a returning player closes the window on the title screen seconds after launch.
 ##   lobby_quit: boot, join, Back to Open Jar, Leave, straight from the title screen (exit 0 expected).
+##   hang_exit: PF-6 proof. Like close_early, but a node left in the tree blocks the main thread forever
+##             while the tree is freed, so the engine's shutdown never ends: Game.quit()'s exit
+##             watchdog must end the process about Game.EXIT_GRACE_MS later (killed, not exit 0).
 ##   solo    : with --solo. Both podiums ready, play, then a second pad presses A: P2 is theirs.
 ## Each check appends "PASS|FAIL <step> <note>" to <dir>/<phase>.txt and saves <dir>/<phase>_NN_<step>.png.
 class_name PlayerFlowRun
@@ -116,6 +119,19 @@ func _run() -> void:
 		"close_early":   # a returning player closes the window on the title screen right after launch
 			await check("title_then_close", Game.state == Game.State.LOBBY, "window closes now")
 			get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+		"hang_exit":   # PF-6: a shutdown that never ends, to prove the exit watchdog
+			get_tree().root.add_child(StuckShutdown.new())
+			await check("title_then_close_stuck", Game.state == Game.State.LOBBY, "shutdown will block")
+			get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+
+
+## Blocks the main thread for 10 minutes when it is freed (the tree is freed after quit()), standing in
+## for an engine shutdown that never ends.
+class StuckShutdown extends Node:
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_PREDELETE:
+			printerr("player_flow: shutdown blocked on purpose (hang_exit)")
+			OS.delay_msec(600000)
 
 
 func _first() -> void:
