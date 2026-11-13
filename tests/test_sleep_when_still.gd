@@ -61,6 +61,9 @@ func _awake(l: YardLevel) -> Array:
 			continue
 		if is_instance_valid(o) and o.is_in_group(PhysicsObject.GROUP) and not o.sleeping:
 			out.append(String(o.name))
+	var plank := l.find_child("SeesawPlank", true, false) as RigidBody3D   # the one plain rigid body
+	if plank and not plank.sleeping:
+		out.append("SeesawPlank")
 	return out
 
 
