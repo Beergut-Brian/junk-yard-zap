@@ -56,6 +56,18 @@ func flush() -> void:
 	saved.emit()
 
 
+## Start fresh (FreshStart): a copy of the whole save as it is now.
+func data() -> Dictionary:
+	return _data.duplicate(true)
+
+
+## Start fresh (FreshStart): the whole save replaced (a backup put back, or {} for a new yard), on disk at once.
+func replace(d: Dictionary) -> void:
+	_data = d.duplicate(true)
+	_dirty = true
+	flush()
+
+
 func get_setting(key: String, default = null):
 	return _settings.get(key, default)
 

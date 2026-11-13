@@ -10,6 +10,9 @@
 ## Chooser voice (docs/ui.md): SAY_SETTLE s after the last step (or a join), the character now on
 ## the podium says its catchphrase once, on that player's own voice (Roster.catchphrase).
 ## Solo: Select picks which podium the pad drives.
+## Start fresh (feel rule, 2026-11-13): with a yard saved, Play reads Continue and a New yard bar
+## appears under it. New yard asks first (FreshCard: hold A), keeps the old save as a backup and
+## opens a fresh yard; Settings > Restore old yard brings the newest backup back (FreshStart).
 ## Games customise it with a MenuSkin (UiStyle.use_skin, or res://data/menu_skin.tres), in code.
 ## title_texture / title_text here still work and win over the skin. Keep the node names.
 extends Control
@@ -20,7 +23,7 @@ signal countdown_cancelled()
 ## The countdown's last beat: the wipe is starting.
 signal launching()
 
-enum Choice { PLAY, SETTINGS, DOOR }
+enum Choice { PLAY, NEW, SETTINGS, DOOR }
 
 const HOLD_TO_START := 1.5
 const COUNT_STEP := 0.7
@@ -67,8 +70,10 @@ var _select_down := false
 var _say_in := { P1: -1.0, P2: -1.0 }
 
 @onready var _spots := { P1: $Spots/P1, P2: $Spots/P2 }
-@onready var _buttons := { Choice.PLAY: $Buttons/Play, Choice.SETTINGS: $Buttons/Settings, Choice.DOOR: $Buttons/Door }
-@onready var _items: Array = [$Buttons/Play, $Buttons/Settings, $Buttons/Door]
+@onready var _new_item: MenuItem = _make_new_item()
+@onready var _buttons := { Choice.PLAY: $Buttons/Play, Choice.NEW: _new_item, Choice.SETTINGS: $Buttons/Settings, Choice.DOOR: $Buttons/Door }
+@onready var _items: Array = [$Buttons/Play, _new_item, $Buttons/Settings, $Buttons/Door]
+@onready var _fresh: FreshCard = _make_fresh_card()
 @onready var _countdown: Control = $Countdown
 @onready var _settings: SettingsPanel = $Settings
 @onready var _confirm: ConfirmDialog = $Confirm
@@ -90,6 +95,9 @@ func _ready() -> void:
 	Game.state_changed.connect(_on_state_changed)
 	_settings.closed.connect(_on_settings_closed)
 	_confirm.chosen.connect(_on_confirm_chosen)
+	_fresh.confirmed.connect(_on_fresh_confirmed)
+	_settings.offer_restore = true
+	_settings.restore_asked.connect(func() -> void: _fresh.open(FreshCard.Ask.RESTORE))
 	visible = Game.state == Game.State.LOBBY
 	# Solo is playtest-only: never restored from settings at boot (--solo / Select+Start turn it on).
 	open()
@@ -103,6 +111,8 @@ func open() -> void:
 	_dots_lit = 0
 	_settings.dismiss()
 	_confirm.dismiss()
+	_fresh.dismiss()
+	update_fresh_items()
 	$Buttons.visible = true
 	_countdown.visible = true
 	$TitleArt.scale = Vector2.ONE
@@ -144,7 +154,54 @@ func _live() -> bool:
 
 ## Settings or the leave question is open over the menu.
 func in_submenu() -> bool:
-	return _settings.active or _confirm.active
+	return _settings.active or _confirm.active or _fresh.active
+
+
+## Start fresh: Continue + New yard with a yard saved, else just Play.
+func update_fresh_items() -> void:
+	var saved := FreshStart.has_save()
+	$Buttons/Play.text = "Continue" if saved else "Play"
+	_new_item.visible = saved
+	_new_item.disabled = not saved
+	if not saved and focus == Choice.NEW:
+		_set_focus(Choice.PLAY, false)
+
+
+func _make_new_item() -> MenuItem:
+	var item := MenuItem.new()
+	item.name = "NewYard"
+	item.text = "New yard"
+	item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$Buttons.add_child(item)
+	$Buttons.move_child(item, 1)
+	return item
+
+
+func _make_fresh_card() -> FreshCard:
+	var card := FreshCard.new()
+	card.name = "FreshCard"
+	add_child(card)
+	return card
+
+
+## Any joined player's A held (the fresh card's hold).
+func _any_a_held() -> bool:
+	for p in Players.active_players():
+		if Input.is_action_pressed(Players.action(p, "action")):
+			return true
+	return false
+
+
+func _on_fresh_confirmed(kind: FreshCard.Ask) -> void:
+	var level := YardLevel.find(self)
+	if kind == FreshCard.Ask.NEW:
+		FreshStart.start_fresh(level)
+	else:
+		FreshStart.restore(level)
+	update_fresh_items()
+	_settings.refresh()
+	if not _settings.active:
+		_set_focus(Choice.PLAY, false)
 
 
 func _process(delta: float) -> void:
@@ -152,6 +209,9 @@ func _process(delta: float) -> void:
 		return
 	voice_step(delta)
 	_countdown.queue_redraw()
+	if _fresh.active:
+		_fresh.step(delta, MenuInput.read(), _any_a_held())
+		return
 	if _confirm.active:
 		_confirm.handle(MenuInput.read())
 		return
@@ -346,6 +406,8 @@ func press_a(player: int) -> void:
 		Choice.PLAY:
 			if not readied[player]:
 				set_ready(player, true)
+		Choice.NEW:
+			_fresh.open(FreshCard.Ask.NEW)
 		Choice.SETTINGS:
 			_settings.open()
 			_settings_stage(true)
@@ -356,7 +418,9 @@ func press_a(player: int) -> void:
 func press_b(player: int) -> void:
 	if _launched:
 		return
-	if _confirm.active:
+	if _fresh.active:
+		_fresh.cancel()
+	elif _confirm.active:
 		_confirm.choose(false)
 	elif _settings.active:
 		_settings.close()
@@ -625,6 +689,7 @@ func _on_state_changed(_from: int, to: int) -> void:
 	else:
 		_settings.dismiss()
 		_confirm.dismiss()
+		_fresh.dismiss()
 
 
 func _draw_countdown() -> void:

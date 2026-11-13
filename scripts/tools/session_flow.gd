@@ -185,8 +185,10 @@ func run(main_scene: Node) -> void:
 			"%d / %d Jarlings, %d catchphrases, %d without one, wrong voice %s"
 			% [seen.size(), free.size(), spoke, has_none, wrong])
 
-	# Lobby settings and back.
+	# Lobby settings and back (past New yard when a yard is saved).
 	await pad(PAD1, JOY_BUTTON_DPAD_DOWN)
+	if FreshStart.has_save():
+		await pad(PAD1, JOY_BUTTON_DPAD_DOWN)
 	await pad(PAD1, JOY_BUTTON_A)
 	var settings: Node = lobby.get_node("Settings")
 	await _wait(0.4)
