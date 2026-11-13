@@ -51,6 +51,8 @@ func _frames(n := 2) -> void:
 ## Waits until cond() is true or timeout real seconds pass (the software renderer draws a frame
 ## every few hundred ms, so fixed waits are not enough there). Returns cond().
 func until(cond: Callable, timeout := 20.0) -> bool:
+	if shot_dir != "" and DisplayServer.get_name() != "headless":
+		timeout *= 6.0   # software Vulkan: loading the yard alone can take a minute
 	var end := Time.get_ticks_msec() + int(timeout * 1000.0)
 	while not cond.call() and Time.get_ticks_msec() < end:
 		await get_tree().process_frame
