@@ -34,6 +34,16 @@ const CHUTE_COLORS := [Color("#ffb21f"), Color("#f4efe0"), Color("#4aa8e8"), Col
 
 const LAND_DV := 3.5             # m/s of sudden velocity change that counts as a landing
 const LAND_COOLDOWN := 0.25
+## S-18 sleep when still. Gravity is ours (_integrate_forces writes the velocity every step, and a write
+## wakes the body), so Jolt never puts a body to sleep by itself. A body the solver has held still for
+## REST_STEPS steps running, cancelling our gravity each time (so something is under it), is put to
+## sleep here; any contact, zap or push wakes it as usual. Woken without a real push (a stack-mate still
+## settling, a neighbour resized) it falls back asleep after one more step of proof that it is held
+## up, so a pile settles together (all on the same even frame); if its support went, that step's
+## gravity moves it and the count starts again (it never sleeps in mid-air).
+const REST_STEPS := 12            # 0.2 s at 60 Hz
+const REST_SPEED := 0.05          # m/s read back after the solve; a resting body reads ~0
+const REST_SPIN := 0.05           # rad/s
 
 @export var data: ObjectData
 ## Layout key ("cow", "chicken_2"): what saves and goal cards call this object. Defaults to data.id.
@@ -62,6 +72,8 @@ var _overlay: StandardMaterial3D
 var _overlay_on := false
 var _last_v := Vector3.ZERO
 var _land_cool := 0.0
+var _rest_steps := 0              # S-18: steps in a row the solver held this body still
+var _gravity_last := false        # S-18: last step applied our gravity (so a still read-back is proof)
 var _pending_land := 0.0
 var _pending_splash := false
 var _clamp_left := 0.0
@@ -398,6 +410,24 @@ func _island_rids() -> Array[RID]:
 	return out
 
 
+## S-18: counts the steps the solver has held this body still and says when it may sleep. Never while
+## we steer it (grab, a size change and its clamp, the chute), off the plane, or with gravity off. A
+## floater counts too: twelve still steps in a row only happen once it has settled at its waterline.
+func _settled(v: Vector3, w: Vector3, pos: Vector3) -> bool:
+	var still := v.length() < REST_SPEED and w.length() < REST_SPIN and absf(pos.z) <= 0.001 \
+			and chute_left <= 0.0 and _clamp_left <= 0.0 and not is_scaling() \
+			and not stack.has(&"grab") and effective_gravity_scale > 0.0
+	if not still:
+		_rest_steps = 0
+		return false
+	if not _gravity_last:   # just woken: no gravity last step, so a still read-back proves nothing yet
+		return false
+	_rest_steps += 1
+	# Only on even physics frames, so bodies that touch fall asleep on the same step: one at a time,
+	# each would wake the other on the next step, for ever.
+	return _rest_steps >= REST_STEPS and Engine.get_physics_frames() % 2 == 0
+
+
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var dt := state.step
 	var pos := state.transform.origin
@@ -407,6 +437,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		nan_events += 1
 		state.linear_velocity = Vector3.ZERO
 		state.angular_velocity = Vector3.ZERO
+		_gravity_last = false
 		return
 	# A landing: the solver took a big bite out of the speed, or turned it round (bouncy), since the
 	# velocity we handed it last step. Skipped while we steer the body ourselves (grab, size clamp).
@@ -415,6 +446,13 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		if dv > LAND_DV and (_last_v.length() - v.length() > LAND_DV * 0.5 or v.dot(_last_v) < 0.0):
 			_pending_land = volume_mass() * dv
 			_land_cool = LAND_COOLDOWN
+	if _settled(v, w, pos):
+		state.linear_velocity = Vector3.ZERO
+		state.angular_velocity = Vector3.ZERO
+		state.sleeping = true
+		_last_v = Vector3.ZERO
+		_gravity_last = false
+		return
 	var up := Yard.up_at(pos)
 	v += Yard.gravity_at(pos) * effective_gravity_scale * dt
 	var surface := Yard.water_level_at(pos)
@@ -449,6 +487,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	state.linear_velocity = v
 	state.angular_velocity = w
 	_last_v = v
+	_gravity_last = true
 
 
 ## Out of bounds: send the whole glued island back to the gate, keeping its shape.
