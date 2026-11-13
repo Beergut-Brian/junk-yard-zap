@@ -37,6 +37,11 @@ static func build(root: Node3D, d: ObjectData) -> void:
 	A.detail(root, K.sphere(0.16, 12), rust, Vector3(-0.95, bot + 0.62, hz - 0.08), Vector3.ZERO, Vector3(1.3, 0.8, 0.2))
 	A.detail(root, K.sphere(0.1, 12), K.c("rust"), Vector3(-0.3, bot + 0.42, hz - 0.08), Vector3.ZERO, Vector3(1.2, 0.7, 0.2))
 	A.detail(root, K.sphere(0.12, 12), rust, Vector3(-0.5, bot + 1.24, 0.1), Vector3.ZERO, Vector3(1.4, 0.15, 1.0))
-	# Door seam and handle.
-	A.detail(root, K.rbox(Vector3(0.03, 0.42, 0.03), 0.01), body.darkened(0.3), Vector3(0.28, bot + 0.55, hz - 0.06))
-	A.detail(root, K.rbox(Vector3(0.14, 0.04, 0.04), 0.015), K.c("metal"), Vector3(0.12, bot + 0.68, hz - 0.05))
+	# The door: zapped, it swings open on its front hinge (a dark seat inside) and shuts
+	# (ObjectArt.gag). Seam and handle ride on it.
+	var dz := hz - 0.05
+	A.detail(root, K.rbox(Vector3(0.5, 0.4, 0.02), 0.06), K.c("rust_dark").darkened(0.35), Vector3(0.0, bot + 0.52, hz - 0.075))
+	var door := A.gag(root, &"swing", Vector3(0.3, bot + 0.52, dz), Vector3.UP, deg_to_rad(70.0))
+	A.part(door, K.rbox(Vector3(0.6, 0.46, 0.05), 0.06), body, Vector3(0.0, bot + 0.52, dz))
+	A.detail(door, K.rbox(Vector3(0.03, 0.42, 0.03), 0.01), body.darkened(0.3), Vector3(0.29, bot + 0.55, dz + 0.02))
+	A.detail(door, K.rbox(Vector3(0.14, 0.04, 0.04), 0.015), K.c("metal"), Vector3(-0.14, bot + 0.66, dz + 0.03))

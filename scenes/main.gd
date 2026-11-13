@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|gags-<zone>|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
 extends Node3D
 
@@ -156,6 +156,9 @@ func _start_demo() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--demo-beat="):
 			beat = a.trim_prefix("--demo-beat=")
+	if beat.begins_with("gags-"):
+		_beat_gags(StringName(beat.trim_prefix("gags-")))
+		return
 	if beat.begins_with("zone-"):
 		_beat_zone(StringName(beat.trim_prefix("zone-")))
 		return
@@ -232,6 +235,18 @@ func _beat_rattle() -> void:
 			if o:
 				o.react_look(ObjectFace.Mood.WIDE, 0.9)
 				o.speak())
+
+
+## Y-19: every faceless machine in the yard reacts at 1.0 s, 2.5 s and 4.0 s, so a frame ~0.35 s
+## later catches the fridge door open, the toast up, the antennae mid-wobble (--demo-beat=gags-<zone>).
+func _beat_gags(zone: StringName) -> void:
+	_beat_zone(zone)
+	for i in 3:
+		get_tree().create_timer(1.0 + i * 1.5).timeout.connect(func() -> void:
+			for o in get_tree().get_nodes_in_group(PhysicsObject.GROUP):
+				var po := o as PhysicsObject
+				if po and not po.data.has_face:
+					po.react_look(ObjectFace.Mood.WIDE, 0.9))
 
 
 ## G-13: three cards done, then Jeff zaps the trophy shelf and the newest one flips up.

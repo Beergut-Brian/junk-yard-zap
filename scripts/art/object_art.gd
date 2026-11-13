@@ -56,3 +56,62 @@ static func wheel(root: Node3D, r: float, w: float, pos: Vector3) -> void:
 	part(root, ArtKit.cyl(r, w), ArtKit.c("rubber"), pos, Vector3(90, 0, 0))
 	detail(root, ArtKit.cyl(r * 0.5, w + 0.02), ArtKit.c("metal"), pos, Vector3(90, 0, 0))
 	detail(root, ArtKit.sphere(r * 0.18, 10), ArtKit.c("metal").darkened(0.25), pos + Vector3(0, 0, w * 0.5 + 0.01))
+
+
+# --- machine gags (Y-19) ------------------------------------------------------------------------------
+
+## Vehicles and machines have no face (producer rule), so each one gets a moving part that shows it
+## felt the zap: the fridge door swings open and shuts, the toast pops up, the antennae wobble.
+## Builders call gag() and put the moving parts in the Node3D it returns, with their usual
+## coordinates; PhysicsObject plays every gag for GAG_SECONDS when the machine reacts.
+## kind: &"swing" (opens by amount radians about axis, then shuts), &"wiggle" (wobbles about axis,
+## dying away), &"pop" (jumps amount metres along axis and drops back).
+static func gag(root: Node3D, kind: StringName, pivot: Vector3, axis: Vector3, amount: float) -> Node3D:
+	var p := Node3D.new()
+	p.name = "Gag_" + String(kind)
+	p.position = pivot
+	p.set_meta(&"gag", {"kind": kind, "axis": axis.normalized(), "amount": amount, "rest": pivot})
+	root.add_child(p)
+	var holder := Node3D.new()
+	holder.position = -pivot
+	p.add_child(holder)
+	return holder
+
+
+## A puff of smoke that comes out at this point when the machine's gags start (tractor exhaust).
+static func puff(root: Node3D, at: Vector3) -> void:
+	var m := Node3D.new()
+	m.name = "GagPuff"
+	m.position = at
+	m.set_meta(&"gag_puff", true)
+	root.add_child(m)
+
+
+## Every gag pivot under node.
+static func gags_in(node: Node) -> Array[Node3D]:
+	var out: Array[Node3D] = []
+	for n in node.find_children("Gag_*", "Node3D", true, false):
+		if n.has_meta(&"gag"):
+			out.append(n)
+	return out
+
+
+## Pose a gag pivot at progress t (0 = start, 1 = done, back at rest).
+static func pose_gag(p: Node3D, t: float) -> void:
+	var g: Dictionary = p.get_meta(&"gag")
+	var axis: Vector3 = g["axis"]
+	var amount: float = g["amount"]
+	p.position = g["rest"]
+	p.basis = Basis.IDENTITY
+	if t <= 0.0 or t >= 1.0:
+		return
+	match g["kind"]:
+		&"swing":
+			# Flies open in the first fifth, hangs there with a little flutter, swings shut.
+			var e := smoothstep(0.0, 0.2, t) * (1.0 - smoothstep(0.7, 1.0, t))
+			var flutter := sin(t * 40.0) * 0.06 * e
+			p.basis = Basis(axis, amount * (e + flutter))
+		&"wiggle":
+			p.basis = Basis(axis, amount * sin(t * TAU * 3.0) * (1.0 - t))
+		&"pop":
+			p.position += axis * amount * sin(PI * minf(1.0, t * 1.4))

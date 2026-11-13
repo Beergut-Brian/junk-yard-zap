@@ -19,9 +19,11 @@ static func build(root: Node3D, d: ObjectData) -> void:
 	for i in 4:
 		A.detail(root, K.rbox(Vector3(s.x * 0.12, 0.015, 0.01), 0.005, 2), K.c("ink"), Vector3(s.x * 0.36, -s.y * 0.32 - i * 0.03, z + 0.01))
 	A.part(root, K.cyl(s.x * 0.12, 0.08, s.x * 0.1), K.c("rubber"), Vector3(0, s.y * 0.46 + 0.02, 0))
-	K.rod(root, Vector3(0, s.y * 0.5, 0), Vector3(-s.x * 0.28, s.y * 0.5 + 0.34, -0.03), 0.018, K.c("metal"))
-	K.rod(root, Vector3(0, s.y * 0.5, 0), Vector3(s.x * 0.24, s.y * 0.5 + 0.3, 0.03), 0.018, K.c("metal"))
-	A.detail(root, K.sphere(0.04, 8), K.c("metal"), Vector3(-s.x * 0.28, s.y * 0.5 + 0.34, -0.03))
-	A.detail(root, K.sphere(0.04, 8), K.c("metal"), Vector3(s.x * 0.24, s.y * 0.5 + 0.3, 0.03))
+	# The rabbit-ear antennae wobble when it's zapped (ObjectArt.gag).
+	var ears := A.gag(root, &"wiggle", Vector3(0, s.y * 0.5, 0), Vector3.BACK, 0.5)
+	K.rod(ears, Vector3(0, s.y * 0.5, 0), Vector3(-s.x * 0.28, s.y * 0.5 + 0.34, -0.03), 0.018, K.c("metal"))
+	K.rod(ears, Vector3(0, s.y * 0.5, 0), Vector3(s.x * 0.24, s.y * 0.5 + 0.3, 0.03), 0.018, K.c("metal"))
+	A.detail(ears, K.sphere(0.04, 8), K.c("metal"), Vector3(-s.x * 0.28, s.y * 0.5 + 0.34, -0.03))
+	A.detail(ears, K.sphere(0.04, 8), K.c("metal"), Vector3(s.x * 0.24, s.y * 0.5 + 0.3, 0.03))
 	for x in [-1.0, 1.0]:
 		A.part(root, K.rbox(Vector3(0.12, 0.06, 0.12), 0.02), K.c("rubber"), Vector3(x * s.x * 0.38, -s.y * 0.5 + 0.03, 0))
