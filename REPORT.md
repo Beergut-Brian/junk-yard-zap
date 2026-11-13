@@ -1,90 +1,86 @@
-# REPORT: fix/jyz-generated-textures-1 (Systems)
+# REPORT: feature/jyz-faceless-audit-1 (Faceless audit)
 
-## The writer
-No game code wrote these files. They came from **Godot's glTF importer**. Its default
-`gltf/embedded_image_handling = 1` (Extract Textures) pulls every image embedded in a `.glb` out
-into a PNG beside the `.glb` on import. It names each one `<glb>_<image>.png` and imports it
-(`chuck/chuck_chuck_tiedye.png`, `chuck_chuck_trex.png`, `boxbot_boxbot_box_torso.png`, ...).
-`*.import` is gitignored, so every clean checkout, `godot --import`, test run or shot started
-from the default again.
+Rule (Kaden, standing): vehicles and machines never get faces or eyes. Base: `origin/dev` @ `8646fd0`
+(gap-close-3 merged).
 
-A clean `godot --headless --import` reproduced it with no game code running. It left **45 untracked PNGs**:
-43 under `assets/characters/<id>/` (22 Jarlings: faces, shirt/pants patterns, Chuck's tie-dye and
-T-rex, Boxbot's torso) and 2 under `assets/models/patience/` (`cow_cow_coat.png`,
-`cow_cow_face.png`). The barn cow has the same bug.
+**Result: no face was left to remove.** The vehicle-faces lane (`feature/jyz-vehicle-faces-1`, already
+merged into dev) and gap-close-1/3 had removed every face on a vehicle or machine. This lane checked
+every place a face could hide and found none. Then it closed one way a face could come back
+(`build_data.gd`), fixed three stale comments that still said "face", and added a test that reads the
+list from the code.
 
-I checked the code that does write files (`save_png`, `ResourceSaver.save`). It is
-`Debug.gd` (screenshots go to `user://`), `scripts/tools/ui_sheet.gd`, `build_theme.gd`,
-`build_data.gd` and `scripts/goals/bake_card_art.gd`. All are deliberate offline tools that
-write tracked assets, and no test or shot runs them. None of them is involved.
+## Locked files check
+All 7 `feature/jyz-*` branches on origin (controls-1, gap-close-1/2/3, goal-physics-1, ui-1,
+vehicle-faces-1) have an empty `git diff --stat origin/dev...<branch>`: they are all merged. No file
+was off-limits.
 
-## The fix (ported from the-hill PR 23, `e8aded9`)
-- `project.godot`: `[importer_defaults] scene={"gltf/embedded_image_handling": 3}` (Embed as
-  Uncompressed). The images stay inside the imported scene in `.godot/imported/`, Godot's own
-  cache, and appear as sub-resources (`jeff.glb::ImageTexture_...`). Nothing goes into `res://`.
-  This covers every `.glb` in the project, the cow included.
-- No `.gitignore` backstop. After a clean import, the fix alone keeps the folder clean (shown below).
-- One limit: the setting only applies to *new* imports. A machine that already has
-  `assets/**/*.glb.import` files from before the fix keeps extracting until those files and
-  `.godot/` are deleted and the project is re-imported. The new test catches this case and says
-  what to do.
-- Wording: `scripts/tools/sync_characters.sh` (its header and the credits line it generates) and
-  the 23 matching lines in `assets/CREDITS.md` used to say "Godot extracts its textures
-  (`<id>_*.png`) on import". They now say "its textures stay embedded on import (no extracted
-  files)". That is the only change under `assets/`, and `CREDITS.md` belongs to the Art lane, so
-  it should look at it. Nothing in `assets/characters/`, `scenes/` or `data/roster.json` changed.
-- `tests/fixtures/standin/` keeps its own tracked `standin.glb.import` and
-  `standin_generic7_face.png`. It is a fixture, and I left it alone.
+## The vehicle and machine list (from the code)
+The code marks a vehicle or machine in two ways: `has_face = false` in `data/objects/*.tres`, and an
+`ObjectArt.gag` moving part in its builder (Y-19). Both give the same 9 types. The crane hook
+(`contraptions.gd`, `d.has_face = false`) and the dressing crane (`yard_dressing.gd`) are machines too.
 
-## Test
-`tests/test_generated_textures.gd` (4 cases):
-- `test_project_default_embeds_gltf_images`: the project setting is 3.
-- `test_every_glb_imported_with_embedded_images`: every character `.glb.import` and the cow's
-  `.glb.import` say 3. It fails on stale imports.
-- `test_no_extracted_textures_beside_glbs`: no `<stem>_*.png` sits beside any of those `.glb` files.
-- `test_a_run_writes_nothing_into_res_assets_characters`: lists every file under
-  `res://assets/characters` and the cow's folder, then loads all 23 models. It checks that each
-  has textures with a size and none is a `.png` file. Then it runs `scenes/main.tscn` for 10
-  frames and fails if any file was added.
+| Object | data `has_face` | 3D art (`scripts/art/objects/`) | Pictos (live cards) | card_art / baked PNG | Face found? |
+| --- | --- | --- | --- | --- | --- |
+| car | false | wheels, cream headlight (a light), rust; door gag | no face (`draws_face`) | silhouette, `return` before face; b1_tiny_car, b2_car_over_fence, b3_raft PNGs have no face | no |
+| tractor | false | cap + smoke gag | no face | silhouette, no face; b1_tiny_tractor, b3_tractor_loft PNGs have no face | no |
+| boat | false | oar gag | no face | via Pictos | no |
+| wheelbarrow | false | tip gag | no face | via Pictos | no |
+| washing_machine | false | porthole gag, 3 knobs | no face | via Pictos | no (see below) |
+| tv | false | antennae gag, 2 dials | no face | via Pictos | no |
+| toaster | false | toast pop gag | no face | via Pictos | no |
+| fridge | false | door swing gag | no face | drawn, no face; b1_magnet_fridge PNG has no face | no |
+| cannon | false | nod + puff gag | no face | via Pictos | no |
+| crane hook (contraption) | false (code) | metal hook | n/a | n/a | no |
+| crane (yard dressing) | n/a (dressing) | cab, glass, jib | n/a | n/a | no |
 
-Checked against the bug: with the old `project.godot` and a clean import, 3 of the 4 cases fail
-(113 failures, one per stale `.import` and per stray PNG). With the fix, all 4 pass.
+Searched for face textures: no `*face*` image under `assets/` belongs to a vehicle or machine (the only
+face material is Patience the cow's `cow_face`, which stays). No vehicle or machine uses a `.glb`
+(`mesh` is unset in all 9 `.tres`), so none has a material that could carry a face.
 
-## Full suite
-From a clean import (`rm -rf .godot`, deleted every `assets/**/*.glb.import`, ran `godot --headless --import`):
-`godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue`
-→ **304 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans**.
-I did not touch the physics tests.
+Kept as they are: the cow (Patience), every Jarling, the animals and the calm faces on props.
+Judgment call: the **kettle** (old stovetop, enamel and rust) and the **piano** are props with
+personality, not machines, so they keep their faces. Logged in GAME.md "Decisions made without Kaden".
 
-## git status after a run
-After the clean import, the full test run and three scripted runs (`scripts/tools/shots.sh`
-of `main.tscn --demo --demo-beat=blame`), `git status --short` lists only this branch's own
-changes. There is nothing untracked under `assets/`:
-```
- M assets/CREDITS.md
- M project.godot
- M scripts/tools/sync_characters.sh
-?? tests/test_generated_textures.gd
-?? tests/test_generated_textures.gd.uid
-```
-(These were committed afterwards.) Before the fix, the same import alone left 45 `??` lines.
+## What changed
+- `scripts/tools/build_data.gd`: the retired grey-box generator would have rewritten every object
+  `.tres` with the default `has_face = true`. A rerun would have put faces back on all 9. It now keeps
+  `has_face = false` where data/ already has it.
+- Stale comments: `car.gd` ("the face sits on the side of the hood"), `wheelbarrow.gd` ("Face on the
+  tray side"), `card_art.gd` `thing()` doc. Comments only, no geometry changed.
+- The leftover `face_at` / `face_size` values in the 9 `.tres` are unused while `has_face = false`.
+  I left them alone to keep the Content lane's files untouched.
 
-## Frames
-`scripts/tools/shots.sh res://scenes/main.tscn 4 <dir> --demo --demo-beat=blame` (Forward+ on llvmpipe):
-(`handoff/` is gitignored, so these PNGs are on disk in this worktree, not in the commit.)
-- `handoff/frames/gentex_before_full.png`: before the fix (extracted PNGs in place).
-- `handoff/frames/gentex_after_full.png`: after the fix, the same beat (this save's picks: Bloom P1, Chuck P2).
-- `handoff/frames/gentex_after_ana_snooze_full.png`: after the fix, `--p1-char=astro_ana --p2-char=snooze`.
-- `handoff/frames/gentex_crops_before_after.png`: close-ups. Left column before, middle after,
-  right Astro Ana and Snooze after.
+## Frames (real, Forward+ on llvmpipe)
+`handoff/frames/` (not tracked by git; in this worktree):
+- `lineup_sheet.png`: car, tractor, boat, wheelbarrow, washing machine, TV, toaster, fridge, cannon,
+  kettle (the kettle is the control with a face). One PNG per object as well (`car.png`, ...).
+- `vehicle_cards_sheet.png`: the 6 baked goal-card PNGs that show a vehicle or the fridge.
 
-Faces, eyes, shirt patterns, Chuck's tie-dye and T-rex shirt, and Snooze's striped hat all render
-the same before and after. The two full frames differ elsewhere only because of demo timing
-(the junk pile, the ring colour, the expression).
+No before/after pair: nothing visible changed, so the dev frames are the after frames. The 3 objects
+I looked at most closely were the car (headlight reads as a light, not an eye), the washing machine
+and the TV. None of them reads as a face.
 
-## PLAN-STATUS
-No row is about this, so PLAN-STATUS has no changes.
+## Test added
+`tests/test_faceless_audit.gd` (4 cases):
+- `test_the_vehicle_and_machine_list_comes_from_the_code_and_agrees_with_itself`: the list is
+  `has_face = false` OR an `ObjectArt` gag (no typed list). Each one must be both faceless and have a
+  moving part. The list has at least 9 entries. The cow, chicken, piano and kettle are not on it.
+- `test_no_vehicle_or_machine_has_a_face_node_or_face_texture`: builds each one as a `PhysicsObject`
+  and scans it for `ObjectFace`, a node or script named `*face*`, and any material, override or albedo
+  texture whose name or path holds "face". It also checks `Pictos.draws_face`.
+- `test_the_scan_finds_the_cows_face`: the control. The same scan must find the cow's and the
+  chicken's faces.
+- `test_the_crane_hook_contraption_has_no_face`.
 
-## Also seen (not this repo)
-`~/openjar/the-hill/assets/characters/jeff/jeff_jeff_face.png` still exists there. It is
-probably left over from before their fix, on a machine with stale `.import` files.
+Mutation check: with `car.tres` set to `has_face = true`, 2 of the 4 cases went red ("car has a moving
+part but has_face = true", "car has a face: node Face"). I reverted it.
+
+## Tests
+Full suite: see `handoff/test-output.txt` and the summary in `handoff/handoff.json`.
+Clean import first: `godot --headless --import` left no untracked PNGs under `assets/` (the
+generated-textures fix on dev holds).
+
+## Needs Gary
+- Nothing required. Optional: on the TV, the washing machine's two teal knobs sit side by side above
+  the round porthole. Look from the sofa. If it reads as a face to you or the kid, the fix is to spread
+  or recolour the knobs. That is an Art change, so I did not make it.

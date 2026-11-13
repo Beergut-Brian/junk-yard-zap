@@ -90,6 +90,13 @@ func _init() -> void:
 		o.bounce = r[4]
 		o.face_at = r[5]
 		o.face_size = r[6]
+		# Vehicles and machines never get a face (Kaden): keep has_face = false where data/ already has it,
+		# so a rerun can't put eyes back on the car, the tractor or the fridge.
+		var old_path := "res://data/objects/%s.tres" % id
+		if ResourceLoader.exists(old_path):
+			var old := load(old_path) as ObjectData
+			if old and not old.has_face:
+				o.has_face = false
 		var parts: Array[Dictionary] = []
 		for p in r[7]:
 			parts.append(p)
