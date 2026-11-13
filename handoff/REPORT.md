@@ -189,3 +189,65 @@ failure, the quiet-yard test ("hay" awake again): a real bug, fixed at the cause
   "shutdown still running" is a normal return.
 
 No frames this lane: no visual change.
+
+---
+
+# CI fix: `test_balloons.gd::test_stress_frame_time_within_budget` (PR 44)
+
+CI-fix lane, same branch, 2026-11-13. dev had not moved (`git merge origin/dev`: already up to date).
+
+## Cause: test staging, not the balloons
+
+CI failed twice with "30.4 awake with vs 26.7 without" (bound base + 3 + 0.5). I reproduced it here
+before changing anything: **27.1 with vs 23.5 without**, same failure.
+
+The old test counted every body in the whole yard (about 50) over 240 frames, starting 0.5 s after the
+level loaded, with a seeded kick every 6 frames, once with a layout that had no balloon entries and
+once with the full layout. Before S-18 nothing ever slept, so both counts were "everything" and the gap
+was exactly the 3 balloons. Now that bodies sleep, the count measures how a kicked, still-settling yard
+falls asleep, and that is chaotic:
+
+- **Not repeatable.** The same staging gave 23.0, then 24.0, as the "without" average in two runs on
+  this box. Single bodies swung by 20 to 91 awake frames (out of 240) between runs.
+- **Not the balloons.** The bodies that swung most (the pipe pile at x = -12, piano and kettle) were not
+  near a balloon, and they swung both ways (piano -39 in one pair, +41 in another). I logged which
+  bodies came within reach of a balloon (boat, gnome, swim ring...). None of them showed a consistent
+  extra awake count.
+- **Control with the balloons out of reach.** With the balloons moved to y = 60, touching nothing, the
+  run still came out 2.7 to 3.4 above "without" plus 3, the same spread as the real run. Three extra
+  bodies change the order Jolt builds and solves the yard, and a chaotic pile turns that into ±1 awake
+  body per frame. CI's different machine landed on the bad side.
+- Separately, the pond floaters (swim ring, boat, duck, beach ball...) are still awake 25 s after the
+  kicks, **with or without balloons** (5 to 8 bodies either way). They are not caused by the balloons,
+  so this is not a gameplay decision for this test. It is noted here in case S-18 wants a quiet pond.
+
+So nothing goes in "Needs a gameplay decision". Measured over the bodies around them, the balloons keep
+nothing else awake (see below).
+
+## What changed (tests/test_balloons.gd only)
+
+- Both runs now build the **same full layout**, so every body is made in the same order. In the
+  "without" run the balloons are benched with the existing `tests/fixtures/stage.gd`.
+- Only the **balloons' neighbours** stay in play: bodies within 4 m (along x, plus their radius) of a
+  balloon. That is 16 bodies (ball, tire, bucket, crates; duck, boat, kiddie pool, rubber chicken, fish,
+  beach ball; piano, kettle, tractor, anvil, bowling pin). Everything else is benched. The kicks pick
+  from these neighbours (same seed and schedule), and the count is over these bodies.
+- The assert and bound are unchanged: `with <= base + KEYS.size() + 0.5`. The physics clock was already
+  pinned to 60 Hz for this suite (`tests/fixtures/physics_clock.gd` in `before()`). The poke-scan half of
+  the test is unchanged.
+
+Prototype numbers (4 pairs in one process, with different start frames): without 12.56 to 12.85, with
+15.56 to 15.76, gap 2.72 to 3.15. The balloons are awake every frame (3.0), so the non-balloon bodies
+differ by -0.3 to +0.15 per frame with balloons vs without.
+
+## Runs
+
+- `test_balloons.gd`, 5 runs in a row: 11/11 each, **without 13.4, with 16.3** every time (gap 2.9,
+  bound 3.5).
+- Once under `taskset -c 0 nice -n 19`: 11/11, without 13.4, with 16.3.
+- Full suite from a clean import (log: `handoff/test-output.txt`) (`rm -rf .godot`, `godot --headless --path . --import`, then
+  `godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue --ignoreHeadlessMode`):
+  **366 test cases, 0 errors, 0 failures, 0 flaky, 0 orphans**. In the suite this test read without 13.2,
+  with 16.1 (gap 2.9): the suites that run before it shift the start slightly, but the gap holds.
+
+Not pushed; the producer ships.

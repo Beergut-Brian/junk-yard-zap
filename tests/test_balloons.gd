@@ -276,11 +276,30 @@ func test_the_three_balloons_wear_three_party_colours() -> void:
 	assert_int(seen.size()).is_equal(3)
 
 
-## Awake bodies per frame, with the same launches on the same non-balloon bodies.
-func _awake_per_frame(layout: YardLayout) -> float:
-	var l := level(layout)
+const NEIGHBOUR_REACH := 4.0   # m along x from a balloon: the bodies that can bump into it
+
+
+## Awake bodies per frame, with the same launches on the same non-balloon bodies. Both runs build the
+## same full yard (so every body is made in the same order and the solver walks them the same way),
+## then keep only the balloons' neighbours: the bodies within NEIGHBOUR_REACH of a balloon, the ones a
+## balloon could keep awake. Everything else is benched, so the forty-odd far bodies settling and
+## being kicked into each other (a chaotic pile: the same kicks gave 20 to 24 awake per frame from run
+## to run, and swung by up to 40 frames per body between two runs, with or without balloons) can't
+## drown out what the balloons do. Without balloons, the balloons are benched too.
+func _awake_per_frame(balloons: bool) -> float:
+	var l := level()
+	var keep := []
+	for k in KEYS:
+		var b := l.object(k)
+		for o in l.objects.values():
+			if absf(o.global_position.x - b.global_position.x) < NEIGHBOUR_REACH + o.radius() and not o in keep:
+				keep.append(o)
+	if not balloons:
+		keep = keep.filter(func(o: PhysicsObject) -> bool: return not o is LooseBalloon)
+	Stage.clear_all(l, keep)
 	await step(30)
-	var keys: Array = l.objects.keys().filter(func(k: StringName) -> bool: return not String(k).begins_with("balloon"))
+	var keys: Array = keep.filter(func(o: PhysicsObject) -> bool: return not o is LooseBalloon) \
+			.map(func(o: PhysicsObject) -> StringName: return o.key)
 	keys.sort()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 11
@@ -290,7 +309,7 @@ func _awake_per_frame(layout: YardLayout) -> float:
 			var o: PhysicsObject = l.object(keys[rng.randi() % keys.size()])
 			o.linear_velocity = Vector3(rng.randf_range(-8, 8), rng.randf_range(2, 8), 0)
 		await get_tree().physics_frame
-		for o: PhysicsObject in l.objects.values():
+		for o: PhysicsObject in keep:
 			if not o.sleeping:
 				awake += 1
 	l.free()
@@ -300,17 +319,12 @@ func _awake_per_frame(layout: YardLayout) -> float:
 
 ## Physics cost, measured in ways a busy box can't fake (the producer box runs other lanes' Godot at
 ## the same time: a wall-clock A/B of the whole yard swung from 5 to 11 ms either way). 1) The
-## balloons keep nothing else awake: at most their own 3 extra awake bodies per frame. 2) A balloon's
-## own per-frame work (the sharp-poke scan; the hover is a few multiplies, no rays) stays far under
-## 0.25 ms. S-18 measures the real frame on the GTX 1060.
+## balloons keep nothing else awake: at most their own 3 extra awake bodies per frame, counted over
+## the bodies around them. 2) A balloon's own per-frame work (the sharp-poke scan; the hover is a few
+## multiplies, no rays) stays far under 0.25 ms. S-18 measures the real frame on the GTX 1060.
 func test_stress_frame_time_within_budget() -> void:
-	var full := load(YardLevel.LAYOUT) as YardLayout
-	var without := YardLayout.new()
-	for e in full.entries:
-		if not (e.object is BalloonData):
-			without.entries.append(e)
-	var base := await _awake_per_frame(without)
-	var with := await _awake_per_frame(full)
+	var base := await _awake_per_frame(false)
+	var with := await _awake_per_frame(true)
 	print("balloons awake per frame: without %.1f, with %.1f" % [base, with])
 	assert_float(with).override_failure_message("%.1f awake with vs %.1f without" % [with, base]) \
 			.is_less_equal(base + KEYS.size() + 0.5)
