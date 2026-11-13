@@ -191,6 +191,9 @@ func update_fresh_items() -> void:
 	$Buttons/Play.text = "Continue" if saved else "Play"
 	_new_item.visible = saved
 	_new_item.disabled = not saved
+	# Four bars must clear the status line under them (lobby.tscn lays out three: top 360, gap 28).
+	$Buttons.offset_top = 290.0 if saved else 360.0
+	$Buttons.add_theme_constant_override("separation", 14 if saved else 28)
 	if not saved and focus == Choice.NEW:
 		_set_focus(Choice.PLAY, false)
 
