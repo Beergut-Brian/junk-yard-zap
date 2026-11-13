@@ -146,6 +146,7 @@ func swap_solo_focus() -> void:
 		var z: Zapper = _players[to]
 		z.wake()
 		Fx.ring(get_tree(), z.global_position + Vector3(0, 1, 0), Players.COLOR[to], 1.2)
+		z.say("swap_in")   # "I'm in!" in the character's own voice (the gate keeps it to one line)
 
 
 # ---------------------------------------------------------------------------------------- demo

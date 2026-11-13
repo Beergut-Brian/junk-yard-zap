@@ -34,6 +34,8 @@ const ALL_BITS := ["poke", "hum", "kick_tire", "check_hat"]
 ## idle with the procedural tilt on top.
 const BIT_ACTION := {"poke": "poke", "hum": "hum", "kick_tire": "kick", "check_hat": "check_hat"}
 const BIT_SECS := {"poke": 1.0, "hum": 1.6, "kick_tire": 0.9, "check_hat": 1.3}
+const WAIT_LINE_AFTER := 12.0  # seconds standing still before the one "wait" line of that stretch
+const OOPS_GAP := 8.0         # seconds: the shortest wait between two "oops" lines from one player
 ## The cue each bit plays (existing cues only; see handoff/REPORT.md).
 const HUM_CUE := "sparkle"        # glockenspiel notes, played low: the closest thing to a hum
 const HAT_CUE := "wheel_move"     # a click: the hat brim straightened
@@ -44,6 +46,8 @@ var zapper: Zapper
 ## Seconds of an action bit / reaction pose left; the zapper doesn't force idle while > 0.
 var busy_left := 0.0
 var still_time := 0.0
+var _last_oops := -100.0
+var _waited := false          # this still stretch already had its "wait" line
 var next_bit := IDLE_AFTER
 ## Last idle bit and the rig action it actually played ("idle" when the rig hasn't got it).
 var last_bit := ""
@@ -81,8 +85,12 @@ func tick(delta: float, active: bool, can_idle: bool, moved := false) -> void:
 	if active or moved or not can_idle:
 		still_time = 0.0
 		next_bit = IDLE_AFTER
+		_waited = false
 		return
 	still_time += delta
+	if not _waited and still_time >= WAIT_LINE_AFTER and busy_left <= 0.0 and Audio.can_bark(zapper):
+		wait_line()
+		return
 	if still_time >= next_bit and busy_left <= 0.0:
 		do_bit(bits()[_rng.randi() % bits().size()])
 		next_bit = still_time + _rng.randf_range(IDLE_GAP.x, IDLE_GAP.y)
@@ -104,6 +112,18 @@ func _cancel() -> void:
 
 
 # ------------------------------------------------------------------------------------- idle bits
+
+## Long enough standing still: once per still stretch, a look round and their pack's "wait" line
+## ("I'll just look at this rock."). Never a hurry-up: the lines are idle chatter.
+func wait_line() -> String:
+	_waited = true
+	last_reaction = "wait"
+	busy_left = 1.2
+	var rig := zapper.rig
+	rig.set_expression("happy")
+	rig.tilt(Vector2(0.0, -0.2), 0.8, 0.4)   # head tilts, looking round
+	return zapper.bark("wait")
+
 
 ## Do one idle bit now; returns the bit actually done (a poke or kick with nothing in reach turns
 ## into the character's other bit).
@@ -242,7 +262,23 @@ func own_zap(changed: bool, refused: bool) -> String:
 		return zapper.bark("zap")
 	if refused and blames() and Audio.can_bark(zapper):
 		return blame()
+	if refused and Audio.can_bark(zapper) and Audio.now() - _last_oops >= OOPS_GAP:
+		return oops()
 	return ""
+
+
+## A zap that couldn't happen, for someone who doesn't blame (Jeff): a sheepish shrug and their
+## pack's gentle "oops" line ("Oops. Sorry, little fence."). Not more than once every OOPS_GAP s,
+## so mashing at the size cap never turns into a nag.
+func oops() -> String:
+	last_reaction = "oops"
+	busy_left = 0.6
+	_last_oops = Audio.now()
+	var rig := zapper.rig
+	rig.set_expression("surprised")
+	rig.hop(0.1, 0.25)
+	rig.tilt(Vector2(0.0, 0.18), 0.5, 0.15)   # a little head tilt
+	return zapper.bark("oops")
 
 
 ## Does this character blame the partner when something doesn't work?
@@ -264,7 +300,7 @@ func blame() -> String:
 	rig.hop(0.12, 0.25)
 	rig.tilt(Vector2(0.25, 0.0), 0.6, 0.2)
 	Fx.burst(get_tree(), zapper.global_position, Color(0.8, 0.7, 0.55, 0.7), 8, 0.4, 0.35)
-	return zapper.bark()
+	return zapper.bark("oops")   # "Oh! That wasn't me." (a random plain line could be a cheer)
 
 
 ## The other awake player, or null.

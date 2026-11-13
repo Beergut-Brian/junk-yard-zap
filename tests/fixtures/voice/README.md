@@ -5,3 +5,7 @@
 `characters/zorp/voice/cheer.ogg`; Open Jar Games, in-house, see `assets/CREDITS.md`). The test
 roster `roster_voice.json` points its made-up characters at them, so the chooser voice tests never
 depend on the real roster's contents.
+
+`join.ogg`, `swap_in.ogg`, `oops.ogg` and `wait.ogg` (added by jyz-gap-close-2) are copies of Zorp's synced
+`characters/zorp/voice/join.ogg`, `swap_in.ogg`, `oops.ogg` and `wait.ogg` (`openjar-characters` `v0.5.3`; Open Jar Games,
+generated with ElevenLabs, see `assets/CREDITS.md`), for the drop-in hello, solo swap, refused-zap and idle tests.

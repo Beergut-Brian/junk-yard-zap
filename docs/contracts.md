@@ -243,8 +243,9 @@ func variants(cue: String) -> int   # how many files; play() rotates them, never
 func voice(base: String, kind := "react", owner: Object = null, pitch := 1.0) -> bool
 	# object voice voice_<id>_<kind> (react, grabbed, thrown, landed); one per owner per 0.5 s
 func bark(character: String, kind := "", speaker = null) -> String
-	# bark_<id>[_kind] cue, else the roster voice pack (<voice>/<kind>.ogg, "roster:<id>"), else bark[_kind]
-func can_bark(speaker) -> bool      # one bark per zap: per-speaker and global gaps
+	# bark_<id>[_kind] cue, else the roster voice pack (<voice>/<kind>.ogg or a PACK_KINDS line:
+	# delight -> cheer|win, zap -> win|cheer; "roster:<id>"), else bark[_kind]
+func can_bark(speaker) -> bool      # one bark per zap: per-speaker and global gaps; never over a spoken line
 func bark_style(character: String, style: String) -> bool   # "delight" (Jeff), "narrate" (Chuck)
 func music(track: String, fade: float = 0.5) -> void       # loops music/<track>.ogg (+ <track>_bright)
 func brighten(secs := 10.0) -> bool  # crossfade to the bright layer and back; card_done calls it
@@ -336,6 +337,7 @@ var jump_tuning: JumpTuning      # data/players/jump.tres: tap = hop, hold = hig
 func reset_progress() -> float   # 0..1 of the Select hold (Zapper.RESET_HOLD 1.5 s), the ring by the player
 var character: String            # Roster id; "" at spawn = Roster.pick(player) (Jeff P1 / Chuck P2 by default)
 func bark(kind := "") -> String  # own cue bark_<id>[_kind] > Roster.bark(id) > generic bark[_kind]
+func say(kind := "") -> String   # bark(kind) if Audio.can_bark(self), else "" (wake: "join" after the snort; solo swap: "swap_in")
 # Body: JarlingRig (scripts/players/jarling_rig.gd) loads Roster.info(id).glb, any standard-body
 # Jarling; belt on `waist`, junk gun on `hand_r`, tape in Players.COLOR[player]. set_character(id)
 # swaps the body in place (lobby podiums). Audio.has_cue(cue) -> bool: a recorded file exists.

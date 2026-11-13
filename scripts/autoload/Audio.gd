@@ -26,6 +26,7 @@ const MAX_SAME_CUE := 3           # one cue never stacks more than this many at 
 const MAX_OBJECT_VOICES := 4      # object voices playing at once (a Reset lands 40 things)
 const VOICE_GAP := 0.5            # seconds between two voices of the same object
 const BARK_GAP := 1.6             # seconds between two barks of the same speaker
+const VOICE_LINE_MAX := 5.0       # seconds: no voice-pack line is longer (a sanity cap on the gate)
 const BARK_ANY_GAP := 0.7         # seconds between any two barks (they never talk over each other)
 const BRIGHT_SECS := 10.0
 const BRIGHT_FADE := 1.0
@@ -39,6 +40,10 @@ const DUCK_ON := {"impact_heavy": DUCK_IMPACT_DB * 0.6, "impact_huge": DUCK_IMPA
 ## Which characters do what (GAME.md "Audio"): Jeff delights at big impacts, Chuck narrates his
 ## own zaps. Anyone else in the roster does both, politely (the gates still apply).
 const BARK_STYLE := {"jeff": ["delight"], "chuck": ["narrate"]}
+## The game's bark kinds in the library voice packs' words (openjar-characters voice/: cheer, win,
+## oops, ready, ...). The packs have no delight.ogg or zap.ogg: without this every character fell
+## through to the generic synth bark. Each kind picks one of these lines at random (variety).
+const PACK_KINDS := {"delight": ["cheer", "win"], "zap": ["win", "cheer"], "cheer": ["cheer", "win"]}
 ## A-04: landing cue by volume mass (ObjectData.mass * scale^3). Upper bound (exclusive) -> band;
 ## anything at or above the last bound is "huge". Light bonk, medium thud, heavy boom, huge crash.
 const IMPACT_BANDS := [[1.0, "light"], [8.0, "medium"], [60.0, "heavy"]]
@@ -55,6 +60,7 @@ var _turn := {}                   # cue key -> next variant index (rotation)
 var _last_voice := {}             # owner key -> time of its last voice
 var _last_bark := {}              # speaker key -> time of its last bark
 var _last_any_bark := -100.0
+var _voice_until := -100.0        # a spoken voice-pack line is still playing until then
 ## Own RNG for pitch wobble, so playing sounds never shifts a seeded simulation.
 var _rng := RandomNumberGenerator.new()
 var _duck_amp: AudioEffectAmplify
@@ -347,6 +353,8 @@ func can_bark(speaker: Variant) -> bool:
 	var t := now()
 	if t - _last_any_bark < BARK_ANY_GAP:
 		return false
+	if t < _voice_until and _voice_until - t < VOICE_LINE_MAX:
+		return false   # nobody talks over a line still being said (a clock set back is ignored)
 	if _last_bark.has(speaker) and t - float(_last_bark[speaker]) < BARK_GAP:
 		return false
 	return true
@@ -375,7 +383,7 @@ func bark(character: String, kind := "", speaker: Variant = null) -> String:
 			used = "roster:" + character
 			stream = load(path)
 		else:
-			used = "bark" + tail
+			used = "bark" + tail if has_cue("bark" + tail) else "bark"   # no generic bark_join: a plain one
 			stream = _resolve(SFX_DIR, used)
 			if stream == null and synth_fallback:
 				stream = Synth.beep(used)
@@ -383,6 +391,12 @@ func bark(character: String, kind := "", speaker: Variant = null) -> String:
 	var t := now()
 	_last_any_bark = t
 	_last_bark[speaker if speaker != null else character] = t
+	if used.begins_with("roster:") and stream:
+		# A whole spoken line (2-3 s): the gaps count from its end, so the speaker gets a breath
+		# before the next line and nobody starts over it.
+		var secs := minf(stream.get_length(), VOICE_LINE_MAX)
+		_voice_until = t + secs
+		_last_bark[speaker if speaker != null else character] = t + secs
 	if stream:
 		_start(_pick(_voice_pool, used), stream, used, 1.0)
 		duck(DUCK_BARK_DB)
@@ -398,7 +412,12 @@ func _pack_file(character: String, kind: String) -> String:
 	if not dir.ends_with("/"):
 		dir += "/"
 	if kind != "":
-		return dir + kind + ".ogg" if ResourceLoader.exists(dir + kind + ".ogg") else ""
+		var lines: Array[String] = []
+		for k in [kind] + Array(PACK_KINDS.get(kind, [])):
+			var path := dir + String(k) + ".ogg"
+			if not lines.has(path) and ResourceLoader.exists(path):
+				lines.append(path)
+		return lines[_rng.randi() % lines.size()] if not lines.is_empty() else ""
 	var barks: Array = who.get("barks", [])
 	if barks.is_empty():
 		return ""
