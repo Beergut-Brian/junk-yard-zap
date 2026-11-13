@@ -96,6 +96,8 @@ func _ready() -> void:
 	_settings.closed.connect(_on_settings_closed)
 	_confirm.chosen.connect(_on_confirm_chosen)
 	_fresh.confirmed.connect(_on_fresh_confirmed)
+	# Leaving play saves the yard after the lobby has opened: Continue / New follow the save itself.
+	Save.saved.connect(update_fresh_items)
 	_settings.offer_restore = true
 	_settings.restore_asked.connect(func() -> void: _fresh.open(FreshCard.Ask.RESTORE))
 	visible = Game.state == Game.State.LOBBY
@@ -188,6 +190,8 @@ func update_hint() -> void:
 ## Start fresh: Continue + New yard with a yard saved, else just Play.
 func update_fresh_items() -> void:
 	var saved := FreshStart.has_save()
+	if saved == _new_item.visible and $Buttons/Play.text == ("Continue" if saved else "Play"):
+		return
 	$Buttons/Play.text = "Continue" if saved else "Play"
 	_new_item.visible = saved
 	_new_item.disabled = not saved

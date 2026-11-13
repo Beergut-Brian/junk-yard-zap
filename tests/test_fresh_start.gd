@@ -240,3 +240,14 @@ func test_pause_main_menu_reaches_continue_and_new_yard() -> void:
 	assert_bool(FreshStart.has_save()).is_true()   # leaving play saved the yard
 	assert_str(lobby.get_node("Buttons/Play").text).is_equal("Continue")
 	assert_bool(lobby.get_node("Buttons/NewYard").visible).is_true()
+
+
+## Leaving play saves the yard after the lobby has opened (first time on a profile): Continue and
+## New yard still appear, from the save itself, not from the next open.
+func test_a_save_made_while_the_lobby_is_open_shows_continue() -> void:
+	_boot()
+	var lobby := _lobby()
+	assert_str(lobby.get_node("Buttons/Play").text).is_equal("Play")
+	_level().save_yard()
+	assert_str(lobby.get_node("Buttons/Play").text).is_equal("Continue")
+	assert_bool(lobby.get_node("Buttons/NewYard").visible).is_true()
