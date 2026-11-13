@@ -11,6 +11,8 @@
 ##   return2 : the tire is still big and the cow normal. Grow the cow, then wait for SIGTERM
 ##             (the caller kills the process) to see what a hard stop loses.
 ##   killed  : after the SIGTERM: is the cow big?
+##   close_early: a returning player closes the window on the title screen seconds after launch.
+##   lobby_quit: boot, join, Back to Open Jar, Leave, straight from the title screen (exit 0 expected).
 ##   solo    : with --solo. Both podiums ready, play, then a second pad presses A: P2 is theirs.
 ## Each check appends "PASS|FAIL <step> <note>" to <dir>/<phase>.txt and saves <dir>/<phase>_NN_<step>.png.
 class_name PlayerFlowRun
@@ -109,6 +111,11 @@ func _run() -> void:
 			get_tree().quit(0)
 		"solo":
 			await _solo()
+		"lobby_quit":
+			await _lobby_quit()
+		"close_early":   # a returning player closes the window on the title screen right after launch
+			await check("title_then_close", Game.state == Game.State.LOBBY, "window closes now")
+			get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 
 
 func _first() -> void:
@@ -198,3 +205,16 @@ func _solo() -> void:
 	await check("second_pad_joins_solo", Players.device_of(Players.P2) == SessionFlow.PAD2
 			and not Players.solo, "P2 device %d, solo %s" % [Players.device_of(Players.P2), Players.solo])
 	get_tree().quit(0)
+
+
+func _lobby_quit() -> void:
+	await flow.pad(SessionFlow.PAD1, JOY_BUTTON_B)   # join, not ready
+	await _menu_down(2)   # Play -> Settings -> Back to Open Jar
+	await flow.pad(SessionFlow.PAD1, JOY_BUTTON_A)
+	await flow._wait(0.4)
+	await check("lobby_door_asks", Game.state == Game.State.LOBBY, "Leave the game?")
+	await flow.pad(SessionFlow.PAD1, JOY_BUTTON_DPAD_RIGHT)   # Stay -> Leave
+	await flow.pad(SessionFlow.PAD1, JOY_BUTTON_A)
+	await flow._wait(5.0)
+	await check("lobby_leave_never_quit", false, "still running 5 s after Leave")
+	get_tree().quit(3)
