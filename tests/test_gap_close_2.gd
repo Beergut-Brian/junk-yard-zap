@@ -1,7 +1,7 @@
 ## Gap-close lane 2 (jyz-gap-close-2). A-12 / P-05 / P-06: a character's delight and zap barks
 ## speak in their own voice pack (cheer / win), not the generic synth, and nobody talks over a
 ## spoken line; a player who drops in (wakes in the tire pile) says hello, and the solo swap says
-## "I'm in", each in their own voice. Fixture roster and settings only, never the real roster's contents.
+## "I'm in", and a refused zap gets a gentle "oops", each in their own voice. Fixture roster and settings only, never the real roster's contents.
 class_name TestGapClose2
 extends GdUnitTestSuite
 
@@ -183,3 +183,54 @@ func test_the_solo_swap_in_the_yard_speaks_the_new_players_line() -> void:
 	assert_bool(Audio.played("solo_swap")).is_true()
 	assert_bool(Audio.played("roster:chuck")).is_true()   # the fixture's P2 default, own voice
 	Players.set_solo(false)
+
+
+func test_a_refused_zap_gets_a_gentle_oops_in_their_own_voice() -> void:
+	assert_str(Audio._pack_file("jeff", "oops")).is_equal("res://tests/fixtures/voice/oops.ogg")
+	var jeff := zapper(Players.P1, "jeff")
+	await get_tree().physics_frame
+	Audio.clock = 16000.0
+	Audio.history.clear()
+	assert_str(jeff.reactions.own_zap(false, true)).is_equal("roster:jeff")
+	assert_str(jeff.reactions.last_reaction).is_equal("oops")
+	# Past every bark gap but inside OOPS_GAP: mashing at the size cap never nags.
+	Audio.clock = 16000.0 + Audio.VOICE_LINE_MAX + Audio.BARK_GAP + 0.1
+	assert_str(jeff.reactions.own_zap(false, true)).is_equal("")
+	Audio.clock = 16000.0 + jeff.reactions.OOPS_GAP + Audio.VOICE_LINE_MAX
+	assert_str(jeff.reactions.own_zap(false, true)).is_equal("roster:jeff")
+	# A zap that worked is never an oops.
+	Audio.clock += 30.0
+	jeff.reactions.last_reaction = ""
+	jeff.reactions.own_zap(true, false)
+	assert_str(jeff.reactions.last_reaction).is_not_equal("oops")
+
+
+func test_a_long_stand_still_gets_one_wait_line_in_their_own_voice() -> void:
+	var jeff := zapper(Players.P1, "jeff")
+	await get_tree().physics_frame
+	Audio.clock = 17000.0
+	Audio.history.clear()
+	var r := jeff.reactions
+	# Standing still, short of WAIT_LINE_AFTER: idle bits only, no line.
+	for i in int((r.WAIT_LINE_AFTER - 0.5) / 0.25):
+		r.tick(0.25, false, true)
+	assert_bool(Audio.played("roster:jeff")).is_false()
+	for i in 4:
+		r.busy_left = 0.0
+		r.tick(0.25, false, true)
+	assert_bool(Audio.played("roster:jeff")).is_true()   # "I'll just look at this rock."
+	assert_str(r.last_reaction).is_equal("wait")
+	# Still standing there, long past every gate: never a second one in the same stretch.
+	Audio.history.clear()
+	Audio.clock += 60.0
+	for i in 120:
+		r.busy_left = 0.0
+		r.tick(0.25, false, true)
+	assert_bool(Audio.played("roster:jeff")).is_false()
+	# He moves, then stands still again: a new stretch may have its line.
+	r.tick(0.25, true, true)
+	Audio.clock += 60.0
+	for i in int(r.WAIT_LINE_AFTER / 0.25) + 4:
+		r.busy_left = 0.0
+		r.tick(0.25, false, true)
+	assert_bool(Audio.played("roster:jeff")).is_true()

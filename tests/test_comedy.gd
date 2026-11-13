@@ -185,14 +185,17 @@ func test_chuck_blames_the_partner_when_a_zap_is_refused() -> void:
 		await step(30)
 	assert_bool(refused).override_failure_message("the size gun never said nope").is_true()
 	assert_str(chuck.reactions.last_reaction).is_equal("blame")
-	assert_array(Array(barks())).is_equal(["roster:chuck"])  # his own plain "hey!" from his voice pack (no blame cue; voiced since characters v0.5.3)
+	assert_array(Array(barks())).is_equal(["roster:chuck"])  # his own pack's "oops" line ("Oh! That wasn't me."), never a cheer
 	assert_float(chuck.reactions.facing(chuck.facing)).is_equal(-1.0)   # turned round on Jeff
 	assert_float(chuck.facing).is_equal(1.0)                 # but his aim is still his own
 	assert_object(b).is_not_null()
-	# Jeff never blames.
+	# Jeff never blames: he says his own sheepish "oops" (gap-close-2), and not again for a while.
 	assert_bool(jeff.reactions.blames()).is_false()
 	quiet()
-	assert_str(jeff.reactions.own_zap(false, true)).is_equal("")
+	assert_str(jeff.reactions.own_zap(false, true)).is_equal("roster:jeff")
+	assert_str(jeff.reactions.last_reaction).is_equal("oops")
+	quiet()
+	assert_str(jeff.reactions.own_zap(false, true)).is_equal("")   # within OOPS_GAP: no nagging
 	assert_int(barks().size()).is_equal(0)
 
 
