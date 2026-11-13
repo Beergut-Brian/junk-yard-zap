@@ -1,6 +1,6 @@
 ## The junk car: a rounded rusty-orange body, a cabin with sky-glass windows, four chunky wheels,
-## chrome bumpers, a cream headlight and rust patches. Faces right (+x); the face sits on the side
-## of the hood, above the front wheel. The cabin pokes a little above the collision box.
+## chrome bumpers, a cream headlight and rust patches. Points right (+x). No face: vehicles
+## never wear one (Kaden); the headlight is a light. The cabin pokes a little above the collision box.
 extends RefCounted
 
 const K = preload("res://scripts/art/art_kit.gd")

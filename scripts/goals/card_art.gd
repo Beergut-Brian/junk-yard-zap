@@ -417,7 +417,7 @@ static func balloon(at: Vector2, size: float) -> void:
 	_ci.draw_circle(at - V(size * 0.18, size * 0.6), _s * size * 0.13, Color(1, 1, 1, 0.6))
 
 
-## A yard object with a face (vehicles and machines without one). New silhouettes here; the rest come from Pictos.object.
+## A yard object; a face only on animals and props (vehicles and machines never wear one). New silhouettes here; the rest come from Pictos.object.
 static func thing(id: StringName, m: Vector2, size: float) -> void:
 	var s := _s * size
 	var c: Color = COLORS.get(id, Color.WHITE)

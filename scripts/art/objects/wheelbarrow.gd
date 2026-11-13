@@ -1,5 +1,5 @@
 ## A wheelbarrow: a teal metal tray (open top) with a rolled rim and a rust patch, one wheel at the
-## front (+x), wooden handles with rubber grips and two legs at the back. Face on the tray side.
+## front (+x), wooden handles with rubber grips and two legs at the back. No face (a vehicle).
 extends RefCounted
 
 const K = preload("res://scripts/art/art_kit.gd")
