@@ -112,6 +112,32 @@ func test_a_second_pad_wakes_p2_during_solo_play() -> void:
 	assert_bool(main.zapper(P2).asleep).is_false()   # handed over: a snort in the tire pile, awake
 
 
+# PF-2: a zap saves the yard a few seconds later, not up to 30 s later, so a hard stop loses little.
+func test_a_zap_saves_the_yard_within_seconds() -> void:
+	Game.start_round()
+	var l := YardLevel.new()
+	l.use_save = false   # no load at _ready; the save path is turned on below
+	l.layout = load(YardLevel.LAYOUT)
+	world.add_child(l)
+	var players := Node3D.new()
+	players.name = "Players"
+	l.add_child(players)
+	l.use_save = true
+	Save.wipe()
+	var cow := l.object(&"cow")
+	Effects.zap(&"grow", cow)
+	l._on_zapped(P1, &"grow", cow)
+	l._process(1.0)
+	assert_object(Save.get_value(YardLevel.SAVE_KEY)).is_null()
+	l._process(YardLevel.SAVE_SOON)
+	var saved = Save.get_value(YardLevel.SAVE_KEY)
+	assert_object(saved).is_not_null()
+	assert_int(int(saved.objects.cow.size)).is_equal(1)
+	Save._load()   # it reached the file
+	assert_int(int(Save.get_value(YardLevel.SAVE_KEY).objects.cow.size)).is_equal(1)
+	assert_float(YardLevel.SAVE_SOON).is_less_equal(5.0)
+
+
 func test_player_flow_phase_from_args() -> void:
 	assert_str(PlayerFlowRun.phase_from_args(PackedStringArray(["--solo", "--player-flow=return"]))).is_equal("return")
 	assert_str(PlayerFlowRun.phase_from_args(PackedStringArray(["--demo"]))).is_equal("")
