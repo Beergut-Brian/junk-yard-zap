@@ -1,29 +1,48 @@
 {
-  "lane": "jyz-gap-close-4",
-  "branch": "feature/jyz-gap-close-4",
-  "base": "origin/dev @ 73c5dea (after PR #42)",
+  "lane": "jyz-gap-close-5",
+  "branch": "feature/jyz-gap-close-5",
+  "base": "dev @ 8c749f1 (after PR #43)",
   "ended": "done",
+  "pushed": false,
   "commits": [
-    {"sha": "4b9b970", "msg": "gameplay: every refusal shows its cause (Y-20, Y-21, Y-22)"},
-    {"sha": "see git log -1", "msg": "docs: gap-close-4 report, test output, handoff"}
+    {"sha": "bf1193d", "msg": "systems: exit watchdog ends a hung shutdown after quit (PF-6)"},
+    {"sha": "1d3b947", "msg": "gameplay: yard objects sleep when still (S-18)"},
+    {"sha": "f4533d9", "msg": "gameplay: see-saw plank sleeps with what it rests on (S-18)"},
+    {"sha": "see git log -1", "msg": "docs: gap-close-5 report, test output, handoff, PLAN-STATUS"}
   ],
   "tests_run": [
-    "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a tests/test_gap_close_4.gd: 9/9 green",
-    "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a tests: 357 test cases, 0 errors, 0 failures, 0 flaky, 0 orphans (handoff/test-output.txt)"
+    "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue --ignoreHeadlessMode: 366 test cases, 0 errors, 0 failures, 0 flaky, 0 orphans, 636 s (handoff/test-output.txt)",
+    "tests/test_exit_watchdog.gd: 5/5 (child processes with a save present: close_early exits 0; hang_exit ended by the watchdog); negative control with the watchdog removed: hang_exit fails, still running after 90 s",
+    "tests/test_sleep_when_still.gd: 4/4 (quiet yard asleep at frame 496 and stays asleep, push wakes, no mid-air sleep, knocked-out stack falls)",
+    "earlier full run before the see-saw fix: 366 cases, 1 failure (test_a_quiet_yard_falls_asleep: hay awake again); cause found and fixed in f4533d9, not by a longer wait"
   ],
+  "export_runs": {
+    "unfixed_close_early": "12 of 19 valid runs hung (run-export, lavapipe on Xvfb)",
+    "fixed_close_early": "8 of 8 ended: 3 exit 0 (2.4-2.8 s after the close), 5 by the watchdog (6.2-6.3 s, exit 137); save intact",
+    "fixed_lobby_quit": "2 of 2 exit 0",
+    "final_head_close_early": "2 of 2 ended (watchdog, 6.2 s)",
+    "override_matrix": "low_priority_thread_ratio=0.5: 0 of 12 hung; baseline 6/9; pipeline cache off 3/5; shader cache off 4/5; sync navigation 4/6; --disable-vsync 5/5"
+  },
+  "soak": {
+    "stress_35min": "--fixed-fps 60 --quit-after 126000 -- --demo --soak --soak-calm=1800: 3417 zaps, 578 glues, 134-157 effects, 0 orphans throughout, nodes 5050->5036 and 221 MB flat over the last 10 min, frame 5.0-6.4 ms mean (worst 42.2 ms), 11 min 46 s wall",
+    "calm_effects_on": "--soak-calm=600: 45-54 awake, all with an effect acting on them (plain=0)",
+    "calm_after_reset": "--soak-calm=30 --soak-calm-reset: 56 -> 4 awake in 10 s and held (3 balloons + crane hook, by design)"
+  },
   "plan_status_moved": {
-    "Y-20": "added (S15) -> built",
-    "Y-21": "added (S15) -> built",
-    "Y-22": "added (S15) -> built"
+    "PF-6": "missing -> built (exit watchdog; cause is the engine's WorkerThreadPool shutdown on the software renderer)",
+    "S-18": "stays partial; note rewritten: sleep when still now built and shown headless, GTX 1060 fps not claimed (weekend TV check)"
   },
   "rows_skipped": [
-    {"id": "C-14", "why": "partial; waits only on playtest #2 (Kaden on the TV)"},
-    {"id": "S-18", "why": "partial; waits only on the GTX 1060 fps check (TV box)"},
-    {"id": "PF-6", "why": "missing; must be tried on the TV box before any fix"}
+    {"id": "C-14", "why": "partial; waits only on playtest #2 (Kaden on the TV); out of this brief"},
+    {"id": "S-18 (fps half)", "why": "60 fps on the GTX 1060 can't be measured here; weekend TV check"}
   ],
-  "open_branches_checked": "git branch -r --no-merged origin/dev: none; no overlap",
-  "off_limits_touched": "none (no art, no assets/, no audio files, no project.godot)",
-  "frames": ["handoff/frames/y20_bonk_before.png", "handoff/frames/y20_bonk_star.png", "handoff/frames/y21_ladder_full.png", "handoff/frames/y21_ladder_cap_stop.png", "handoff/frames/y22_glue_string.png", "handoff/frames/y22_string_shiver.png", "handoff/frames/y22_snap_recoil.png", "handoff/frames/y22_snap_rings.png"],
-  "next_action": "Gary: review feature/jyz-gap-close-4 and open a PR to dev; at playtest #2, check that the size ladder reads from the couch",
-  "evidence": ["handoff/REPORT.md", "handoff/test-output.txt", "handoff/frames/"]
+  "for_others": [
+    "Systems: threading/worker_pool/low_priority_thread_ratio=0.5 in project.godot avoided the engine hang in 12 of 12 runs (project.godot is off-limits to this lane)",
+    "Launcher: a hung shutdown now ends by the watchdog with exit 137 after the line 'Game: shutdown still running 6000 ms after quit(); ending the process (PF-6)'; the save is already written, so treat it as a normal return",
+    "TV box: after an early close, check whether that line appears (does the engine hang happen on the GTX 1060 at all)"
+  ],
+  "off_limits_touched": "none (no art, no assets/, no audio, no project.godot; diagnostics used override.cfg next to scratch copies of the export only)",
+  "frames": [],
+  "next_action": "Gary: review feature/jyz-gap-close-5 and open a PR to dev; weekend TV box: PF-6 early close and S-18 F3 fps",
+  "evidence": ["handoff/REPORT.md", "handoff/test-output.txt"]
 }
