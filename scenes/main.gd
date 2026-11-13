@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|gags-<zone>|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|bonk|cap|glue-snap|gags-<zone>|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto, --session-flow --flow-out=<dir>
 ## (scripts/tools/session_flow.gd on an export), --player-flow=<phase> (scripts/tools/player_flow.gd).
 extends Node3D
@@ -191,6 +191,9 @@ func _start_demo() -> void:
 		"sign-hold": _beat_sign_hold()
 		"wheel": _beat_wheel()
 		"beams": _beat_beams()
+		"bonk": _beat_bonk()
+		"cap": _beat_cap()
+		"glue-snap": _beat_glue_snap()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -313,6 +316,66 @@ func _beat_beams() -> void:
 				z.target = tire
 			if z.target:
 				z._press())
+
+
+## Y-20: a grow that something stops shows what stopped it. A plank frozen just over the crate;
+## Jeff grows the crate at 1.2 s; it bumps the plank and a bonk star pops there at ~1.9 s.
+func _beat_bonk() -> void:
+	var crate := level.object(&"crate")
+	crate.global_position = Vector3(-33.5, 0.5, 0)
+	var plank := level.object(&"plank")
+	plank.global_position = Vector3(-33.5, 1.3, 0)
+	plank.rotation = Vector3.ZERO
+	Effects.zap(&"freeze", plank)
+	_place(Players.P1, -37.0, 1.0)
+	_place(Players.P2, -29.0, -1.0)
+	camera.focus = [crate]
+	get_tree().create_timer(1.2).timeout.connect(func() -> void:
+		var z: Zapper = _players[Players.P1]
+		z.set_gun(0, false)
+		z.target = crate
+		z._press())
+
+
+## Y-21: the size ladder and its cap. The cow starts at +3; Jeff grows it to +4 at 2.0 s (ladder
+## full) and tries once more at 2.8 s: the end square blinks and a stop bar shows.
+func _beat_cap() -> void:
+	var cow := level.object(&"cow")
+	cow.global_position = Vector3(-33.0, 1.0, 0)
+	for i in 3:
+		Effects.zap(&"grow", cow)
+	_place(Players.P1, -39.0, 1.0)
+	_place(Players.P2, -26.0, -1.0)
+	camera.focus = [cow]
+	for t in [2.0, 2.8]:
+		get_tree().create_timer(t).timeout.connect(func() -> void:
+			var z: Zapper = _players[Players.P1]
+			z.set_gun(0, false)
+			z.target = cow
+			z._press())
+
+
+## Y-22: glue that can't meet. A fridge frozen between two crates; Jeff glues them at 1.0 s; the
+## pink string stretches round it, shivers, and snaps at ~4.0 s.
+func _beat_glue_snap() -> void:
+	var a := level.object(&"crate")
+	var b := level.object(&"crate_2")
+	var wall := level.object(&"fridge")
+	a.global_position = Vector3(-35.6, 0.5, 0)
+	b.global_position = Vector3(-31.4, 0.5, 0)
+	wall.global_position = Vector3(-33.5, 0.9, 0)
+	wall.rotation = Vector3.ZERO
+	Effects.zap(&"freeze", wall)
+	_place(Players.P1, -39.0, 1.0)
+	_place(Players.P2, -28.0, -1.0)
+	camera.focus = [a, b]
+	get_tree().create_timer(1.0).timeout.connect(func() -> void:
+		var z: Zapper = _players[Players.P1]
+		z.set_gun(5, false)
+		z.target = a
+		z._press()
+		z.target = b
+		z._press())
 
 
 ## Art check: Jeff and Chuck standing in one zone (front_gate, scrap_heap, pond, barn, tower), guns up.

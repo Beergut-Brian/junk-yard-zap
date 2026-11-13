@@ -208,7 +208,12 @@ class Glue extends Effect:
 	var b: PhysicsObject
 	var joint: Generic6DOFJoint3D
 	var blob: MeshInstance3D
+	## Y-22: while the pair pulls together, a stretchy pink string between them shows the glue is
+	## working; it thins as it stretches, shivers near the end, and snaps when they never meet.
+	var string_mesh: MeshInstance3D
 	var pull_left := PULL_TIME
+	const STRING_R := 0.09
+	const SHIVER := 0.8   # s before the snap the string starts to shiver
 
 	func _init(p_a: PhysicsObject = null, p_b: PhysicsObject = null) -> void:
 		id = &"glue"
@@ -234,9 +239,12 @@ class Glue extends Effect:
 		b.stack.push(self)
 		if gap() <= JOIN_GAP:
 			_make_joint()
+		else:
+			_make_string()
 		return true
 
 	func undo(_target: PhysicsObject) -> void:
+		_drop_string()
 		if is_instance_valid(joint):
 			joint.queue_free()
 		joint = null
@@ -259,7 +267,59 @@ class Glue extends Effect:
 		var dir := _dir()
 		return a.global_position + dir * (a.half_extent_along(dir) + gap() * 0.5)
 
+	func _make_string() -> void:
+		if not a.is_inside_tree():
+			return
+		string_mesh = MeshInstance3D.new()
+		string_mesh.name = "GlueString"
+		var m := CylinderMesh.new()
+		m.top_radius = STRING_R
+		m.bottom_radius = STRING_R
+		m.height = 1.0
+		m.radial_segments = 8
+		m.rings = 1
+		string_mesh.mesh = m
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = color
+		mat.emission_enabled = true
+		mat.emission = color * 0.6
+		mat.no_depth_test = true   # visible even where it runs behind a thing
+		string_mesh.material_override = mat
+		string_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		string_mesh.top_level = true
+		a.add_child(string_mesh)
+		_pose_string()
+
+	func _drop_string() -> void:
+		if is_instance_valid(string_mesh):
+			string_mesh.queue_free()
+		string_mesh = null
+
+	## End points on the two surfaces, along the line between centres.
+	func string_ends() -> Array[Vector3]:
+		var dir := _dir()
+		return [a.global_position + dir * a.half_extent_along(dir), b.global_position - dir * b.half_extent_along(-dir)]
+
+	func _pose_string() -> void:
+		if not is_instance_valid(string_mesh):
+			return
+		var ends := string_ends()
+		var d: Vector3 = ends[1] - ends[0]
+		var length := maxf(d.length(), 0.05)
+		var y := d / length if d.length() > 0.001 else Vector3.UP
+		var x := y.cross(Vector3.BACK)
+		if x.length() < 0.01:
+			x = Vector3.RIGHT
+		x = x.normalized()
+		var z := x.cross(y)
+		var thin := clampf(1.4 / sqrt(length + 1.0), 0.45, 1.2)   # stretched glue gets thinner
+		var shiver := Vector3.ZERO
+		if pull_left < SHIVER:
+			shiver = x * sin(pull_left * 70.0) * 0.06 * (1.0 - pull_left / SHIVER)
+		string_mesh.global_transform = Transform3D(Basis(x * thin, y * length, z * thin), (ends[0] + ends[1]) * 0.5 + shiver + Vector3(0, 0, 0.3))
+
 	func _make_joint() -> void:
+		_drop_string()
 		joint = Generic6DOFJoint3D.new()
 		joint.name = "Glue_%s_%s" % [a.name, b.name]
 		# All six axes default to locked limits of 0, which is exactly "glued".
@@ -298,8 +358,13 @@ class Glue extends Effect:
 			return
 		pull_left -= delta
 		if pull_left <= 0.0:
+			var ends := string_ends()
 			undo(a)
+			Refusal.snapped(self, (ends[0] + ends[1]) * 0.5, ends)   # every curse shows its cause (Y-22)
 			return
+		if string_mesh == null:
+			_make_string()
+		_pose_string()
 		var acc := _dir() * PULL_ACCEL * clampf(g, 0.3, 1.0)
 		a.apply_central_force(acc * a.mass)
 		b.apply_central_force(-acc * b.mass)

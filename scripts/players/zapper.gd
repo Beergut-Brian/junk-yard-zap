@@ -475,6 +475,9 @@ func _press() -> void:
 			else:
 				Audio.play("nope", global_position)
 				_refused = true
+				var on: Effects.Grab = o.stack.get_effect(&"grab") if o else null
+				if on:   # the cause: someone else is carrying it (a ring in their colour)
+					Refusal.held(o, on.color)
 		GunData.Kind.GLUE:
 			changed = _fire_glue()
 		_:
@@ -514,6 +517,8 @@ func _size_step(dir: int) -> bool:
 	Audio.play(("grow" if dir > 0 else "shrink") if ok else "nope", o.global_position,
 		Audio.size_pitch(o.target_scale) if ok else 1.0)
 	_refused = not ok
+	# The size ladder shows how big it is now; at a cap the end square blinks and a bar says stop.
+	Refusal.size_ladder(o, 0 if ok else dir)
 	if ok:
 		o.speak()
 		o.last_touch = &"gun"
@@ -597,7 +602,10 @@ func _fire_glue() -> bool:
 		obj.react_look(ObjectFace.Mood.WIDE, 0.6)
 		Fx.burst(get_tree(), obj.global_position, gun().beam_color, 10, 0.5, 0.4)
 		return false
+	var stuck := Effects.Glue.between(glue_first, obj)
 	var ok := Effects.glue(glue_first, obj) != null
+	if stuck and not ok:   # the cause: these two are already glued (their blob pulses)
+		Refusal.already_glued(stuck)
 	glue_first = null
 	Audio.play(gun().zap_cue() if ok else "nope", obj.global_position)
 	_refused = not ok

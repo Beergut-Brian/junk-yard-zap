@@ -309,8 +309,11 @@ func _scale_step(delta: float) -> void:
 			_blocked_time += delta
 			if _blocked_time > BLOCKED_GIVE_UP:
 				_blocked_time = 0.0
-				scale_refused.emit(self)
+				var hit := block_contact(next, lift)   # before the step comes back down
 				Effects.Size.new(-1).apply(self)
+				scale_refused.emit(self)
+				# Every curse shows its cause (Y-20): a bonk star where it hit, the blocker flashes.
+				Refusal.blocked(self, hit.get("collider"), hit.get("at", global_position))
 			return
 		global_position += lift
 	_blocked_time = 0.0
@@ -346,6 +349,46 @@ func _blocked(s: float, offset: Vector3) -> bool:
 			if c is StaticBody3D or (c is RigidBody3D and c.freeze):
 				return true
 	return false
+
+
+## Y-20: what a grow at scale s bumped into, and where. {collider, at}: the first static body or
+## frozen object the bigger shape overlaps, and the middle of the contact points with it alone (every
+## other overlap is excluded from the second query, so a pushed-aside neighbour never moves the star).
+func block_contact(s: float, offset: Vector3) -> Dictionary:
+	if not is_inside_tree():
+		return {}
+	var space := get_world_3d().direct_space_state
+	var found: Object = null
+	var at_sum := Vector3.ZERO
+	var n := 0
+	for part in _shape_parts(s, BLOCK_INSET):
+		var q := PhysicsShapeQueryParameters3D.new()
+		q.shape = part[0]
+		q.transform = Transform3D(global_basis, global_position + offset) * (part[1] as Transform3D)
+		q.exclude = _island_rids()
+		q.collision_mask = 1
+		var others: Array[RID] = q.exclude.duplicate()
+		var mine: Object = null
+		for hit in space.intersect_shape(q, 16):
+			var c: Object = hit.collider
+			var blocks: bool = c is StaticBody3D or (c is RigidBody3D and (c as RigidBody3D).freeze)
+			if blocks and (found == null or c == found) and mine == null:
+				mine = c
+			elif c != mine:
+				others.append(hit.rid)
+		if mine == null:
+			continue
+		found = mine
+		q.exclude = others
+		var pts := space.collide_shape(q, 8)
+		for i in range(1, pts.size(), 2):   # pairs: [on us, on them]; the point on the blocker
+			at_sum += pts[i]
+			n += 1
+		break
+	if found == null:
+		return {}
+	var at := at_sum / n if n > 0 else global_position + Yard.up_at(global_position) * half_extent_along(Yard.up_at(global_position))
+	return {"collider": found, "at": at}
 
 
 func _island_rids() -> Array[RID]:
