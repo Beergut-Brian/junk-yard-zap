@@ -1,130 +1,56 @@
 {
-  "lane": "jyz-rules-audit-1",
-  "branch": "fix/jyz-rules-audit-1",
-  "base": "origin/dev @ f6e3b9b (after PR #44)",
+  "lane": "jyz-rules-followup-1",
+  "branch": "fix/jyz-rules-followup-1",
+  "base": "origin/dev @ 42491b1 (after PR #45)",
   "ended": "done",
   "pushed": false,
   "commits": [
     {
-      "sha": "0a4fac3",
-      "msg": "systems: the D-pad moves the character in play (feel rule 1)"
-    },
-    {
-      "sha": "eb590ba",
-      "msg": "systems: start fresh: Continue, New yard (held A, backup), Restore"
-    },
-    {
-      "sha": "669ec11",
-      "msg": "gameplay: a press on a statue beeps; menu hints follow focus"
-    },
-    {
-      "sha": "1e6d0fe",
-      "msg": "systems: four menu bars clear the status line; Start fresh shots tool"
-    },
-    {
-      "sha": "d2903e4",
-      "msg": "systems: Continue / New follow the save; test saves start empty"
+      "sha": "6055388",
+      "msg": "gameplay: unbound buttons and an air B give the soft nope tick"
     },
     {
       "sha": "see git log -1",
-      "msg": "docs: rules-audit-1 report, test output, handoff"
+      "msg": "docs: rules-followup-1 report, test output, handoff"
     }
   ],
   "tests": {
     "command": "rm -rf .godot && godot --headless --import --path . ; godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue",
-    "summary": "Overall Summary: 383 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
+    "summary": "Overall Summary: 387 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
     "log": "handoff/test-output.txt",
-    "new_suites": [
-      "tests/test_dpad_moves.gd (6)",
-      "tests/test_fresh_start.gd (7)",
-      "tests/test_feel_rules.gd (4)"
+    "new_tests": [
+      "test_feel_rules.gd::test_an_unbound_button_in_play_refuses_once_per_gap",
+      "test_feel_rules.gd::test_an_unbound_button_is_silent_outside_play",
+      "test_feel_rules.gd::test_a_b_press_in_the_air_refuses",
+      "test_feel_rules.gd::test_a_b_press_that_jumps_does_not_refuse"
     ],
-    "before_proof": "test_dpad_moves.gd with add_dpad() off: test_every_move_action_has_its_dpad_button fails on 8 of 8 move actions"
+    "flake": "first full run: test_exit_watchdog.gd::test_a_shutdown_that_never_ends_is_ended_by_the_watchdog failed (2 asserts, child process missed its PASS under load); alone 5/5 pass; second full run clean"
   },
   "plan_status_moved": {
-    "added_source": "S16 Standing feel rules (2026-11-13)",
-    "added_rows": "R-01..R-08",
     "built": [
-      "R-01",
-      "R-02",
-      "R-03",
-      "R-04",
-      "R-06",
-      "R-08"
+      "R-05"
     ],
-    "partial": [
-      "R-05",
-      "R-07"
-    ],
-    "totals": "195 rows: built 176 \u00b7 partial 4 \u00b7 missing 0 \u00b7 superseded 11 \u00b7 later 4 \u00b7 dropped 0"
+    "proof": "test_feel_rules.gd::test_an_unbound_button_in_play_refuses_once_per_gap, ::test_a_b_press_in_the_air_refuses, ::test_a_b_press_that_jumps_does_not_refuse",
+    "totals": "195 rows: built 177 \u00b7 partial 3 \u00b7 missing 0 \u00b7 superseded 11 \u00b7 later 4 \u00b7 dropped 0"
   },
-  "rules": [
+  "rows_skipped": [
     {
-      "rule": "1 D-pad everywhere",
-      "before": "fail in play (stick + keys only)",
-      "now": "built",
-      "where": "Players.gd add_dpad(), tests/test_dpad_moves.gd"
-    },
-    {
-      "rule": "2 Start fresh",
-      "before": "missing",
-      "now": "built",
-      "where": "fresh_start.gd, fresh_card.gd, lobby.gd, settings_panel.gd, tests/test_fresh_start.gd, handoff/frames/rules_*.png"
-    },
-    {
-      "rule": "3 Pause and back out",
-      "before": "pass",
-      "now": "built (unchanged)",
-      "where": "pause_menu.gd, test_lobby.gd::test_pause_door_asks_then_quits, test_exit_watchdog.gd"
-    },
-    {
-      "rule": "4 Solo mode",
-      "before": "pass",
-      "now": "built (now tested: not restored at boot)",
-      "where": "Players.gd, test_feel_rules.gd::test_solo_remembered_in_settings_is_off_at_boot"
-    },
-    {
-      "rule": "5 Every action beeps",
-      "before": "partial (statue presses silent)",
-      "now": "partial (statue fixed; unbound buttons and mid-air B need a decision)",
-      "where": "zapper.gd _statue_refusals(), test_feel_rules.gd"
-    },
-    {
-      "rule": "6 No forced movement",
-      "before": "pass",
-      "now": "built (unchanged)",
-      "where": "zapper.gd _physics_process"
-    },
-    {
-      "rule": "7 Show the buttons that matter",
-      "before": "partial (static menu hints, none in play)",
-      "now": "partial (menus contextual; play needs a decision)",
-      "where": "lobby.gd hint_text(), settings_panel.gd, test_feel_rules.gd"
-    },
-    {
-      "rule": "8 Every cause shown",
-      "before": "pass",
-      "now": "built",
-      "where": "Y-20..Y-22, zapper.gd ice chips"
+      "row": "R-07",
+      "why": "button hints in play are still Kaden's decision (rule 7); out of scope by the brief"
     }
   ],
-  "needs_gameplay_decision": [
-    "Unbound buttons in play (X, Y, LT, RT, L3, R3) are silent: refusal tick, harmless gag, or leave silent?",
-    "B in mid-air past coyote/buffer is silent: refuse or not?",
-    "Glyph hints in play (e.g. A over the Reset Yard sign)? PF-4 chose pictures only.",
-    "New yard resets the whole save (yard, deck, trophy shelf, guns); keep the trophy shelf instead?"
-  ],
-  "template_gaps": [
-    "project.godot: no D-pad on move actions",
-    "ui_preview.gd: no game-added states",
-    "HintLine static per screen",
-    "SettingRow has no action kind",
-    "Save.profile change does not reload _data"
-  ],
-  "frames": [
-    "handoff/frames/rules_start_menu_continue_new_yard.png",
-    "handoff/frames/rules_new_yard_hold_a_question.png",
-    "handoff/frames/rules_settings_restore_old_yard.png",
-    "handoff/frames/rules_restore_hold_a_question.png"
+  "game_md": "dated line under 'Decisions made without Kaden' (2026-11-13, Gary): soft refusal tick",
+  "frames": [],
+  "frames_note": "the cue is audio-only; proven by the test suite (Audio.history), no frame taken",
+  "not_changed": [
+    "D-pad",
+    "stick",
+    "Start fresh",
+    "statue refusal",
+    "menus",
+    "project.godot input map",
+    "art",
+    "audio files",
+    "data/camera.tres"
   ]
 }
