@@ -1,7 +1,9 @@
 ## Pause menu, Showtime style: the game stays visible, softened and tinted, and a dark wedge slides
 ## in from the left edged in the pauser's colour, with a big PAUSED, a "PLAYER 2 PAUSED" tag and
 ## slanted bars, each with a picture: Resume, Reset Yard (whoosh and bell, back in the yard at once,
-## no question), Restart (back to the lobby), Settings, Back to Open Jar (asks first).
+## no question), Main Menu (the Restart bar, back to the lobby; PF-3: "Restart" next to "Reset Yard"
+## read as a fresh yard), Settings, Back to Open Jar (asks first).
+## Bottom left, the controls (PF-4: play itself shows none): A zap, B jump, LB/RB gun, hold Select reset.
 ## Either pad moves the cursor, A presses, B resumes or backs out of Settings / the question.
 ## Start is Game's (it resumes from anywhere). Shown while Game.state == PAUSED.
 extends Control

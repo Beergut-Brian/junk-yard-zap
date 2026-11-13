@@ -22,6 +22,9 @@ const RESET_HOLD := 2.0       # seconds; long enough that holding A to grab near
 const RESET_REACH := 1.6
 const SIGN_Y := 2.9            # the Reset Yard sign board's centre height (YardDressing, hud ring)
 const AUTOSAVE := 30.0
+## PF-2: a zap saves the yard this soon after (not up to AUTOSAVE later), so a hard stop (the TV box
+## switched off, a killed process) loses at most a few seconds of play.
+const SAVE_SOON := 3.0
 const SAVE_KEY := "yard"
 const LAYOUT := "res://data/yard_layout.tres"
 
@@ -220,6 +223,8 @@ func register_zapper(z: Zapper) -> void:
 
 
 func _on_zapped(player: int, gun: StringName, target: Node3D) -> void:
+	if use_save:
+		_autosave = minf(_autosave, SAVE_SOON)
 	zapped.emit(player, gun, target)
 
 

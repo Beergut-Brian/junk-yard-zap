@@ -249,9 +249,10 @@ static func glow(color: Color, radius: int = RADIUS, size := 26) -> StyleBoxFlat
 
 
 # --- text with controller glyphs -------------------------------------------------
-# "Press [a] to join": [a] [b] [x] [y] [start] [select] [lr] [ud] become drawn Xbox-layout glyphs.
+# "Press [a] to join": [a] [b] [x] [y] [start] [select] [lr] [ud] [lb] [rb] become drawn Xbox-layout
+# glyphs ([lb] / [rb]: the bumpers, a lettered pill).
 
-const GLYPHS := ["a", "b", "x", "y", "start", "select", "lr", "ud"]
+const GLYPHS := ["a", "b", "x", "y", "start", "select", "lr", "ud", "lb", "rb"]
 
 
 static func _parts(text: String) -> Array:
@@ -276,7 +277,7 @@ static func _parts(text: String) -> Array:
 
 static func glyph_width(tok: String, size: int) -> float:
 	var h := size * 1.25
-	return h * (1.5 if tok == "lr" or tok == "ud" else 1.0)
+	return h * (1.5 if tok in ["lr", "ud", "lb", "rb"] else 1.0)
 
 
 static func rich_width(text: String, role: Role, size := 0) -> float:
@@ -343,6 +344,18 @@ static func draw_glyph(ci: CanvasItem, c: Vector2, h: float, tok: String, alpha 
 				var back := Vector2(-s * k, 0) if tok == "lr" else Vector2(0, -s * k)
 				var side := Vector2(0, k) if tok == "lr" else Vector2(k, 0)
 				ci.draw_colored_polygon(PackedVector2Array([tip, tip + back + side, tip + back - side]), ink)
+		"lb", "rb":
+			var pill := StyleBoxFlat.new()
+			pill.bg_color = fill
+			pill.set_corner_radius_all(int(r * 0.6))
+			pill.anti_aliasing = true
+			ci.draw_style_box(pill, Rect2(c - Vector2(r * 1.5, r * 0.82), Vector2(r * 3.0, r * 1.64)))
+			var bf := font(Role.CAPTION)
+			var bs := int(h * 0.6)
+			var label := tok.to_upper()
+			var bz := bf.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, bs)
+			ci.draw_string(bf, Vector2(c.x - bz.x * 0.5, c.y + (bf.get_ascent(bs) - bf.get_descent(bs)) * 0.5),
+					label, HORIZONTAL_ALIGNMENT_LEFT, -1, bs, ink)
 		"start":
 			ci.draw_circle(c, r, fill, true, -1.0, true)
 			for i in 3:
