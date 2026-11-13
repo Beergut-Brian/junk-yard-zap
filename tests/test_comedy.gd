@@ -15,6 +15,8 @@ var world: Node3D
 var _real_settings := ""
 var _real_profile := ""
 var _t0 := 100000.0
+var _real_roster := ""
+const ROSTER := "res://tests/fixtures/roster_comedy.json"   # never the real roster's contents
 
 
 func before() -> void:
@@ -24,9 +26,14 @@ func before() -> void:
 	_real_settings = Save.settings_path
 	Save.settings_path = "user://test_settings_comedy.json"   # never the real settings file
 	Save.wipe_settings()
+	_real_roster = Roster.data_path
+	Roster.data_path = ROSTER
+	Roster.reload()
 
 
 func after() -> void:
+	Roster.data_path = _real_roster
+	Roster.reload()
 	_clock.restore()
 	Save.wipe_settings()
 	Save.settings_path = _real_settings
@@ -36,6 +43,7 @@ func after() -> void:
 	# The fake clock ran far ahead: leave the bark gates as a fresh boot has them.
 	Audio._last_bark.clear()
 	Audio._last_any_bark = -100.0
+	Audio._voice_until = -100.0
 
 
 func before_test() -> void:
@@ -105,7 +113,7 @@ func barks() -> PackedStringArray:
 
 
 func quiet() -> void:
-	Audio.clock += Audio.BARK_GAP + 0.1   # past every bark gap
+	Audio.clock += Audio.BARK_GAP + Audio.VOICE_LINE_MAX + 0.1   # past every bark gap and spoken line
 	Audio.history.clear()
 
 
@@ -117,9 +125,9 @@ func test_bark_rate_cap_holds_back_a_burst_of_impacts() -> void:
 	for i in 10:   # a Reset lands everything at once: ten big impacts in half a second
 		Audio.big_impact.emit(Vector3(2, 0, 0), "impact_huge")
 		Audio.clock += 0.05
-	assert_array(Array(barks())).is_equal(["bark_delight"])
+	assert_array(Array(barks())).is_equal(["roster:jeff"])   # his own voice-pack cheer, not the generic synth
 	assert_str(jeff.reactions.last_reaction).is_equal("delight")   # one clap for the lot
-	Audio.clock += Audio.BARK_GAP
+	Audio.clock += Audio.BARK_GAP + Audio.VOICE_LINE_MAX   # his whole line, then the gap
 	Audio.big_impact.emit(Vector3(2, 0, 0), "impact_heavy")
 	assert_int(barks().size()).is_equal(2)
 	# Too far away: no bark, no wobble.
@@ -138,7 +146,7 @@ func test_one_bark_per_zap() -> void:
 	# Chuck zaps the box: he narrates (one bark), Jeff says nothing.
 	use_gun(chuck, &"bouncy")
 	await fire(chuck)
-	assert_array(Array(barks())).is_equal(["bark_zap"])
+	assert_array(Array(barks())).is_equal(["roster:chuck"])   # his own voice-pack line
 	assert_str(chuck.reactions.last_reaction).is_equal("narrate")
 	# Again at once: the gate holds it back, still one bark for two zaps.
 	await fire(chuck)

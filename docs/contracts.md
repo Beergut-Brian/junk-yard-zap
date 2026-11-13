@@ -243,8 +243,9 @@ func variants(cue: String) -> int   # how many files; play() rotates them, never
 func voice(base: String, kind := "react", owner: Object = null, pitch := 1.0) -> bool
 	# object voice voice_<id>_<kind> (react, grabbed, thrown, landed); one per owner per 0.5 s
 func bark(character: String, kind := "", speaker = null) -> String
-	# bark_<id>[_kind] cue, else the roster voice pack (<voice>/<kind>.ogg, "roster:<id>"), else bark[_kind]
-func can_bark(speaker) -> bool      # one bark per zap: per-speaker and global gaps
+	# bark_<id>[_kind] cue, else the roster voice pack (<voice>/<kind>.ogg or a PACK_KINDS line:
+	# delight -> cheer|win, zap -> win|cheer; "roster:<id>"), else bark[_kind]
+func can_bark(speaker) -> bool      # one bark per zap: per-speaker and global gaps; never over a spoken line
 func bark_style(character: String, style: String) -> bool   # "delight" (Jeff), "narrate" (Chuck)
 func music(track: String, fade: float = 0.5) -> void       # loops music/<track>.ogg (+ <track>_bright)
 func brighten(secs := 10.0) -> bool  # crossfade to the bright layer and back; card_done calls it
