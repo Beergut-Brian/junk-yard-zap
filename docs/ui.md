@@ -160,8 +160,10 @@ swap cue and set `_say_in[p] = SAY_SETTLE`; each frame count it down and at zero
   hint line; the hint strip bottom right. Join, ready, hold-to-start-solo, solo mode and
   mid-game joins behave as before.
 - **Pause** (`scenes/ui/pause_menu.tscn`): PAUSED in cream with a drop in the pauser's colour,
-  "PLAYER 2 PAUSED" tag, Resume / Restart / Settings / Back to Open Jar bars bleeding off the
-  left, hint strip "[b] Resume".
+  "PLAYER 2 PAUSED" tag, Resume / Reset Yard / Main Menu / Settings bars bleeding off the
+  left, then the template's big door icon (IconButton, 128 px, 140 px focused, in the game's
+  accent) with "Back to Open Jar" beneath it (asks first). Bottom right: the play controls line
+  above the hint strip "[b] Resume".
 - **Settings** (`scenes/ui/settings_panel.tscn`): SETTINGS, "Saved on this TV", rows MUSIC and
   SOUND (10-segment meters and the number), SCREEN SHAKE and SOLO PLAYTEST (ON / OFF chips).
   Per install, saved the moment a value changes.

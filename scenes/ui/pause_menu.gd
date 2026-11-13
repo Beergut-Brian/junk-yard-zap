@@ -2,8 +2,11 @@
 ## in from the left edged in the pauser's colour, with a big PAUSED, a "PLAYER 2 PAUSED" tag and
 ## slanted bars, each with a picture: Resume, Reset Yard (whoosh and bell, back in the yard at once,
 ## no question), Main Menu (the Restart bar, back to the lobby; PF-3: "Restart" next to "Reset Yard"
-## read as a fresh yard), Settings, Back to Open Jar (asks first).
-## Bottom left, the controls (PF-4: play itself shows none): A zap, B jump, LB/RB gun, hold Select reset.
+## read as a fresh yard), Settings, then the template's big door icon (IconButton, 128 px, 140 px
+## focused) with "Back to Open Jar" beneath it: back to the launcher, asks first, saves, never a
+## force-close. The door wears this game's accent (set in apply_skin, not in the scene).
+## Bottom right, above the hint, the controls (PF-4: play itself shows none): A zap, B jump,
+## LB/RB gun, hold Select reset. (They sat bottom left until the door took that corner.)
 ## Either pad moves the cursor, A presses, B resumes or backs out of Settings / the question.
 ## Start is Game's (it resumes from anywhere). Shown while Game.state == PAUSED.
 extends Control
@@ -27,12 +30,14 @@ var paused_by := Players.P1:
 var _tw: Tween
 
 @onready var _buttons: Array = [$Card/Buttons/Resume, $Card/Buttons/ResetYard, $Card/Buttons/Restart,
-		$Card/Buttons/Settings, $Card/Buttons/Door]
+		$Card/Buttons/Settings, $Card/Door/Icon]
 @onready var _card: Control = $Card
 @onready var _wedge: Control = $Wedge
 @onready var _by: Control = $Card/PausedBy
 @onready var _settings: SettingsPanel = $Settings
 @onready var _confirm: ConfirmDialog = $Confirm
+@onready var _door: IconButton = $Card/Door/Icon
+@onready var _door_label: Label = $Card/Door/Label
 
 
 func _ready() -> void:
@@ -44,6 +49,8 @@ func _ready() -> void:
 	_by.draw.connect(_draw_paused_by)
 	apply_skin()
 	for i in _buttons.size():
+		if _buttons[i] == _door:
+			continue   # the door draws its own icon
 		var kind: UiGlyphs.Kind = GLYPHS[i]
 		_buttons[i].glyph = func(item: CanvasItem, c: Vector2, r: float, col: Color) -> void:
 			var spin := Time.get_ticks_msec() * 0.002 if kind == UiGlyphs.Kind.RESET and i == focus else 0.0
@@ -141,6 +148,7 @@ func _set_focus(to: Choice, sound := true) -> void:
 	focus = to
 	for i in _buttons.size():
 		_buttons[i].focused = i == focus
+	_style_door_label()
 
 
 func _on_confirm_chosen(leave: bool) -> void:
@@ -165,6 +173,10 @@ func _on_state_changed(_from: int, to: int) -> void:
 	_tw.tween_property(_wedge, "edge", 1010.0, 0.3).from(-300.0).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_tw.tween_property(_card, "position:x", 0.0, 0.3).from(-500.0).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	MenuItem.slam_all(_buttons, 0.1, 0.05)
+	# The door's words come in with the door.
+	_door_label.position.x = -500.0
+	_tw.tween_property(_door_label, "position:x", 0.0, 0.34).set_delay(0.25) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 ## UiStyle.use_skin() calls this on every open menu.
@@ -172,7 +184,17 @@ func apply_skin() -> void:
 	var dim := $Dim.material as ShaderMaterial
 	if dim:
 		dim.set_shader_parameter("tint", Color(UiStyle.deep(), 0.4))
+	_door.tint = UiStyle.accent   # this game's accent, not the template's yellow
 	_apply_pauser()
+	_style_door_label()
+
+
+## Under the door: cream and big when it is focused, softer when not.
+func _style_door_label() -> void:
+	if _door_label == null:
+		return
+	var on := focus == Choice.DOOR
+	UiStyle.style_title(_door_label, 46 if on else 38, UiStyle.CREAM if on else Color(UiStyle.CREAM, 0.75), 420.0)
 
 
 func _apply_pauser() -> void:

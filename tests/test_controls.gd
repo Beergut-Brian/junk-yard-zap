@@ -339,6 +339,9 @@ func test_pause_menu_has_a_reset_yard_entry_that_resets_at_once() -> void:
 	assert_str(item.text).is_equal("Reset Yard")
 	assert_bool(item.glyph.is_valid()).is_true()   # the swirl picture
 	for b in pm._buttons:
+		if b is IconButton:   # the template door icon (R-03) draws its own picture
+			assert_int((b as IconButton).icon).is_equal(IconButton.Icon.DOOR)
+			continue
 		assert_bool((b as MenuItem).glyph.is_valid()).is_true()
 	pm.move_focus(1)
 	assert_int(pm.focus).is_equal(PauseMenu.Choice.RESET)
