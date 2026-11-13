@@ -179,3 +179,49 @@ func test_gag_poses_start_and_end_at_rest() -> void:
 		assert_vector(p.position).is_equal(Vector3(0.3, 0.2, 0.1))
 	assert_int(ObjectArt.gags_in(root).size()).is_equal(3)
 
+
+# ------------------------------------------------------------------ Y-12 / K-10: faces watch you
+
+## A stand-in player: anything in the zappers group is someone a face can look at.
+func fake_player(at: Vector3) -> Node3D:
+	var p := Node3D.new()
+	p.position = at
+	world.add_child(p)
+	p.add_to_group(Zapper.GROUP)
+	return p
+
+
+func pupil_x(f: ObjectFace) -> float:
+	return f._pupils[0].position.x
+
+
+func test_a_face_watches_the_nearest_player_walk_past() -> void:
+	var crate := spawn("crate")
+	await step(30)
+	var f := crate.face
+	assert_object(f).is_not_null()
+	assert_bool(f.watching()).is_false()
+	var p := fake_player(crate.global_position + Vector3(4.0, -1.0, 2.0))
+	await step(30)
+	assert_bool(f.watching()).is_true()
+	var right := pupil_x(f)
+	assert_float(right).is_greater(0.0)
+	p.position = crate.global_position + Vector3(-4.0, -1.0, 2.0)
+	await step(30)
+	assert_float(pupil_x(f)).is_less(0.0)
+	# Walk away: the eyes go back to looking ahead.
+	p.position = crate.global_position + Vector3(-30.0, 0.0, 0.0)
+	await step(30)
+	assert_bool(f.watching()).is_false()
+	assert_float(pupil_x(f)).is_greater(0.0)
+	assert_float(pupil_x(f)).is_less(right)
+
+
+func test_a_wide_eyed_reaction_still_wins_over_watching() -> void:
+	var crate := spawn("crate")
+	await step(30)
+	fake_player(crate.global_position + Vector3(4.0, 0.0, 2.0))
+	await step(30)
+	crate.face.react(ObjectFace.Mood.WIDE, 1.0)
+	await step(2)
+	assert_float(pupil_x(crate.face)).is_equal_approx(0.0, 0.0001)
