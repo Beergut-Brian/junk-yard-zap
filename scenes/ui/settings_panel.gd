@@ -6,6 +6,8 @@ class_name SettingsPanel
 extends Control
 
 signal closed()
+## A on Restore old yard (the lobby asks first, with its FreshCard).
+signal restore_asked()
 
 const MUSIC := "music_volume"
 const SOUND := "sound_volume"
@@ -13,16 +15,20 @@ const SHAKE := "screen_shake"
 const SOLO := "solo_playtest"
 const DEFAULTS := { MUSIC: 0.8, SOUND: 1.0, SHAKE: true, SOLO: false }
 
-enum Row { MUSIC, SOUND, SHAKE, SOLO }
+enum Row { MUSIC, SOUND, SHAKE, SOLO, RESTORE }
 
 var active := false
 var focus := Row.MUSIC
+## Start fresh: the lobby's panel offers Restore old yard while a backup exists (FreshStart).
+## The pause menu's does not (its Main Menu bar reaches the lobby's).
+var offer_restore := false
 
 var _tw: Tween
 
 @onready var _card: Control = $Card
 @onready var _wedge: Control = $Wedge
-@onready var _rows: Array = [$Card/Rows/Music, $Card/Rows/Sound, $Card/Rows/Shake, $Card/Rows/Solo]
+@onready var _restore: MenuItem = _make_restore_row()
+@onready var _rows: Array = [$Card/Rows/Music, $Card/Rows/Sound, $Card/Rows/Shake, $Card/Rows/Solo, _restore]
 
 
 static func screen_shake() -> bool:
@@ -39,6 +45,26 @@ func _ready() -> void:
 	add_to_group("openjar_skinned")
 	apply_skin()
 	Players.solo_changed.connect(_on_solo_changed)
+
+
+func _make_restore_row() -> MenuItem:
+	var row := MenuItem.new()
+	row.name = "Restore"
+	row.text = "Restore old yard"
+	row.height = 112.0
+	row.height_focused = 126.0
+	row.text_size = 56
+	row.text_size_focused = 62
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.visible = false
+	row.disabled = true
+	$Card/Rows.add_child(row)
+	return row
+
+
+func refresh() -> void:
+	if is_node_ready():
+		_refresh()
 
 
 func apply_skin() -> void:
@@ -78,6 +104,11 @@ func handle(input: Dictionary) -> void:
 		return
 	if input.move.y != 0:
 		move_focus(input.move.y)
+	if focus == Row.RESTORE:
+		if input.a != -1:
+			_restore.press()
+			restore_asked.emit()
+		return
 	if input.move.x != 0:
 		adjust(input.move.x)
 	elif input.a != -1:
@@ -90,6 +121,8 @@ func move_focus(dir: int) -> void:
 
 ## Slider rows step by 0.1; toggles flip (A) or go on/off (right/left).
 func adjust(dir: int, pressed := false) -> void:
+	if not _rows[focus] is SettingRow:
+		return
 	var row: SettingRow = _rows[focus]
 	if pressed:
 		row.press()
@@ -127,6 +160,11 @@ func _refresh() -> void:
 	_rows[Row.SOUND].value = value_of(SOUND)
 	_rows[Row.SHAKE].value = 1.0 if value_of(SHAKE) else 0.0
 	_rows[Row.SOLO].value = 1.0 if Players.solo else 0.0
+	var can := offer_restore and FreshStart.has_backup()
+	_restore.visible = can
+	_restore.disabled = not can
+	if not can and focus == Row.RESTORE:
+		_set_focus(Row.SOLO, false)
 
 
 func _set_focus(to: Row, sound := true) -> void:
@@ -135,6 +173,11 @@ func _set_focus(to: Row, sound := true) -> void:
 	focus = to
 	for i in _rows.size():
 		_rows[i].focused = i == focus
+	# Show the buttons that matter: the hint follows the row (Restore asks first, it doesn't change).
+	var hint := get_node_or_null("Card/Hint")
+	if hint:
+		hint.text = "[ud] Choose    [a] Restore (asks first)    [b] Back" if focus == Row.RESTORE \
+				else "[ud] Choose    [lr] Change    [b] Back"
 
 
 func _on_solo_changed(on: bool) -> void:

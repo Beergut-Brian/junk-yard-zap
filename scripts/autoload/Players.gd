@@ -16,6 +16,16 @@ const VIRTUAL := -2
 const SOLO_HOLD := 2.0
 const SOLO_BUTTONS := [JOY_BUTTON_BACK, JOY_BUTTON_START]
 const SoloMarker := preload("res://scripts/autoload/solo_marker.gd")
+## No stick-only requirement (Kaden's feel rule, 2026-11-13): the D-pad moves the character, aims
+## and steers every menu exactly like the left stick. project.godot (template-owned) binds the move
+## actions to the stick and keys only, so add_dpad() puts the four D-pad buttons beside them at
+## boot; _rebind then keeps each pad's D-pad on its own player, and solo copies it like the stick.
+const DPAD := {
+	"move_left": JOY_BUTTON_DPAD_LEFT,
+	"move_right": JOY_BUTTON_DPAD_RIGHT,
+	"move_up": JOY_BUTTON_DPAD_UP,
+	"move_down": JOY_BUTTON_DPAD_DOWN,
+}
 
 signal player_joined(player: int, device: int)
 signal player_left(player: int)
@@ -36,6 +46,7 @@ var _marker: CanvasLayer
 
 
 func _ready() -> void:
+	add_dpad()
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_marker = SoloMarker.new()
@@ -103,6 +114,29 @@ func move_vector(player: int) -> Vector2:
 	return Input.get_vector(
 		action(player, "move_left"), action(player, "move_right"),
 		action(player, "move_up"), action(player, "move_down"))
+
+
+## Gives both players' move actions the D-pad, once (safe to call again: a button already there is
+## left alone). Each new event follows the player's pad like the stick's (device -1 = any pad until
+## a pad joins). While solo is on the map is rebuilt from the saved events, so this waits for it.
+func add_dpad() -> void:
+	for p in [P1, P2]:
+		var dev: int = int(_device_of[p])
+		for a: String in DPAD:
+			var name := action(p, a)
+			if not InputMap.has_action(name):
+				continue
+			var have := false
+			for ev in InputMap.action_get_events(name):
+				if ev is InputEventJoypadButton and (ev as InputEventJoypadButton).button_index == DPAD[a]:
+					have = true
+			if have:
+				continue
+			var b := InputEventJoypadButton.new()
+			b.button_index = DPAD[a]
+			b.pressed = true
+			b.device = dev if dev >= 0 else -1
+			InputMap.action_add_event(name, b)
 
 
 ## Is this player's Start down? Their pad's Start, or (keyboard / --demo / solo) the pause key.

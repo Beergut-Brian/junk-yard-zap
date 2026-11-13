@@ -225,7 +225,8 @@ func _solo() -> void:
 
 func _lobby_quit() -> void:
 	await flow.pad(SessionFlow.PAD1, JOY_BUTTON_B)   # join, not ready
-	await _menu_down(2)   # Play -> Settings -> Back to Open Jar
+	# Play (Continue) -> [New yard, with a yard saved] -> Settings -> Back to Open Jar
+	await _menu_down(3 if FreshStart.has_save() else 2)
 	await flow.pad(SessionFlow.PAD1, JOY_BUTTON_A)
 	await flow._wait(0.4)
 	await check("lobby_door_asks", Game.state == Game.State.LOBBY, "Leave the game?")

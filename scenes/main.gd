@@ -54,6 +54,8 @@ func _ready() -> void:
 			_start_demo()).call_deferred()
 	elif Game.state != Game.State.LOBBY:
 		Game.to_lobby()
+	if FreshPreview.state_from_args(OS.get_cmdline_user_args()) != "":   # Start fresh screenshots
+		add_child(FreshPreview.new())
 	if PlayerFlowRun.phase_from_args(OS.get_cmdline_user_args()) != "":   # handoff/PLAYER-FLOW.md runs
 		add_child(PlayerFlowRun.new())
 

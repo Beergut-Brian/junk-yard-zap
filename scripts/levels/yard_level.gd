@@ -166,6 +166,34 @@ func reset_yard(by: Node3D = null) -> void:
 		save_yard()
 
 
+## Start fresh (FreshStart.start_fresh): the layout's yard and the deck from its first card, as on
+## the first day (trophy shelf empty). The whoosh and bell, like Reset Yard. Saves nothing itself.
+func fresh_yard() -> void:
+	deck.checking = false
+	clear_objects()
+	spawn_layout()
+	var all: Array[GoalData] = []
+	for g: GoalData in deck.cards.values():
+		all.append(g)
+	deck.set_cards(all)
+	deck.memory.clear()
+	Audio.play("reset_yard")
+	Fx.shake(0.4)
+	get_tree().create_timer(0.5).timeout.connect(func() -> void: deck.checking = true)
+
+
+## Restore old yard (FreshStart.restore): the yard rebuilt from what Save holds now.
+func reload_from_save() -> void:
+	deck.checking = false
+	clear_objects()
+	spawn_layout()
+	deck.memory.clear()
+	if not load_yard():
+		get_tree().create_timer(0.5).timeout.connect(func() -> void: deck.checking = true)
+	Audio.play("reset_yard")
+	Fx.shake(0.4)
+
+
 func near_reset_sign(z: Node3D) -> bool:
 	return absf(z.global_position.x - reset_sign.global_position.x) < RESET_REACH and z.global_position.y < 2.5
 

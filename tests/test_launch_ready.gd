@@ -44,6 +44,7 @@ func after() -> void:
 
 func before_test() -> void:
 	Save.wipe_settings()
+	Save.replace({})   # no yard saved: the menu starts Play, Settings, Back to Open Jar (FreshStart)
 	Players.reset()
 	Players.set_solo(false)
 	Game.demo = false
