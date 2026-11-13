@@ -157,6 +157,34 @@ func in_submenu() -> bool:
 	return _settings.active or _confirm.active or _fresh.active
 
 
+## Show the buttons that matter (feel rule, 2026-11-13): the footer's glyph line follows the
+## focus and who is joined / ready, so it always names the press that does something next.
+func hint_text() -> String:
+	var move := "    [ud] Move"
+	match focus:
+		Choice.NEW:
+			return "[a] New yard (asks first)" + move + "    [b] Back"
+		Choice.SETTINGS, Choice.DOOR:
+			return "[ud] Move    [a] Select    [b] Back"
+	if Players.active_players().is_empty():
+		return "[a] Join in"
+	if counting:
+		return "[b] Not ready"
+	for p in Players.active_players():
+		if not readied[p]:
+			return "[lr] Pick who you play    [a] Ready" + move
+	return "Hold [a] Start    [b] Not ready" + move
+
+
+func update_hint() -> void:
+	var line := get_node_or_null("Footer/Hints")
+	if line == null:
+		return
+	var t := hint_text()
+	if line.text != t:
+		line.text = t
+
+
 ## Start fresh: Continue + New yard with a yard saved, else just Play.
 func update_fresh_items() -> void:
 	var saved := FreshStart.has_save()
@@ -231,6 +259,7 @@ func _process(delta: float) -> void:
 			if dir != 0:
 				choose(p, dir)
 	_solo_select()
+	update_hint()
 	if freeze or in_submenu():
 		return
 	for p in [P1, P2]:

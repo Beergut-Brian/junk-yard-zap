@@ -68,6 +68,10 @@ var _coyote := 0.0
 var _jump_buffer := 0.0
 var _was_on_floor := true
 var _action_was := false
+## Every action beeps (feel rule, 2026-11-13): buttons as they were last frame, read even while a
+## statue, so a fresh press on a frozen player is refused out loud (_statue_refusals).
+var _raw_was := {}
+var _statue_nope := 0.0
 var _jump_was := false
 var _jump_held := false      # B still down since take-off: the rise isn't cut yet
 var _jump_cut := false       # B came up during this rise: the heavier released_rise_gravity
@@ -260,6 +264,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_tick_partner(delta)
 	_tick_reset(inp, delta, live)
+	_statue_refusals(inp, live)
 	if statue_left > 0.0 or not live:
 		inp = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
 	var mv: Vector2 = inp.get("move", Vector2.ZERO)
@@ -363,6 +368,25 @@ func _gravity(delta: float) -> void:
 ## Hold Select RESET_HOLD s: the yard resets (whoosh and bell). A tap fills a bit of the ring and
 ## drains; nothing happens. Start (solo's Select + Start, either order), the solo swap
 ## (LB + RB + Select), a pause or a statue spend the press: no reset until Select comes up.
+## A statue (partner freeze, at most PARTNER_TIME) ignores its buttons. A fresh press of A, B, LB
+## or RB on one still says so: the refusal "nope" and a puff of ice chips off the player, whose ice
+## look is the cause. At most one every 0.25 s; a button already down when the freeze hit is not new.
+func _statue_refusals(inp: Dictionary, live: bool) -> bool:
+	var fresh := false
+	for k in ["action", "jump", "next", "prev"]:
+		var down: bool = inp.get(k, false)
+		if down and not _raw_was.get(k, false):
+			fresh = true
+		_raw_was[k] = down
+	_statue_nope = maxf(0.0, _statue_nope - get_physics_process_delta_time())
+	if not fresh or statue_left <= 0.0 or not live or _statue_nope > 0.0:
+		return false
+	_statue_nope = 0.25
+	Audio.play("nope", global_position)
+	Fx.burst(get_tree(), center(), Color(0.75, 0.9, 1.0, 0.9), 6, 0.3, 0.3)
+	return true
+
+
 func _tick_reset(inp: Dictionary, delta: float, live: bool) -> void:
 	var down: bool = inp.get("reset", false)
 	if not down:

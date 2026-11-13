@@ -173,6 +173,11 @@ func _set_focus(to: Row, sound := true) -> void:
 	focus = to
 	for i in _rows.size():
 		_rows[i].focused = i == focus
+	# Show the buttons that matter: the hint follows the row (Restore asks first, it doesn't change).
+	var hint := get_node_or_null("Card/Hint")
+	if hint:
+		hint.text = "[ud] Choose    [a] Restore (asks first)    [b] Back" if focus == Row.RESTORE \
+				else "[ud] Choose    [lr] Change    [b] Back"
 
 
 func _on_solo_changed(on: bool) -> void:
