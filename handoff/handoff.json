@@ -1,1 +1,29 @@
-{"packet": "maker/openjar jyz-faceless-audit-1", "ended": "done", "did": ["Audited the 9 vehicles/machines (car, tractor, boat, wheelbarrow, washing_machine, tv, toaster, fridge, cannon) plus the crane hook and dressing crane across data, 3D art, Pictos, card_art and the 6 baked vehicle card PNGs: no face left anywhere (dev already clean from vehicle-faces-1)", "build_data.gd keeps has_face = false on a rerun (it would have put faces back on all 9)", "Fixed stale 'face' comments in car.gd, wheelbarrow.gd, card_art.gd", "tests/test_faceless_audit.gd (4 cases): list derived from code (has_face=false or ObjectArt gag), scans built objects for face nodes/textures, cow+chicken control, crane hook; mutation check (car has_face=true) turns it red", "Kettle and piano ruled props with personality (keep faces), logged in GAME.md", "Full suite 338/338 green; clean import left no untracked PNGs under assets/"], "next_action": "Gary: review the commit on feature/jyz-faceless-audit-1 and open a PR to dev; optionally check on the TV whether the washing machine's two knobs over the porthole read as a face", "blocked": [], "evidence": ["REPORT.md", "handoff/test-output.txt (338 test cases, 0 failures)", "handoff/frames/lineup_sheet.png", "handoff/frames/vehicle_cards_sheet.png"]}
+{
+  "lane": "jyz-gap-close-4",
+  "branch": "feature/jyz-gap-close-4",
+  "base": "origin/dev @ 73c5dea (after PR #42)",
+  "ended": "done",
+  "commits": [
+    {"sha": "4b9b970", "msg": "gameplay: every refusal shows its cause (Y-20, Y-21, Y-22)"},
+    {"sha": "see git log -1", "msg": "docs: gap-close-4 report, test output, handoff"}
+  ],
+  "tests_run": [
+    "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a tests/test_gap_close_4.gd: 9/9 green",
+    "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a tests: 357 test cases, 0 errors, 0 failures, 0 flaky, 0 orphans (handoff/test-output.txt)"
+  ],
+  "plan_status_moved": {
+    "Y-20": "added (S15) -> built",
+    "Y-21": "added (S15) -> built",
+    "Y-22": "added (S15) -> built"
+  },
+  "rows_skipped": [
+    {"id": "C-14", "why": "partial; waits only on playtest #2 (Kaden on the TV)"},
+    {"id": "S-18", "why": "partial; waits only on the GTX 1060 fps check (TV box)"},
+    {"id": "PF-6", "why": "missing; must be tried on the TV box before any fix"}
+  ],
+  "open_branches_checked": "git branch -r --no-merged origin/dev: none; no overlap",
+  "off_limits_touched": "none (no art, no assets/, no audio files, no project.godot)",
+  "frames": ["handoff/frames/y20_bonk_before.png", "handoff/frames/y20_bonk_star.png", "handoff/frames/y21_ladder_full.png", "handoff/frames/y21_ladder_cap_stop.png", "handoff/frames/y22_glue_string.png", "handoff/frames/y22_string_shiver.png", "handoff/frames/y22_snap_recoil.png", "handoff/frames/y22_snap_rings.png"],
+  "next_action": "Gary: review feature/jyz-gap-close-4 and open a PR to dev; at playtest #2, check that the size ladder reads from the couch",
+  "evidence": ["handoff/REPORT.md", "handoff/test-output.txt", "handoff/frames/"]
+}
