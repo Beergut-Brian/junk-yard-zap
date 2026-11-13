@@ -1,6 +1,7 @@
 ## Gap-close lane 2 (jyz-gap-close-2). A-12 / P-05 / P-06: a character's delight and zap barks
 ## speak in their own voice pack (cheer / win), not the generic synth, and nobody talks over a
-## spoken line. Fixture roster and settings only, never the real roster's contents.
+## spoken line; a player who drops in (wakes in the tire pile) says hello, and the solo swap says
+## "I'm in", each in their own voice. Fixture roster and settings only, never the real roster's contents.
 class_name TestGapClose2
 extends GdUnitTestSuite
 
@@ -8,22 +9,39 @@ const ROSTER := "res://tests/fixtures/roster_comedy.json"
 const CHEER := "res://tests/fixtures/voice/cheer.ogg"
 
 var _real_roster := ""
+var _real_picks := ""
+var _real_args: Variant = null
+var _real_profile := ""
+const PICKS := "user://test_gap_close_2_players.json"
 var _real_settings := ""
-var world: Node
+var world: Node3D
+const IDLE := {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
 
 
 func before() -> void:
 	_real_settings = Save.settings_path
 	Save.settings_path = "user://test_settings_gap_close_2.json"   # never the real settings file
 	Save.wipe_settings()
+	_real_profile = Save.profile
+	Save.profile = "gdunit_gap_close_2"   # main.tscn saves the yard: never the family's profile
 	_real_roster = Roster.data_path
+	_real_picks = Roster.picks_path
+	_real_args = Roster.args_override
 	Roster.data_path = ROSTER
+	Roster.picks_path = PICKS
+	Roster.args_override = PackedStringArray(["--gdunit-gap-close-2"])   # not this run's real args
 	Roster.reload()
 
 
 func after() -> void:
 	Roster.data_path = _real_roster
+	Roster.picks_path = _real_picks
+	Roster.args_override = _real_args
+	if FileAccess.file_exists(PICKS):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(PICKS))
 	Roster.reload()
+	Save.profile = _real_profile
+	Players.set_solo(false)
 	Save.wipe_settings()
 	Save.settings_path = _real_settings
 	Save.reload_settings()
@@ -31,8 +49,11 @@ func after() -> void:
 
 
 func before_test() -> void:
-	world = Node.new()
+	Players.reset()
+	Game.demo = false
+	world = Node3D.new()
 	add_child(world)
+	world.add_child(YardStrip.new())
 	Audio.history.clear()
 	_fresh_gates()
 
@@ -42,6 +63,8 @@ func after_test() -> void:
 	Audio.clock = -1.0
 	if is_instance_valid(world):
 		world.free()
+	Yard.reset_world()
+	Players.reset()
 
 
 func _fresh_gates() -> void:
@@ -95,3 +118,68 @@ func test_nobody_talks_over_a_spoken_line() -> void:
 	Audio.clock = 9000.0 + secs + Audio.BARK_GAP + 0.05
 	assert_bool(Audio.can_bark(jeff)).is_true()
 
+
+
+func zapper(player: int, who: String) -> Zapper:
+	var z: Zapper = load("res://scenes/players/zapper.tscn").instantiate()
+	z.player = player
+	z.character = who
+	z.position = Vector3(2.0 * player, 0.05, 0)
+	world.add_child(z)
+	z.input_override = IDLE.duplicate()
+	return z
+
+
+func test_a_drop_in_snorts_then_says_hello_in_their_own_voice() -> void:
+	assert_str(Audio._pack_file("chuck", "join")).is_equal("res://tests/fixtures/voice/join.ogg")
+	var chuck := zapper(Players.P2, "chuck")
+	await get_tree().physics_frame
+	chuck.set_asleep(true)
+	Audio.clock = 12000.0
+	Audio.history.clear()
+	chuck.wake()
+	assert_bool(Audio.played("snort")).is_true()     # the snort comes first, at once
+	assert_bool(Audio.played("roster:chuck")).is_false()
+	await get_tree().create_timer(Zapper.JOIN_LINE_DELAY + 0.25).timeout
+	assert_bool(Audio.played("roster:chuck")).is_true()   # then his own "join" line
+	assert_bool(Audio.can_bark("anyone")).is_false()      # and nobody talks over it
+
+
+func test_a_drop_in_with_no_voice_pack_still_says_something() -> void:
+	var dee := zapper(Players.P2, "dee")
+	await get_tree().physics_frame
+	dee.set_asleep(true)
+	Audio.clock = 13000.0
+	Audio.history.clear()
+	dee.wake()
+	await get_tree().create_timer(Zapper.JOIN_LINE_DELAY + 0.25).timeout
+	assert_bool(Audio.played("bark")).is_true()   # no bark_join cue: the plain generic bark
+
+
+func test_the_solo_swap_says_im_in() -> void:
+	assert_str(Audio._pack_file("jeff", "swap_in")).is_equal("res://tests/fixtures/voice/swap_in.ogg")
+	var jeff := zapper(Players.P1, "jeff")
+	await get_tree().physics_frame
+	Audio.clock = 14000.0
+	Audio.history.clear()
+	assert_str(jeff.say("swap_in")).is_equal("roster:jeff")
+	assert_str(jeff.say("swap_in")).is_equal("")   # the gate: never twice over itself
+
+
+func test_the_solo_swap_in_the_yard_speaks_the_new_players_line() -> void:
+	var main: Node = load("res://scenes/main.tscn").instantiate()
+	world.add_child(main)
+	for i in 2:
+		await get_tree().physics_frame
+	Players.set_solo(true)
+	Game.to_lobby()
+	Game.finish_lobby([Players.P1, Players.P2])
+	for i in 2:
+		await get_tree().physics_frame
+	Audio.clock = 15000.0
+	Audio.history.clear()
+	main.swap_solo_focus()
+	assert_int(Players.solo_focus).is_equal(Players.P2)
+	assert_bool(Audio.played("solo_swap")).is_true()
+	assert_bool(Audio.played("roster:chuck")).is_true()   # the fixture's P2 default, own voice
+	Players.set_solo(false)

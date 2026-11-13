@@ -337,6 +337,7 @@ var jump_tuning: JumpTuning      # data/players/jump.tres: tap = hop, hold = hig
 func reset_progress() -> float   # 0..1 of the Select hold (Zapper.RESET_HOLD 1.5 s), the ring by the player
 var character: String            # Roster id; "" at spawn = Roster.pick(player) (Jeff P1 / Chuck P2 by default)
 func bark(kind := "") -> String  # own cue bark_<id>[_kind] > Roster.bark(id) > generic bark[_kind]
+func say(kind := "") -> String   # bark(kind) if Audio.can_bark(self), else "" (wake: "join" after the snort; solo swap: "swap_in")
 # Body: JarlingRig (scripts/players/jarling_rig.gd) loads Roster.info(id).glb, any standard-body
 # Jarling; belt on `waist`, junk gun on `hand_r`, tape in Players.COLOR[player]. set_character(id)
 # swaps the body in place (lobby podiums). Audio.has_cue(cue) -> bool: a recorded file exists.

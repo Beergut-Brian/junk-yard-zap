@@ -12,6 +12,7 @@ signal gun_changed(player: int, gun: GunData)
 signal woke(player: int)
 signal partner_zapped(player: int, gun: StringName)
 
+const JOIN_LINE_DELAY := 0.55   # seconds after the wake-up snort before the hello line
 const GROUP := &"zappers"
 const SPEED := 6.0
 const ACCEL := 40.0
@@ -202,6 +203,10 @@ func wake() -> void:
 	Fx.burst(get_tree(), global_position + Vector3(0, 0.8, 0), Color(0.9, 0.9, 0.8, 0.8), 14, 0.8, 0.5)
 	rig.set_expression("surprised")
 	woke.emit(player)
+	# Then, once the snort is out, hello in their own voice (the pack's "join" line).
+	get_tree().create_timer(JOIN_LINE_DELAY).timeout.connect(func() -> void:
+		if is_instance_valid(self) and not asleep and say("join") != "":
+			rig.set_expression("happy"))
 
 
 func radius() -> float:
@@ -696,6 +701,12 @@ func cheer() -> void:
 ## Returns the cue name it used ("roster:<id>" for the voice pack). Never another character's voice.
 func bark(kind := "") -> String:
 	return Audio.bark(character, kind, self)
+
+
+## A line in their own voice if the bark gate lets them (nobody talks over anybody); the cue it
+## used, or "" when the gate held it back.
+func say(kind := "") -> String:
+	return bark(kind) if Audio.can_bark(self) else ""
 
 
 ## Everyone wobbles at a big impact near him; Jeff claps and delights (GAME.md "Audio"), at most one

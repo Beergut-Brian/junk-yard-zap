@@ -383,7 +383,7 @@ func bark(character: String, kind := "", speaker: Variant = null) -> String:
 			used = "roster:" + character
 			stream = load(path)
 		else:
-			used = "bark" + tail
+			used = "bark" + tail if has_cue("bark" + tail) else "bark"   # no generic bark_join: a plain one
 			stream = _resolve(SFX_DIR, used)
 			if stream == null and synth_fallback:
 				stream = Synth.beep(used)
