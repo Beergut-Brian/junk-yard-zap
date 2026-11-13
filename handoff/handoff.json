@@ -1,89 +1,130 @@
 {
-  "lane": "jyz-gap-close-5",
-  "branch": "feature/jyz-gap-close-5",
-  "base": "dev @ 8c749f1 (after PR #43)",
+  "lane": "jyz-rules-audit-1",
+  "branch": "fix/jyz-rules-audit-1",
+  "base": "origin/dev @ f6e3b9b (after PR #44)",
   "ended": "done",
   "pushed": false,
   "commits": [
     {
-      "sha": "bf1193d",
-      "msg": "systems: exit watchdog ends a hung shutdown after quit (PF-6)"
+      "sha": "0a4fac3",
+      "msg": "systems: the D-pad moves the character in play (feel rule 1)"
     },
     {
-      "sha": "1d3b947",
-      "msg": "gameplay: yard objects sleep when still (S-18)"
+      "sha": "eb590ba",
+      "msg": "systems: start fresh: Continue, New yard (held A, backup), Restore"
     },
     {
-      "sha": "f4533d9",
-      "msg": "gameplay: see-saw plank sleeps with what it rests on (S-18)"
+      "sha": "669ec11",
+      "msg": "gameplay: a press on a statue beeps; menu hints follow focus"
+    },
+    {
+      "sha": "1e6d0fe",
+      "msg": "systems: four menu bars clear the status line; Start fresh shots tool"
+    },
+    {
+      "sha": "d2903e4",
+      "msg": "systems: Continue / New follow the save; test saves start empty"
     },
     {
       "sha": "see git log -1",
-      "msg": "docs: gap-close-5 report, test output, handoff, PLAN-STATUS"
-    },
-    {
-      "sha": "see git log -1",
-      "msg": "jyz: stage balloon awake count on the balloons' neighbours"
+      "msg": "docs: rules-audit-1 report, test output, handoff"
     }
   ],
-  "tests_run": [
-    "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue --ignoreHeadlessMode: 366 test cases, 0 errors, 0 failures, 0 flaky, 0 orphans, 636 s (handoff/test-output.txt)",
-    "tests/test_exit_watchdog.gd: 5/5 (child processes with a save present: close_early exits 0; hang_exit ended by the watchdog); negative control with the watchdog removed: hang_exit fails, still running after 90 s",
-    "tests/test_sleep_when_still.gd: 4/4 (quiet yard asleep at frame 496 and stays asleep, push wakes, no mid-air sleep, knocked-out stack falls)",
-    "earlier full run before the see-saw fix: 366 cases, 1 failure (test_a_quiet_yard_falls_asleep: hay awake again); cause found and fixed in f4533d9, not by a longer wait"
-  ],
-  "export_runs": {
-    "unfixed_close_early": "12 of 19 valid runs hung (run-export, lavapipe on Xvfb)",
-    "fixed_close_early": "8 of 8 ended: 3 exit 0 (2.4-2.8 s after the close), 5 by the watchdog (6.2-6.3 s, exit 137); save intact",
-    "fixed_lobby_quit": "2 of 2 exit 0",
-    "final_head_close_early": "2 of 2 ended (watchdog, 6.2 s)",
-    "override_matrix": "low_priority_thread_ratio=0.5: 0 of 12 hung; baseline 6/9; pipeline cache off 3/5; shader cache off 4/5; sync navigation 4/6; --disable-vsync 5/5"
-  },
-  "soak": {
-    "stress_35min": "--fixed-fps 60 --quit-after 126000 -- --demo --soak --soak-calm=1800: 3417 zaps, 578 glues, 134-157 effects, 0 orphans throughout, nodes 5050->5036 and 221 MB flat over the last 10 min, frame 5.0-6.4 ms mean (worst 42.2 ms), 11 min 46 s wall",
-    "calm_effects_on": "--soak-calm=600: 45-54 awake, all with an effect acting on them (plain=0)",
-    "calm_after_reset": "--soak-calm=30 --soak-calm-reset: 56 -> 4 awake in 10 s and held (3 balloons + crane hook, by design)"
+  "tests": {
+    "command": "rm -rf .godot && godot --headless --import --path . ; godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue",
+    "summary": "Overall Summary: 383 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
+    "log": "handoff/test-output.txt",
+    "new_suites": [
+      "tests/test_dpad_moves.gd (6)",
+      "tests/test_fresh_start.gd (7)",
+      "tests/test_feel_rules.gd (4)"
+    ],
+    "before_proof": "test_dpad_moves.gd with add_dpad() off: test_every_move_action_has_its_dpad_button fails on 8 of 8 move actions"
   },
   "plan_status_moved": {
-    "PF-6": "missing -> built (exit watchdog; cause is the engine's WorkerThreadPool shutdown on the software renderer)",
-    "S-18": "stays partial; note rewritten: sleep when still now built and shown headless, GTX 1060 fps not claimed (weekend TV check)"
+    "added_source": "S16 Standing feel rules (2026-11-13)",
+    "added_rows": "R-01..R-08",
+    "built": [
+      "R-01",
+      "R-02",
+      "R-03",
+      "R-04",
+      "R-06",
+      "R-08"
+    ],
+    "partial": [
+      "R-05",
+      "R-07"
+    ],
+    "totals": "195 rows: built 176 \u00b7 partial 4 \u00b7 missing 0 \u00b7 superseded 11 \u00b7 later 4 \u00b7 dropped 0"
   },
-  "rows_skipped": [
+  "rules": [
     {
-      "id": "C-14",
-      "why": "partial; waits only on playtest #2 (Kaden on the TV); out of this brief"
+      "rule": "1 D-pad everywhere",
+      "before": "fail in play (stick + keys only)",
+      "now": "built",
+      "where": "Players.gd add_dpad(), tests/test_dpad_moves.gd"
     },
     {
-      "id": "S-18 (fps half)",
-      "why": "60 fps on the GTX 1060 can't be measured here; weekend TV check"
+      "rule": "2 Start fresh",
+      "before": "missing",
+      "now": "built",
+      "where": "fresh_start.gd, fresh_card.gd, lobby.gd, settings_panel.gd, tests/test_fresh_start.gd, handoff/frames/rules_*.png"
+    },
+    {
+      "rule": "3 Pause and back out",
+      "before": "pass",
+      "now": "built (unchanged)",
+      "where": "pause_menu.gd, test_lobby.gd::test_pause_door_asks_then_quits, test_exit_watchdog.gd"
+    },
+    {
+      "rule": "4 Solo mode",
+      "before": "pass",
+      "now": "built (now tested: not restored at boot)",
+      "where": "Players.gd, test_feel_rules.gd::test_solo_remembered_in_settings_is_off_at_boot"
+    },
+    {
+      "rule": "5 Every action beeps",
+      "before": "partial (statue presses silent)",
+      "now": "partial (statue fixed; unbound buttons and mid-air B need a decision)",
+      "where": "zapper.gd _statue_refusals(), test_feel_rules.gd"
+    },
+    {
+      "rule": "6 No forced movement",
+      "before": "pass",
+      "now": "built (unchanged)",
+      "where": "zapper.gd _physics_process"
+    },
+    {
+      "rule": "7 Show the buttons that matter",
+      "before": "partial (static menu hints, none in play)",
+      "now": "partial (menus contextual; play needs a decision)",
+      "where": "lobby.gd hint_text(), settings_panel.gd, test_feel_rules.gd"
+    },
+    {
+      "rule": "8 Every cause shown",
+      "before": "pass",
+      "now": "built",
+      "where": "Y-20..Y-22, zapper.gd ice chips"
     }
   ],
-  "for_others": [
-    "Systems: threading/worker_pool/low_priority_thread_ratio=0.5 in project.godot avoided the engine hang in 12 of 12 runs (project.godot is off-limits to this lane)",
-    "Launcher: a hung shutdown now ends by the watchdog with exit 137 after the line 'Game: shutdown still running 6000 ms after quit(); ending the process (PF-6)'; the save is already written, so treat it as a normal return",
-    "TV box: after an early close, check whether that line appears (does the engine hang happen on the GTX 1060 at all)"
+  "needs_gameplay_decision": [
+    "Unbound buttons in play (X, Y, LT, RT, L3, R3) are silent: refusal tick, harmless gag, or leave silent?",
+    "B in mid-air past coyote/buffer is silent: refuse or not?",
+    "Glyph hints in play (e.g. A over the Reset Yard sign)? PF-4 chose pictures only.",
+    "New yard resets the whole save (yard, deck, trophy shelf, guns); keep the trophy shelf instead?"
   ],
-  "off_limits_touched": "none (no art, no assets/, no audio, no project.godot; diagnostics used override.cfg next to scratch copies of the export only)",
-  "frames": [],
-  "next_action": "Gary: review feature/jyz-gap-close-5 and open a PR to dev; weekend TV box: PF-6 early close and S-18 F3 fps",
-  "evidence": [
-    "handoff/REPORT.md",
-    "handoff/test-output.txt"
+  "template_gaps": [
+    "project.godot: no D-pad on move actions",
+    "ui_preview.gd: no game-added states",
+    "HintLine static per screen",
+    "SettingRow has no action kind",
+    "Save.profile change does not reload _data"
   ],
-  "ci_fix": {
-    "lane": "ci-fix for PR 44",
-    "date": "2026-11-13",
-    "dev_merge": "already up to date",
-    "failing_test": "tests/test_balloons.gd::test_stress_frame_time_within_budget (CI: 30.4 with vs 26.7 without; local repro 27.1 vs 23.5)",
-    "decision": "test staging; no gameplay decision needed",
-    "cause": "whole-yard awake count during a kicked, still-settling yard is chaotic since S-18 (runs not repeatable; balloons parked out of reach still showed +2.7..+3.4); the 3 extra bodies only reorder the solver",
-    "change": "tests/test_balloons.gd: same full layout both runs, balloons benched in the 'without' run, only bodies within 4 m of a balloon kept, kicked and counted; same assert and bound; clock was already pinned at 60 Hz",
-    "runs": {
-      "test_balloons_x5": "11/11 each, without 13.4 with 16.3 every run",
-      "taskset_c0_nice19": "11/11, without 13.4 with 16.3",
-      "full_suite_clean_import": "366 cases, 0 errors, 0 failures, 0 flaky, 0 orphans (test read 13.2 / 16.1)"
-    },
-    "noted_not_changed": "pond floaters stay awake 25 s after the kicks with or without balloons",
-    "pushed": false
-  }
+  "frames": [
+    "handoff/frames/rules_start_menu_continue_new_yard.png",
+    "handoff/frames/rules_new_yard_hold_a_question.png",
+    "handoff/frames/rules_settings_restore_old_yard.png",
+    "handoff/frames/rules_restore_hold_a_question.png"
+  ]
 }
