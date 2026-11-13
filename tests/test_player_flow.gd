@@ -141,3 +141,19 @@ func test_a_zap_saves_the_yard_within_seconds() -> void:
 func test_player_flow_phase_from_args() -> void:
 	assert_str(PlayerFlowRun.phase_from_args(PackedStringArray(["--solo", "--player-flow=return"]))).is_equal("return")
 	assert_str(PlayerFlowRun.phase_from_args(PackedStringArray(["--demo"]))).is_equal("")
+
+
+# PF-3: the pause bar that goes back to the lobby says so ("Restart" under "Reset Yard" read as a
+# fresh yard), and still goes to the lobby in one press.
+func test_pause_main_menu_bar_says_main_menu_and_goes_to_the_lobby() -> void:
+	var pm: Control = load("res://scenes/ui/pause_menu.tscn").instantiate()
+	world.add_child(pm)
+	var bars := []
+	for b in pm.get_node("Card/Buttons").get_children():
+		bars.append(str(b.text))
+	assert_array(bars).contains(["Main Menu"]).not_contains(["Restart"])
+	assert_str(str(pm.get_node("Card/Buttons/Restart").text)).is_equal("Main Menu")
+	Game.start_round()
+	Game.pause()
+	pm.press(pm.Choice.RESTART)
+	assert_int(Game.state).is_equal(Game.State.LOBBY)
