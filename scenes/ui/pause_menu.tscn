@@ -152,6 +152,18 @@ text = "[ud] Move    [a] Select    [b] Resume"
 align = 2
 strip = true
 
+[node name="Controls" type="Control" parent="Card"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 984.0
+offset_right = 800.0
+offset_bottom = 1044.0
+mouse_filter = 2
+script = ExtResource("3_hint")
+text = "[a] Zap   [b] Jump   [lb][rb] Gun   Hold [select] Reset"
+align = 0
+color = Color(1, 0.96, 0.9, 0.85)
+
 [node name="Settings" parent="." instance=ExtResource("6_settings")]
 layout_mode = 1
 

@@ -157,3 +157,13 @@ func test_pause_main_menu_bar_says_main_menu_and_goes_to_the_lobby() -> void:
 	Game.pause()
 	pm.press(pm.Choice.RESTART)
 	assert_int(Game.state).is_equal(Game.State.LOBBY)
+
+
+# PF-4: play shows no controls, so the pause card does: every button play needs, as glyphs.
+func test_pause_card_shows_the_controls() -> void:
+	var pm: Control = load("res://scenes/ui/pause_menu.tscn").instantiate()
+	world.add_child(pm)
+	var line := str(pm.get_node("Card/Controls").text)
+	for tok in ["a", "b", "lb", "rb", "select"]:
+		assert_bool(UiStyle._parts(line).has([tok])).override_failure_message("no [%s] glyph" % tok).is_true()
+	assert_float(UiStyle.glyph_width("rb", 30)).is_greater(UiStyle.glyph_width("a", 30))
