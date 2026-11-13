@@ -1,0 +1,117 @@
+## Player-flow lane (jyz-player-flow-1, handoff/PLAYER-FLOW.md): the fails found by playing the export
+## as a new and a returning player. PF-1 a second pad joins out of solo; PF-2 a zap saves the yard
+## within seconds. Own save profile, settings and picks files: never the family's.
+class_name TestPlayerFlow
+extends GdUnitTestSuite
+
+const P1 := Players.P1
+const P2 := Players.P2
+const PAD_A := 30   # synthetic device ids, never a real pad's
+const PAD_B := 31
+
+var world: Node3D
+var _real_settings := ""
+var _real_profile := ""
+var _real_picks := ""
+
+
+func before() -> void:
+	_real_profile = Save.profile
+	Save.profile = "gdunit_player_flow"
+	Save.wipe()
+	_real_settings = Save.settings_path
+	Save.settings_path = "user://test_settings_player_flow.json"
+	Save.wipe_settings()
+	_real_picks = Roster.picks_path
+	Roster.picks_path = "user://test_player_flow_players.json"
+
+
+func after() -> void:
+	Save.wipe()
+	Save.profile = _real_profile
+	Save.wipe_settings()
+	Save.settings_path = _real_settings
+	Save.reload_settings()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Roster.picks_path))
+	Roster.picks_path = _real_picks
+
+
+func before_test() -> void:
+	Players.reset()
+	Game.demo = false
+	Audio.history.clear()
+	world = Node3D.new()
+	add_child(world)
+
+
+func after_test() -> void:
+	if is_instance_valid(world):
+		world.free()
+	Yard.reset_world()
+	Players.reset()
+	Game.to_lobby()
+	get_tree().paused = false
+
+
+func _press(device: int, button: JoyButton) -> void:
+	for down in [true, false]:
+		var ev := InputEventJoypadButton.new()
+		ev.device = device
+		ev.button_index = button
+		ev.pressed = down
+		Input.parse_input_event(ev)
+		Input.flush_buffered_events()
+		await get_tree().process_frame
+
+
+# PF-1: one pad playing solo (Select + Start), a second pad presses A: it gets P2, solo ends.
+func test_a_second_pad_takes_p2_out_of_solo() -> void:
+	Players._assign(P1, PAD_A)
+	Players.set_solo(true, PAD_A)
+	assert_bool(Players.solo).is_true()
+	Audio.history.clear()
+	await _press(PAD_B, JOY_BUTTON_A)
+	assert_bool(Players.solo).is_false()
+	assert_int(Players.device_of(P1)).is_equal(PAD_A)
+	assert_int(Players.device_of(P2)).is_equal(PAD_B)
+	assert_bool(Audio.played("player_join")).is_true()
+	assert_bool(Audio.played("solo_off")).is_true()
+
+
+# PF-1, --solo (no pad held the buttons): the new pad still gets P2 and solo ends.
+func test_a_second_pad_takes_p2_after_cli_solo() -> void:
+	Players.set_solo(true)
+	await _press(PAD_B, JOY_BUTTON_A)
+	assert_bool(Players.solo).is_false()
+	assert_int(Players.device_of(P2)).is_equal(PAD_B)
+	assert_int(Players.device_of(P1)).is_not_equal(PAD_B)
+
+
+# PF-1: the solo pad itself pressing A is still solo play, not a join.
+func test_the_solo_pad_pressing_a_stays_solo() -> void:
+	Players._assign(P1, PAD_A)
+	Players.set_solo(true, PAD_A)
+	await _press(PAD_A, JOY_BUTTON_A)
+	assert_bool(Players.solo).is_true()
+
+
+# PF-1 in the main scene: solo play, a second pad presses A, P2 is theirs and awake.
+func test_a_second_pad_wakes_p2_during_solo_play() -> void:
+	var main: Node = load("res://scenes/main.tscn").instantiate()
+	main.get_node("Arena").use_save = false
+	world.add_child(main)
+	Players._assign(P1, PAD_A)
+	Players.set_solo(true, PAD_A)
+	Game.finish_lobby([P1])
+	await get_tree().process_frame
+	assert_object(main.zapper(P2)).is_not_null()   # solo: the one pad drives both, both awake
+	await _press(PAD_B, JOY_BUTTON_A)
+	await get_tree().process_frame
+	assert_bool(Players.solo).is_false()
+	assert_int(Players.device_of(P2)).is_equal(PAD_B)
+	assert_bool(main.zapper(P2).asleep).is_false()   # handed over: a snort in the tire pile, awake
+
+
+func test_player_flow_phase_from_args() -> void:
+	assert_str(PlayerFlowRun.phase_from_args(PackedStringArray(["--solo", "--player-flow=return"]))).is_equal("return")
+	assert_str(PlayerFlowRun.phase_from_args(PackedStringArray(["--demo"]))).is_equal("")
