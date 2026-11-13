@@ -18,6 +18,11 @@ var round_index: int = 0
 var demo := false
 ## Tests turn this off so quit() does everything but exit.
 var quit_exits := true
+## PF-6: how long the engine gets to shut down after quit() before the exit watchdog ends the process.
+## A clean shutdown takes 1-3.5 s on the software renderer and well under that on a real GPU.
+const EXIT_GRACE_MS := 6000
+## The exit watchdog's thread, kept so it outlives this node while the engine shuts down.
+static var _exit_watch: Thread
 
 
 func _ready() -> void:
@@ -90,11 +95,39 @@ func finish_lobby(players: Array) -> void:
 
 
 ## Clean exit, code 0 for the launcher, which resumes when the process ends.
+## PF-6: the save is written first, then an exit watchdog is armed, then the tree quits. If the engine's
+## own shutdown never ends (seen on the software Vulkan renderer when the window closes seconds after
+## launch: the main thread waits forever in WorkerThreadPool::exit_languages_threads()), the watchdog
+## ends the process after EXIT_GRACE_MS so the launcher isn't left waiting. On a clean shutdown the
+## process is gone long before the watchdog wakes.
 func quit(code: int = 0) -> void:
 	quit_requested.emit()
 	Save.flush()
 	if quit_exits:
+		arm_exit_watchdog(EXIT_GRACE_MS)
 		get_tree().quit(code)
+
+
+## Starts the exit watchdog: a plain Thread (not a WorkerThreadPool task, so the engine's shutdown never
+## waits for it) that sleeps natively for `grace_ms`, then calls `on_overdue` (default: end this
+## process). Returns the thread. Safe to call once per quit; a second call keeps the first watchdog.
+static func arm_exit_watchdog(grace_ms: int, on_overdue := Callable()) -> Thread:
+	if _exit_watch != null and _exit_watch.is_started() and on_overdue.is_null():
+		return _exit_watch
+	var t := Thread.new()
+	t.start(_exit_watchdog.bind(grace_ms, on_overdue, OS.get_process_id()))
+	if on_overdue.is_null():
+		_exit_watch = t
+	return t
+
+
+static func _exit_watchdog(grace_ms: int, on_overdue: Callable, pid: int) -> void:
+	OS.delay_msec(grace_ms)   # one native sleep: a clean exit ends the process while we are in here
+	if on_overdue.is_valid():
+		on_overdue.call()
+		return
+	printerr("Game: shutdown still running %d ms after quit(); ending the process (PF-6)" % grace_ms)
+	OS.kill(pid)
 
 
 func _set_state(to: State) -> void:

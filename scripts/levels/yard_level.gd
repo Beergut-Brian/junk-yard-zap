@@ -370,7 +370,7 @@ func _add_spawn(player: int, at: Vector3) -> void:
 ## dropped on one end flips the other end up.
 func _build_seesaw(parent: Node3D, at: Vector3) -> void:
 	var pivot := _box(parent, "SeesawPivot", at + Vector3(0, 0.45, 0), Vector3(0.6, 0.9, 1.2))
-	var plank := RigidBody3D.new()
+	var plank := SeesawPlank.new()
 	plank.name = "SeesawPlank"
 	plank.mass = 3.0
 	plank.position = at + Vector3(0, 1.05, 0)
@@ -392,6 +392,26 @@ func _build_seesaw(parent: Node3D, at: Vector3) -> void:
 	hinge.set_flag(HingeJoint3D.FLAG_USE_LIMIT, true)
 	hinge.set_param(HingeJoint3D.PARAM_LIMIT_LOWER, deg_to_rad(-22))
 	hinge.set_param(HingeJoint3D.PARAM_LIMIT_UPPER, deg_to_rad(22))
+
+
+## S-18: the see-saw plank is the yard's one plain rigid body (engine gravity, a hinge). Left alone it
+## could never sleep while it rested on a yard object: that object falls asleep on an even frame, the
+## awake plank wakes it by contact, and the waking keeps the plank's own sleep timer from running out.
+## So it follows the yard objects' rule: still for PhysicsObject.REST_STEPS steps, it sleeps on an even
+## physics frame, the same step as whatever it rests on.
+class SeesawPlank extends RigidBody3D:
+	var _still := 0
+
+	func _physics_process(_delta: float) -> void:
+		if sleeping:
+			_still = 0
+			return
+		if linear_velocity.length() < PhysicsObject.REST_SPEED and angular_velocity.length() < PhysicsObject.REST_SPIN:
+			_still += 1
+		else:
+			_still = 0
+		if _still >= PhysicsObject.REST_STEPS and Engine.get_physics_frames() % 2 == 0:
+			sleeping = true
 
 
 func _box(parent: Node3D, n: String, pos: Vector3, size: Vector3, roll_deg := 0.0) -> StaticBody3D:
