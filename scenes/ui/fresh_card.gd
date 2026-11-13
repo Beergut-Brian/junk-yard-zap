@@ -3,6 +3,9 @@
 ## The A that opened the card never counts: A has to come up first. A menu, so text and glyphs are
 ## fine (docs/kid-design.md, "Menus are for grown-ups"); every press still has a sound.
 ## The lobby owns one, over its Settings; it reads MenuInput like the other cards.
+## Every press answers (docs/press-answers.md): the stick or D-pad (nothing to move between here) and
+## every other button (X, Y, shoulders, triggers, stick clicks, Select, Start) refuse: the soft
+## refusal sound and the card shakes. Nothing else changes: the ring keeps its fill, the question stays.
 class_name FreshCard
 extends Control
 
@@ -27,6 +30,10 @@ var hold := 0.0
 var _armed := false
 var _tick := 0.0
 var _pop := 0.0
+var _wob := 0.0      # refusal shake, 1 (just refused) .. 0 (still)
+var _tw_wob: Tween
+## How many times the card shook (tests read it).
+var wobbles := 0
 
 
 func _ready() -> void:
@@ -72,6 +79,11 @@ func step(delta: float, input: Dictionary, a_down: bool) -> void:
 	if input.b != -1:
 		cancel()
 		return
+	if input.move != Vector2i.ZERO:
+		MenuInput.refuse(self, "left" if input.move.x < 0 else "right" if input.move.x > 0 \
+				else "up" if input.move.y < 0 else "down")
+	elif input.get("other", -1) != -1 and not MenuInput.owned_elsewhere(input):
+		MenuInput.refuse(self, input.button)
 	if not _armed:
 		_armed = not a_down   # the press that opened the card does not count
 		return
@@ -95,6 +107,33 @@ func step(delta: float, input: Dictionary, a_down: bool) -> void:
 		confirmed.emit(k)
 
 
+## The refusal (MenuInput.refuse()): the card shakes side to side three times, fading out.
+func wobble() -> void:
+	wobbles += 1
+	if not is_inside_tree():
+		return
+	if _tw_wob:
+		_tw_wob.kill()
+	_tw_wob = create_tween()
+	_tw_wob.tween_method(_set_wob, 1.0, 0.0, MenuItem.WOBBLE_TIME)
+
+
+## Screenshots: hold the shake at `v` (1 just refused .. 0 still).
+func pose_wobble(v: float) -> void:
+	if _tw_wob:
+		_tw_wob.kill()
+	_set_wob(v)
+
+
+func is_wobbling() -> bool:
+	return _wob > 0.0
+
+
+func _set_wob(v: float) -> void:
+	_wob = v
+	queue_redraw()
+
+
 func progress() -> float:
 	return clampf(hold / HOLD, 0.0, 1.0)
 
@@ -106,7 +145,8 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, vs), Color(0, 0, 0, 0.55))
 	var sc := 1.0 + 0.04 * _pop
 	var sz := CARD * sc
-	var r := Rect2((vs - sz) * 0.5, sz)
+	var shake := sin((1.0 - _wob) * TAU * 3.0) * MenuItem.WOBBLE_PX * _wob
+	var r := Rect2((vs - sz) * 0.5 + Vector2(shake, 0.0), sz)
 	UiStyle.para(self, r.grow(10.0), UiStyle.skin().accent)
 	UiStyle.para(self, r, UiStyle.INK_SHOW)
 	var lines: Array = TEXT.get(ask, TEXT[Ask.NEW])
