@@ -8,6 +8,9 @@ extends Node3D
 enum Mood { NEUTRAL, HAPPY, WIDE, DIZZY, SMUG, PANIC, SHUT, SAD }
 
 const MOUTH_DOTS := 7
+## Eyes follow the nearest player within this many metres (calm moods only).
+const WATCH_RANGE := 7.0
+const WATCH_LOOK := 0.95   # how far the pupils slide toward them (1 = to the eye's rim, near enough)
 const INK := Color("#24181a")
 ## Own RNG: blinking must never shift a seeded simulation (the stress run).
 static var _rng := RandomNumberGenerator.new()
@@ -24,6 +27,8 @@ var _brows: Array[MeshInstance3D] = []
 var _mouth: Array[MeshInstance3D] = []
 var _sweat: MeshInstance3D
 var _size := 0.35
+var _watch := Vector2(0.15, 0.1)   # smoothed look while calm: toward the nearest player, else ahead
+var _watching := false
 
 
 func setup(face_size: float) -> void:
@@ -85,7 +90,38 @@ func _process(delta: float) -> void:
 	_blink -= delta
 	if _blink < -0.12:
 		_blink = _rng.randf_range(2.0, 4.5)
+	_update_watch(delta)
 	_pose(delta)
+
+
+## True while the eyes are following a player.
+func watching() -> bool:
+	return _watching
+
+
+## Where a calm face looks: at the nearest player's head within WATCH_RANGE, smoothed so the eyes
+## glide; nobody near, back to looking ahead. Uses the face's own axes, so a tipped-over crate still
+## looks the right way.
+func _update_watch(delta: float) -> void:
+	var want := Vector2(0.15, 0.1)
+	_watching = false
+	if is_inside_tree():
+		var best := WATCH_RANGE
+		var me := global_position
+		var inv := global_transform.basis.orthonormalized().inverse()
+		for z in get_tree().get_nodes_in_group(Zapper.GROUP):
+			var n := z as Node3D
+			if n == null or not n.visible:
+				continue
+			var d := n.global_position + Vector3(0, 1.1, 0) - me
+			var dist := d.length()
+			if dist < best and dist > 0.05:
+				best = dist
+				var local := inv * d
+				var v := Vector2(local.x, local.y)
+				want = v.normalized() * WATCH_LOOK if v.length() > 0.01 else Vector2.ZERO
+				_watching = true
+	_watch = _watch.lerp(want, 1.0 - exp(-8.0 * delta))
 
 
 func _pose(_delta: float) -> void:
@@ -95,7 +131,7 @@ func _pose(_delta: float) -> void:
 	var eye := 1.0
 	var lid := 1.0         # eye height: 1 open, ~0.1 a closed line
 	var pupil := 1.0
-	var look := Vector2(0.15, 0.1)
+	var look := _watch
 	var curve := 0.45      # + smile, - frown
 	var open := 0.0        # 0 a line of dots, 1 a round O
 	var width := 1.0

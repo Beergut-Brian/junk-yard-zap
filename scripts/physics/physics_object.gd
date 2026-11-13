@@ -26,6 +26,7 @@ const RATTLE_MIN := 0.35   # seconds: the shortest rattle a faceless object does
 const RATTLE_MAX := 0.9
 const RATTLE_TILT := 0.12  # radians at the start of a rattle
 const RATTLE_HOP := 0.12   # of the object's height
+const GAG_SECONDS := 1.2   # Y-19: a machine's moving part (fridge door, toast) plays this long
 const GAG_MIN_IMPULSE := 4.0   # a real drop, not a settle
 const CHUTE_MAX := 1.9          # seconds: the parachute never hangs around longer than this
 const CHUTE_SPEED := 2.6        # m/s, the slow fall under the canopy (4 m at the gate in ~1.6 s)
@@ -68,6 +69,8 @@ var _blocked_time := 0.0
 var _squash_tween: Tween
 var _rattle_left := 0.0
 var _rattle_len := 1.0
+var _gags: Array[Node3D] = []   # Y-19: the machine's moving parts (ObjectArt.gag)
+var _gag_left := 0.0
 ## K-08: a recalled object floats down at the gate under a parachute (seconds left; 0 = closed).
 var chute_left := 0.0
 var _chute: Node3D
@@ -101,6 +104,8 @@ func _ready() -> void:
 	elif ObjectArt.build(data, _visual):
 		for mi in _visual.find_children("*", "GeometryInstance3D", true, false):
 			_art_meshes.append(mi)
+		if not data.has_face:
+			_gags = ObjectArt.gags_in(_visual)
 	else:
 		_build_greybox()
 	if data.has_face:
@@ -264,6 +269,7 @@ func _physics_process(delta: float) -> void:
 		_clamp_left -= delta
 	_visual.scale = squash * current_scale * _wobble()
 	_rattle(delta)
+	_gag(delta)
 	if sleeping and absf(global_position.z) > 0.02:
 		sleeping = false   # don't let a body fall asleep off the plane
 	stack.tick(delta)
@@ -603,6 +609,32 @@ func react_look(mood: ObjectFace.Mood, seconds: float) -> void:
 		return
 	_rattle_len = clampf(seconds, RATTLE_MIN, RATTLE_MAX)
 	_rattle_left = _rattle_len
+	if not _gags.is_empty():
+		if _gag_left <= 0.0 and is_inside_tree():
+			for m in _visual.find_children("GagPuff", "Node3D", true, false):
+				var smoke := Fx.burst(get_tree(), (m as Node3D).global_position, Color(0.9, 0.88, 0.85, 0.9), 8, 1.4, 1.0)
+				if smoke:   # soft round puffs that drift up, not dust that falls
+					smoke.gravity = Vector3(0, 0.8, 0)
+					smoke.spread = 30.0
+					smoke.initial_velocity_min = 0.6
+					smoke.initial_velocity_max = 1.3
+					smoke.scale_amount_min = 1.0
+					smoke.scale_amount_max = 1.8
+		_gag_left = GAG_SECONDS
+
+
+## Y-19: true while a machine's moving part is playing (fridge door open, toast up).
+func gagging() -> bool:
+	return _gag_left > 0.0
+
+
+func _gag(delta: float) -> void:
+	if _gag_left <= 0.0:
+		return
+	_gag_left = maxf(0.0, _gag_left - delta)
+	var t := 1.0 - _gag_left / GAG_SECONDS
+	for p in _gags:
+		ObjectArt.pose_gag(p, t)
 
 
 func rattling() -> bool:

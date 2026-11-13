@@ -16,7 +16,10 @@ static func build(root: Node3D, d: ObjectData) -> void:
 	# grille and bonnet trim
 	A.detail(root, K.rbox(Vector3(0.06, 0.34, 0.5), 0.02), K.c("rust_dark"), Vector3(1.07, by + 0.58, 0))
 	A.part(root, K.cyl(0.07, 0.45), K.c("rust_dark"), Vector3(0.75, by + 1.0, 0.2))
-	A.detail(root, K.cyl(0.1, 0.05), K.c("ink"), Vector3(0.75, by + 1.25, 0.2))
+	# The exhaust cap pops up with a puff of smoke when it's zapped (ObjectArt.gag).
+	var cap := A.gag(root, &"pop", Vector3(0.75, by + 1.25, 0.2), Vector3.UP, 0.22)
+	A.part(cap, K.cyl(0.1, 0.05), K.c("ink"), Vector3(0.75, by + 1.25, 0.2))
+	A.puff(root, Vector3(0.75, by + 1.35, 0.2))
 	# axles and wheels (two per side, so it reads from either end)
 	for z in [-0.5, 0.5]:
 		A.wheel(root, 0.55, 0.22, Vector3(-0.65, by + 0.55, z))
