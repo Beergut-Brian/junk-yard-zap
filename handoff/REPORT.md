@@ -49,7 +49,8 @@ checked again in a frame (PF-3, PF-4, PF-5) or an export run (PF-1, PF-2).
   - exit 0, **344 test cases, 0 errors, 0 failures, 0 orphans** (`handoff/test-output.txt`).
   - The suite ran before the last tool-only commit (33ac5cc: two player-flow phases in
     scripts/tools/player_flow.gd, no game code). Import and export were re-run after it.
-- **Export:** `godot --headless --path . --export-release Linux .scratch/b/game.x86_64`, exit 0.
+- **Export:** `godot --headless --path . --export-release Linux .scratch/b/game.x86_64`, exit 0 (final run
+  after `handoff/.gdignore`: no handoff files packed).
   This lane's first export hit the known abort at exit (134) after `savepack DONE`; the rerun exited 0.
 - **Export boot:** `RUN_SECS=60 run-export .scratch/b/game.x86_64 -- --demo` (scratch `XDG_DATA_HOME`).
   It ran the full 60 s with **0 script errors and 0 errors**.
@@ -74,6 +75,10 @@ Plus the docs commit with this report, PLAYER-FLOW.md, PLAN-STATUS.md (PF-1..PF-
 rows: built 166, partial 2, missing 1) and handoff.json.
 
 ## Notes for review
+
+- `handoff/.gdignore` (new): without it, a `--import` with frames in `handoff/shots/` imports them, and the
+  export (`export_filter="all_resources"`) packed all 45 into the game. Caught on this lane's final export
+  and re-exported: 0 handoff files packed, boot clean. Earlier lanes' `handoff/frames/` would have done the same.
 
 - The label change (PF-3) is only the text in this game's pause_menu.tscn. The node is still `Restart`,
   and docs/contracts.md still names the bar "Restart (`to_lobby()`)".
