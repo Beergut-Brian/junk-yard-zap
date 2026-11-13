@@ -7,7 +7,8 @@
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
 ## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|gags-<zone>|zone-<name> (staged
-## shots), --soak (with --demo: stress + a log line every 30 s), --proto.
+## shots), --soak (with --demo: stress + a log line every 30 s), --proto, --session-flow --flow-out=<dir>
+## (scripts/tools/session_flow.gd on an export), --player-flow=<phase> (scripts/tools/player_flow.gd).
 extends Node3D
 
 const ZAPPER := preload("res://scenes/players/zapper.tscn")
@@ -26,6 +27,10 @@ var _bots := {}
 func _ready() -> void:
 	if OS.get_cmdline_user_args().has("--proto"):   # Phase 1 risk prototype, reachable from an export
 		get_tree().change_scene_to_file.call_deferred("res://scenes/proto/risk_proto.tscn")
+		return
+	# The scripted session (scripts/tools/session_flow.gd) on a release export, which takes no scene path.
+	if OS.get_cmdline_user_args().has("--session-flow") and get_parent() == get_tree().root:
+		get_tree().change_scene_to_file.call_deferred("res://scripts/tools/session_flow.tscn")
 		return
 	# The round card after the wipe (its title, "ZAP TIME!", is in data/menu_skin.tres).
 	lobby.round_card_subtitle = "THE YARD IS OPEN"
@@ -49,6 +54,8 @@ func _ready() -> void:
 			_start_demo()).call_deferred()
 	elif Game.state != Game.State.LOBBY:
 		Game.to_lobby()
+	if PlayerFlowRun.phase_from_args(OS.get_cmdline_user_args()) != "":   # handoff/PLAYER-FLOW.md runs
+		add_child(PlayerFlowRun.new())
 
 
 func _on_lobby_ready(players: Array) -> void:

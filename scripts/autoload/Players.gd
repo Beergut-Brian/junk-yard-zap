@@ -70,6 +70,9 @@ func _input(event: InputEvent) -> void:
 	var device: int = event.device
 	if device in _device_of.values():
 		return
+	if solo:
+		hand_p2_to(device)
+		return
 	for player in [P1, P2]:
 		if _device_of[player] == -1:
 			_assign(player, device)
@@ -189,6 +192,21 @@ func set_solo(on: bool, device: int = VIRTUAL) -> void:
 		_marker.show_solo(false)
 		solo_changed.emit(false)
 		player_left.emit(P2)
+
+
+## PF-1: a second pad pressed a button while one pad was playing solo. Solo ends (P1 keeps the solo
+## pad) and the new pad gets P2, the way it would without solo: they drop straight in.
+func hand_p2_to(device: int) -> void:
+	if not solo:
+		return
+	var keep := _solo_device
+	if keep == VIRTUAL:   # --solo: P1 keeps the other pad, if there is one
+		for d in Input.get_connected_joypads():
+			if d != device:
+				keep = d
+				break
+	set_solo(false, keep)
+	_assign(P2, device)
 
 
 func set_solo_focus(player: int) -> void:
