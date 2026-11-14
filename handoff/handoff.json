@@ -6,7 +6,14 @@
   "status": "done: launch-ready except the TV-box checks",
   "pushed": false,
   "commits": [
-    { "sha": "see git log -1", "msg": "systems: launch-ready-3 session flow, checklist, plan sync" }
+    {
+      "sha": "ad86b89",
+      "msg": "systems: launch-ready-3 session flow, checklist, plan sync"
+    },
+    {
+      "sha": "see git log -1",
+      "msg": "docs: launch-ready-3 handoff sha"
+    }
   ],
   "plan_status_moved": {
     "L-18": "added, built (session flow: ready-up alone with a held A, quit from the main menu; 42/42 steps in real frames)",
@@ -16,14 +23,31 @@
     "C-14": "partial: playtest #2 on the TV (Kaden)",
     "S-18": "partial: GTX 1060 frame rate (TV box)"
   },
-  "skipped": ["C-14", "S-18", "L-11", "C-15", "C-20", "G-12", "art / palette / logo / store-art / jar rows (Art Director process; none open)"],
+  "skipped": [
+    "C-14",
+    "S-18",
+    "L-11",
+    "C-15",
+    "C-20",
+    "G-12",
+    "art / palette / logo / store-art / jar rows (Art Director process; none open)"
+  ],
   "tests": {
     "command": "rm -rf .godot && godot --headless --path . --import && godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue",
     "summary": "Overall Summary: 415 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
     "log": "handoff/test-output.txt"
   },
-  "session_flow": { "command": "scripts/tools/session_flow.sh handoff/frames/flow3", "steps": 42, "failed": 0 },
-  "soak": { "command": "godot --headless --path . --fixed-fps 60 --quit-after 108000 -- --demo --soak", "simulated_minutes": 30, "script_errors": 0, "orphans": 0 },
+  "session_flow": {
+    "command": "scripts/tools/session_flow.sh handoff/frames/flow3",
+    "steps": 42,
+    "failed": 0
+  },
+  "soak": {
+    "command": "godot --headless --path . --fixed-fps 60 --quit-after 108000 -- --demo --soak",
+    "simulated_minutes": 30,
+    "script_errors": 0,
+    "orphans": 0
+  },
   "frames": {
     "tracked": [
       "handoff/frames/flow3/23_ready_p1_alone.png",
