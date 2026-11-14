@@ -1,37 +1,67 @@
 {
-  "lane": "press-answers-adopt-1",
+  "lane": "jyz-launch-ready-3",
   "game": "junk-yard-zap",
-  "branch": "feature/press-answers-adopt-1",
-  "base": "origin/dev @ 42491b1 (after PR #45)",
-  "template_source": "openjar-template feature/template-press-answers-1 @ 9d99f29",
-  "status": "done",
+  "branch": "feature/jyz-launch-ready-3",
+  "base": "origin/dev @ b70c955 (after PR #48)",
+  "status": "done: launch-ready except the TV-box checks",
   "pushed": false,
   "commits": [
-    { "sha": "a74fd12", "msg": "systems: every menu press answers (template press-answers adopted)" },
-    { "sha": "see git log -1", "msg": "docs: press-answers-adopt-1 handoff" }
+    {
+      "sha": "ad86b89",
+      "msg": "systems: launch-ready-3 session flow, checklist, plan sync"
+    },
+    {
+      "sha": "see git log -1",
+      "msg": "docs: launch-ready-3 handoff sha"
+    }
   ],
-  "moved_rows": {
-    "M-07": "added, built (every menu press answers; S17)",
-    "R-05": "note updated (menu half built via M-07); stays partial (in-play half needs a gameplay decision)"
+  "plan_status_moved": {
+    "L-18": "added, built (session flow: ready-up alone with a held A, quit from the main menu; 42/42 steps in real frames)",
+    "totals": "197 rows: built 180, partial 2, missing 0, superseded 11, later 4 (the previous line missed M-07)"
   },
-  "fr_rows_note": "This game's PLAN-STATUS has no FR-5 / FR-3 rows; rule 5 is R-05, rule 3 is R-03 (already built, untouched).",
+  "open_rows": {
+    "C-14": "partial: playtest #2 on the TV (Kaden)",
+    "S-18": "partial: GTX 1060 frame rate (TV box)"
+  },
+  "skipped": [
+    "C-14",
+    "S-18",
+    "L-11",
+    "C-15",
+    "C-20",
+    "G-12",
+    "art / palette / logo / store-art / jar rows (Art Director process; none open)"
+  ],
   "tests": {
-    "command": "rm -rf .godot && godot --headless --path . --import && godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode",
-    "summary": "Overall Summary: 396 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
-    "baseline": 383,
-    "new_suites": ["tests/test_press_answers.gd (13)"],
+    "command": "rm -rf .godot && godot --headless --path . --import && godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue",
+    "summary": "Overall Summary: 415 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
     "log": "handoff/test-output.txt"
   },
-  "frames": [
-    "handoff/frames/press_pause_refused_right_on_door.png",
-    "handoff/frames/press_start_menu_refused_x_on_continue.png",
-    "handoff/frames/press_new_yard_card_refused_x.png"
-  ],
-  "frames_tracked": false,
-  "decisions_for_producer": [
-    "Menu refusal plays the game's own 'nope' (nope_1/2.ogg), not the template's synth 'honk': no honk.ogg here and test_launch_ready requires every menu cue to be a file.",
-    "Lobby Start now refuses when it has nothing to do (waiting for the other player, or counting down).",
-    "New yard card footer still reads Move / Select / Back (R-07 hint area, unchanged)."
-  ],
-  "off_limits_respected": "no gameplay code, art, audio files, save format, .tscn, or template repo changed"
+  "session_flow": {
+    "command": "scripts/tools/session_flow.sh handoff/frames/flow3",
+    "steps": 42,
+    "failed": 0
+  },
+  "soak": {
+    "command": "godot --headless --path . --fixed-fps 60 --quit-after 108000 -- --demo --soak",
+    "simulated_minutes": 30,
+    "script_errors": 0,
+    "orphans": 0
+  },
+  "frames": {
+    "tracked": [
+      "handoff/frames/flow3/23_ready_p1_alone.png",
+      "handoff/frames/flow3/24_hold_a_alone_starts.png",
+      "handoff/frames/flow3/27_menu_door_asks.png",
+      "handoff/frames/flow3/17_pause.png",
+      "handoff/frames/flow3/29_solo_on.png",
+      "handoff/frames/launch3/solo_flag_boot.png"
+    ],
+    "untracked_in_worktree": "handoff/frames/flow3/*.png (42 steps, 16 MB)"
+  },
+  "needs_kaden": [
+    "Screen shake is a saved on/off restored at boot (like volume); keep, or reset every boot like solo?",
+    "Playtest #2 on the TV (C-14), then v1.0.0 (C-15)",
+    "TV-box list in docs/launch-checklist.md"
+  ]
 }

@@ -1,119 +1,129 @@
-# REPORT: feature/press-answers-adopt-1 (press-answers adoption)
+# REPORT: feature/jyz-launch-ready-3 (launch-readiness, third pass)
 
-Kaden's standing rule 5 (every press answers): a menu press that does nothing must say so. The template
-fixed its menu kit on `feature/template-press-answers-1` (openjar-template commit `9d99f29`). This lane
-adopted that fix into Junk Yard Zap's own menu kit and gave this game's own menu screens the same
-refusal.
+Base and checked head: `origin/dev` @ `b70c955` (PR #48 press answers, on top of PR #49 hint panel and
+the 2026-11-13 merges: pause door, rules audit, hub refusal, plan syncs). Not pushed. The previous root
+REPORT.md (press-answers-adopt-1) is at `git show b70c955:REPORT.md`.
 
-Base: `origin/dev` @ `42491b1` (after PR #45). `git fetch origin && git merge origin/dev` was already up to
-date. The previous root REPORT.md (feel-rules audit, jyz-rules-audit-1) is at `git show 4156c43:REPORT.md`.
-
-## PLAN-STATUS: no FR rows here
-
-This game's PLAN-STATUS has no rows named FR-5 or FR-3. Kaden's feel rules are the rows R-01..R-08:
-- **Rule 5 is R-05.** It stays **partial**. Its open half is in play (X, Y, LT, RT and the stick clicks
-  do nothing in play, and B in mid-air does nothing), and that needs a gameplay decision this lane must
-  not make. Its note now says the menu half is built (M-07).
-- **Rule 3 is R-03** (pause and back out). It was already built; this lane did not touch it.
-
-**Rows moved:** **M-07** added as **built** (S17, the menu half of rule 5). **R-05**: the note was
-updated and the status stays partial. Totals: 196 rows, built 177, partial 4.
+**Verdict: Junk Yard Zap is launch-ready except the TV-box checks.** Nothing open needs code. The two
+partial rows are C-14 (playtest #2 on the TV) and S-18 (GTX 1060 frame rate), both Kaden's weekend item.
 
 ## What changed
 
-The template commit was merged file by file with `git merge-file`: the base was the template before the
-fix (`9d99f29~1`), "ours" was this game's file and "theirs" was the template after the fix. No `.tscn`
-was changed, and nothing changes in gameplay code, art, audio files or the save format.
+- `scripts/tools/session_flow.gd`: six new steps between Restart and Solo. **Ready-up alone:** P2 unplugs,
+  P1 readies, holds A on Play until the bar fills, plays alone, Main Menu back to the lobby. **Quit from
+  the main menu:** Back to Open Jar asks "Leave the game?", Leave calls `Game.quit` (no force-close).
+  Two harness notes in the code: the hold drives P1's bound action (a synthetic pad is not in
+  `Input.get_connected_joypads()`, the same limit the Select-hold step already works around), and it
+  waits for the bar rather than 1.5 s of wall clock (on the software renderer frames lag the clock;
+  headless it fills in 1.5 s as designed: probe printed hold 0.41 / 0.81 / 1.22 s, then the countdown).
+- `PLAN-STATUS.md`: header (checked against b70c955), source S18, row **L-18** added as built, totals.
+- `docs/launch-checklist.md`: rewritten (standing rules yes/no with proof, TV-box checks with the exact
+  test and pass condition, load steps, the dev head).
+- No game code changed: the audit found nothing in the game to fix.
 
-| File | How |
-| --- | --- |
-| `scenes/ui/kit/menu_input.gd` | Merged by hand. This game's D-pad edge code stays (it is solo-focus aware, and R-01's D-pad also feeds the move actions). Added from the template: `other` and `button` in `read()`, `refuse()`, `owned_elsewhere()`, `_other()` (triggers count once per pull, a join press is not a refusal, the solo hold is not a refusal, a button already held when a menu opens is not a press). `_other()` is cached per frame, so a second `read()` in the same frame sees the same press. **`REFUSE_CUE` is `"nope"`** (see below). |
-| `scenes/ui/kit/menu_item.gd`, `scenes/ui/icon_button.gd` | `wobble()`, `pose_wobble()`, `is_wobbling()` and `wobbles` from the template. The template's `slam_in` vars were not taken for `icon_button` (this game's icon button has no slam). |
-| `scenes/ui/kit/ui_sound.gd` | Took the `plays` counter that tests read. **Left out** the template's synth `honk` cue (see below). |
-| `scenes/ui/pause_menu.gd`, `settings_panel.gd`, `confirm_dialog.gd` | Template refusals, merged cleanly. |
-| `scenes/ui/lobby.gd` | Template refusals, merged (the header conflict kept both notes). **Changed for this game:** Start already has a job in the lobby (PF-5: ready, then start), so `_process` never refuses `"start"`. Instead, `press_start()` refuses when Start has nothing to do: counting down already, or ready and waiting for the other player (before, that press was silent). |
-| `scenes/ui/settings_panel.gd` (game-only row) | **Restore old yard**: left/right and X, Y, LB, RB, LT, RT, L3, R3, Select and Start (in the lobby) used to return silently. Now they refuse and the row wobbles. A still asks. |
-| `scenes/ui/fresh_card.gd` (game-only screen) | The **New yard / Restore question** card: stick or D-pad moves and the same unused buttons were silent. Now they refuse and the whole card shakes (`wobble()`, 3 shakes, 16 px, 0.32 s, the same feel as a bar). Nothing else changes: the ring keeps its fill, A-hold and B work as before. |
-| `scenes/ui/kit/ui_preview.gd`, `scripts/tools/shots.sh` | `--ui=lobby-refuse` and `--ui=pause-refuse` from the template (`pause-refuse` was adapted: this game's Door is the fifth bar, not an icon). New: `--ui=lobby-fresh-refuse`. |
-| `docs/press-answers.md` (new), `docs/ui.md` | The before and after tables for this game, the `nope` cue row, the "Every press answers" section, the new screenshot states. |
-| `tests/test_press_answers.gd` (new) | 13 tests (below). |
-| `PLAN-STATUS.md` | S17, M-07, the R-05 note, the header and the totals. |
+## Rows moved
 
-### The refusal sound is `nope`, not `honk` (please check this)
+| Row | Move | Proof |
+| --- | --- | --- |
+| L-18 | added, **built** | session_flow.gd steps `ready_p1_alone` .. `menu_door_leave_quits`; `test_launch_ready.gd::test_the_whole_session_flows_with_a_way_back_from_every_screen`; frames `handoff/frames/flow3/24_hold_a_alone_starts.png`, `27_menu_door_asks.png` |
+| Totals | corrected | 197 rows: built 180 · partial 2 · missing 0 · superseded 11 · later 4. The line before had missed M-07 (PR #48) |
 
-The template plays `honk`, which is a game's own `honk.ogg` if it has one, or else a synth stand-in.
-Junk Yard Zap has no `honk.ogg`. Its `test_launch_ready.gd::test_every_menu_cue_is_a_designed_file_not_the_synth`
-requires every `UiSound` cue to be a real file, so it **failed** with the template's synth `honk` in the
-cue list (first full run: 391 cases, 1 failure). Adding audio is off-limits for this lane. So the menus
-here play the yard's own refusal, **`nope`** (`nope_1/2.ogg`, 0.35 s, the same sound the zapper makes on
-a refused press). The game now has one "no" sound. If Kaden wants a separate menu honk, that is a job
-for the Audio lane: add `assets/audio/sfx/honk.ogg`, put the `honk` cue back in `UiSound.CUES`, and set
-`MenuInput.REFUSE_CUE = "honk"`.
+Open rows re-audited, not moved: **C-14** partial (needs playtest #2 on the TV, a playtest result is not
+invented here); **S-18** partial (sleep-when-still is built and tested; the GTX 1060 number needs the
+TV box). Later rows untouched: C-15 (v1.0.0 after playtest #2), C-20, G-12 (after v1), L-11 (TV box).
 
-## Screen by screen (after)
+## Skipped (and why)
 
-| Input | Lobby (start menu) | Pause list | Settings | Leave the game? | New yard / Restore card (game-only) |
-| --- | --- | --- | --- | --- | --- |
-| X, Y, LB, RB, LT, RT, L3, R3 | refuse | refuse | refuse (also on Restore old yard) | refuse | refuse, the card shakes |
-| Up / down | move (unchanged) | move (unchanged) | row (unchanged) | move (unchanged) | refuse, the card shakes |
-| Left / right | chooser (unchanged); locked podium: refuse | step the list (right = down); past the end: refuse | step (unchanged); Restore old yard: refuse | move (unchanged) | refuse, the card shakes |
-| Start | ready, then start (PF-5, unchanged); nothing to do: refuse | resume (Game, unchanged) | in pause: resume; in the lobby: refuse | in pause: resume; in the lobby: refuse | refuse, the card shakes |
-| Select | solo: switch podium (unchanged); otherwise refuse | refuse | refuse | refuse | refuse, the card shakes |
-| B | un-ready / back to Play (unchanged); not ready on Play: refuse | resume (unchanged) | close (unchanged) | Stay (unchanged) | keep the yard (unchanged) |
+- **C-14**: playtest #2 on the TV; Kaden's.
+- **S-18, L-11**: GTX 1060 frame rate, the TV box, the 8BitDo pads on the TV; Kaden's weekend item.
+- **C-15**: v1.0.0 promotion after playtest #2; Hermes.
+- **C-20, G-12**: out of scope for v1 / update decks.
+- **Art rows (none open, none touched)**: art, palette, logo, store art and jar rows follow the Art
+  Director process. Not re-checked or rebuilt here: V rows, A-13, Y-04 art passes, `store/grid.png`,
+  `store/hero.png`, `store/jar.glb`, `store/clip.mp4` (L-13), the lobby title logo. They are all built on
+  dev already; this pass did not judge them.
+- Nothing is waiting on a Docket pick.
 
-The full before / after table is in `docs/press-answers.md`.
+## Placeholders, debug prints, dev switches
+
+- No TODO / FIXME / placeholder / lorem text in shipped scenes, scripts or data (the three "placeholder"
+  hits are code comments about the kit's fallback, never reached: L-04).
+- `print` lines (`Chooser voice:`, `Audio soak:`, `Audio: no file for cue`) go to stdout only; nothing on
+  screen. Left in: they are the soak and chooser logs the tools read.
+- Debug: F3 (FPS overlay) and F12 (screenshot) are bound to keyboard keys only; no pad button reaches
+  them. F3 is the tool for the GTX 1060 check, so it stays.
+- Dev flags (`--demo`, `--soak`, `--solo`, `--screenshot-after`) are command-line only; a player can't hit them.
+- Title, lobby and pause text read as finished (frames below).
+
+## Session flow (real frames, software Vulkan, 1920x1080)
+
+`scripts/tools/session_flow.sh handoff/frames/flow3`: **42 / 42 steps pass** (34 framed checks + 8
+window-close checks, each a clean `Game.quit`). Headless run of the same flow: 42 / 42. Frames are in
+this worktree, `handoff/frames/flow3/` (16 MB, untracked); six are tracked (23, 24, 27, 17, 29 and `launch3/solo_flag_boot.png`, listed in `handoff/handoff.json`). What each shows (I looked
+at every one):
+
+- 01 boot_lobby: title "JUNK YARD ZAP", Play / Settings / Back to Open Jar, two dim podiums "A JOIN", v0.1.0.
+- 02 chooser: P1 joined, Astro Ana on the green podium. 03 full lap: back at Astro Ana after 21 / 21 Jarlings, each said its own catchphrase.
+- 04 lobby settings: Music, Sound, Screen shake on/off, Solo playtest on/off, "Saved on this TV". 05 closed. 06 Back to Open Jar asks "Leave the game?" (Stay first). 07 stayed.
+- 08 both ready: green Astro Ana and red Chuck "READY!", "Starting in 2", Continue / New yard shown (a save exists).
+- 09 the "ZAP TIME! / THE YARD IS OPEN" card (the check fires during the wipe into play). 10 gun wheel popped over P1, both hint panels in the corners. 11 zap and jump.
+- 12 Select tap: nothing. 13 Select hold ring filling. 14 yard reset.
+- 15 P2 unplugged: asleep at the tire pile; P2's corner shows only "A" with a sun (press A to wake). 16 P2 back in: a sun burst over P2, P2's hint panel back.
+- 17 pause: "PAUSED / PLAYER 1 PAUSED", Resume, Reset Yard, Main Menu, Settings, **Back to Open Jar bar with the door glyph**. 18-19 pause settings and back. 20 resumed with B.
+- 21 Reset Yard from pause. 22 Main Menu back to the lobby, both still joined.
+- 23 **ready alone**: P1 ready, P2 "A JOIN", footer "Press Start or hold A to start solo". 24 **hold A alone**: "PLAYER 1 READY 3 / Starting in 3", 1P tag. 25 "ZAP TIME!" card into play. 26 back to the lobby.
+- 27 **main menu door**: "LEAVE THE GAME? Progress is saved. You'll go back to Open Jar." Stay / Leave. 28 after Leave (`Game.quit` fired once; the harness keeps the process alive, so the lobby is still drawn).
+- 29 **solo on** (Select+Start 2 s): solo marker (green and red dots) top left, both podiums ready. 30 "ZAP TIME!" into play. 31 solo swap: the pad drives the other zapper. 32 **solo off**: marker gone.
+- 33 pause door asks. 34 Leave quits (`Game.quit`).
+
+Also: `handoff/frames/launch3/solo_flag_boot.png` (`--solo` at boot, 4 s): solo marker top left, both
+zappers in the yard, both hint panels. Solo turns on only from the flag or the hold; a saved "on"
+never restores (S-25 tests).
+
+Drop-in / drop-out are 15-16 above; quitting from the menu without a force-close is 27-28 and 33-34,
+plus the window close on 8 screens.
+
+## Soak
+
+`godot --headless --path . --fixed-fps 60 --quit-after 108000 -- --demo --soak` (30 simulated minutes,
+this machine, software): **0 script errors**, 0 engine errors in play. The only ERROR line is the
+engine's exit notice "1 resources still in use at exit" (the same line the clean import prints).
+3382 zaps, 561 glues, 133-161 effects stacked, 0 orphans in every log line, 56 objects, 0 recalls. From
+minute 20, nodes stay between 5094 and 5260 and follow the stacked-effect count; memory 223.1 -> 224.1 MB
+over the last 10 minutes. Frame 6-11 ms mean (simulated time on a software box, not a frame-rate claim).
+
+## Export
+
+`godot --headless --path . --export-release "Linux" .scratch/b/game.x86_64` wrote the pack ("savepack
+DONE"), then the editor process aborted on its own exit (core dump after DONE; the export is complete
+and the binary runs). That is the engine shutdown issue PF-6 works around for the game; it does not
+affect the release workflow's output, but CI should be watched. The binary: `--headless --quit-after 600
+-- --demo` exit code 0, 0 script errors.
 
 ## Tests
 
-`tests/test_press_answers.gd` has **13 tests**, at least one per menu screen. Each one sends real pad
-events (devices 5 and 6) to a booted `main.tscn`, then checks that the refusal counted, the `nope` cue
-played, the focused item wobbled, and nothing else changed (state, focus, ready, picks, settings values,
-backups, and the question still open):
-- Lobby: `test_lobby_unused_buttons_refuse_and_change_nothing`,
-  `test_lobby_start_readies_then_refuses_when_it_has_nothing_to_do` (new for this game),
-  `test_lobby_b_with_nothing_to_back_out_of_refuses`, `test_lobby_join_press_is_not_a_refusal`,
-  `test_lobby_left_right_on_a_locked_podium_refuses`, `test_lobby_select_in_solo_still_switches`
-- Pause: `test_pause_unused_buttons_refuse_and_change_nothing`,
-  `test_pause_left_right_cycle_then_refuse_at_the_end` (five rows),
-  `test_pause_start_still_resumes`
-- Settings: `test_settings_unused_button_refuses_and_changes_nothing`,
-  `test_settings_restore_row_refuses_left_right_and_unused_buttons` (game-only row)
-- Leave the game?: `test_confirm_unused_button_refuses_and_stays_open`
-- New yard card: `test_fresh_card_unused_presses_refuse_and_keep_the_question` (game-only screen)
+Clean import (`rm -rf .godot && godot --headless --path . --import`), then
+`godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue`:
+**415 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans**, exit code 0 (run twice:
+once before the flow change while the soak and the rendered flow loaded the CPU, once after the
+change on a fresh import). Log: `handoff/test-output.txt`.
 
-The suite runs on its own profile (`gdunit_press_answers`), its own settings file
-(`user://test_settings_press_answers.json`, which a test asserts), and its own picks file. It never uses
-the real settings or save.
+- Roster and chooser tests use fixtures (`tests/fixtures/roster_three.json`, `roster_standin.json`,
+  `roster_two.json`, `roster_voice.json`, `roster_comedy.json`). The one real-data test,
+  `test_roster.gd::test_real_roster_is_jeff_and_chuck`, checks only the shipped defaults (Jeff P1, Chuck
+  P2, no residents, every file present), never a count. The session flow's full lap counts the live
+  roster on purpose (it is the real-game check, not a unit test).
+- Physics-outcome tests in the full yard bench the bodies they are not about (`tests/fixtures/stage.gd`
+  in test_balloons, test_greybox, test_playtest1, test_polish, test_sleep_when_still). The others do not
+  depend on a pile: test_controls builds its own bare world, test_more_objects checks effect stacks and
+  undo, and test_goal_deck either builds its own boxes on a `YardStrip` or carries the card's object by
+  hand along waypoints and fails if it gets stuck.
 
-**Full suite** (clean import: `rm -rf .godot`, `godot --headless --path . --import`, then
-`godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode`):
-exit 0, `Overall Summary: 396 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |`.
-Before this lane: 383, all green. 383 + 13 new = 396. The suite log is `handoff/test-output.txt`.
+## Needs Kaden
 
-## Frames (real renders, `scripts/tools/shots.sh`, Forward+ on the software GPU)
-
-I looked at all three. The shake is held at 0.92 (`pose_wobble`), so the bar or card sits about 16 px
-off its place. In a still frame a sideways shake reads weakly; the template notes the same.
-- `handoff/frames/press_pause_refused_right_on_door.png` (`--ui=pause-refuse`): paused by P2, Back to
-  Open Jar focused, right pressed (no row that way), the bar mid-shake.
-- `handoff/frames/press_start_menu_refused_x_on_continue.png` (`--ui=lobby-refuse`): the start menu with
-  a saved yard (Continue / New yard). P1 is ready and P2 is choosing. X was pressed, and the Continue bar
-  is mid-shake.
-- `handoff/frames/press_new_yard_card_refused_x.png` (`--ui=lobby-fresh-refuse`): "START A NEW YARD?"
-  with X pressed, the card mid-shake (shifted right). Nobody is ready and New yard is focused behind it.
-
-`handoff/` is in `.git/info/exclude`, and frames are untracked by this repo's convention (PLAN-STATUS
-"Frame paths"). They are in this worktree.
-
-## For the producer / Kaden
-
-1. **`nope` instead of `honk`** for menu refusals (above). Please confirm, or send it to the Audio lane.
-2. **Lobby Start now refuses** when it has nothing to do (ready and waiting for the other player, or
-   counting down). Before, that press was silent; the status line already says "Waiting for Player 2".
-3. **On the New yard card the footer still reads "Move / Select / Back".** That is the lobby's footer
-   hint (R-07 area), and while the card is up a move now refuses. I did not change it; it is a small
-   hint tweak if wanted.
-4. **R-05 stays partial**: what is left is silent X, Y, LT, RT and stick clicks in play, plus B in
-   mid-air. That needs a gameplay decision.
-5. Pause left/right do not wrap (as in the template): they refuse at the ends.
-6. Not pushed (the producer ships).
+- **Screen shake** is a saved on/off that comes back at boot, like the volume sliders. The standing rule
+  "saved toggles never restore at boot" came from mode toggles (the launcher's dev toggle, solo), and
+  solo follows it. Keep shake as a comfort preference, or reset it every boot? Left as it is until he says.
+- Playtest #2 on the TV (C-14), then v1.0.0 (C-15).
+- The TV-box list in `docs/launch-checklist.md` (GTX 1060 at F3, both 8BitDo pads, hold A alone, Select
+  hold vs Select+Start, launcher round trip, sound levels, read from the sofa).

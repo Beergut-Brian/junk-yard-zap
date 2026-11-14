@@ -296,9 +296,48 @@ func run(main_scene: Node) -> void:
 	await check("restart_to_lobby", Game.state == Game.State.LOBBY and lobby.visible
 			and Players.is_active(Players.P1) and Players.is_active(Players.P2))
 
-	# Solo: P2 unplugs, P1 holds Select+Start 2 s, then readies both and plays.
+	# Ready-up alone: P2 unplugs; P1 readies, then holds A on Play 1.5 s and starts with no partner.
 	Players._on_joy_connection_changed(PAD2, false)
 	await _frames(4)
+	lobby._set_focus(lobby.Choice.PLAY, false)
+	if not lobby.readied[Players.P1]:
+		await pad(PAD1, JOY_BUTTON_A)
+	await check("ready_p1_alone", lobby.readied[Players.P1] and not lobby.counting, "P1 ready, P2 gone, no countdown")
+	# The lobby reads the hold from P1's bound action; Players binds that to pads it polls in
+	# Input.get_connected_joypads(), which a synthetic pad is not in: hold the bound action itself.
+	Input.action_press(Players.action(Players.P1, "action"))
+	# Held until the bar fills: on a software renderer frame time lags the wall clock.
+	await until(func() -> bool: return lobby.counting or Game.state == Game.State.PLAYING, 8.0)
+	Input.action_release(Players.action(Players.P1, "action"))
+	await check("hold_a_alone_starts", lobby.counting or Game.state == Game.State.PLAYING, "hold A 1.5 s")
+	await until(func() -> bool: return Game.state == Game.State.PLAYING and main.zapper(Players.P1) != null)
+	await _wait(0.5)
+	await check("playing_alone", Game.state == Game.State.PLAYING and main.zapper(Players.P1) != null)
+	await pad(PAD1, JOY_BUTTON_START)
+	await _wait(0.3)
+	pm._set_focus(pm.Choice.RESTART, false)
+	await pad(PAD1, JOY_BUTTON_A)
+	await until(func() -> bool: return Game.state == Game.State.LOBBY, 5.0)
+	await _wait(0.4)
+	await check("restart_to_lobby_alone", Game.state == Game.State.LOBBY and lobby.visible)
+
+	# Quit from the main menu: Back to Open Jar asks, Leave quits (no force-close).
+	if lobby.readied[Players.P1]:
+		await pad(PAD1, JOY_BUTTON_B)   # un-ready so the cursor moves
+	lobby._set_focus(lobby.Choice.DOOR, false)
+	await pad(PAD1, JOY_BUTTON_A)
+	await _wait(0.3)
+	q = quits
+	await check("menu_door_asks", confirm.active and quits == q)
+	confirm.move_focus(1)   # Stay is first; one step to Leave
+	await pad(PAD1, JOY_BUTTON_A)
+	await _wait(0.2)
+	await check("menu_door_leave_quits", quits == q + 1, "Game.quit from the main menu")
+	if confirm.active:
+		await pad(PAD1, JOY_BUTTON_B)
+	lobby._set_focus(lobby.Choice.PLAY, false)
+
+	# Solo: P1 holds Select+Start 2 s, then readies both and plays.
 	await hold_select_start(PAD1)
 	await check("solo_on", Players.solo)
 	await until(func() -> bool: return Game.state == Game.State.PLAYING and main.zapper(Players.P1) != null)
