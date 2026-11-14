@@ -11,6 +11,9 @@ signal zapped(player: int, gun: StringName, target: Node3D)
 signal gun_changed(player: int, gun: GunData)
 signal woke(player: int)
 signal partner_zapped(player: int, gun: StringName)
+## A press was refused out loud (the "nope" cue): a statue press, an unbound button, an air B, or a
+## zap / grab / grow that could not happen. The hint panel (scenes/ui/hud/hint_panel.gd) shakes.
+signal noped(player: int)
 
 const JOIN_LINE_DELAY := 0.55   # seconds after the wake-up snort before the hello line
 const GROUP := &"zappers"
@@ -415,6 +418,7 @@ func _statue_refusals(inp: Dictionary, live: bool) -> bool:
 		return false
 	_statue_nope = 0.25
 	Audio.play("nope", global_position)
+	noped.emit(player)
 	Fx.burst(get_tree(), center(), Color(0.75, 0.9, 1.0, 0.9), 6, 0.3, 0.3)
 	return true
 
@@ -427,6 +431,7 @@ func _soft_refusal() -> bool:
 		return false
 	_statue_nope = SOFT_NOPE_GAP
 	Audio.play("nope", global_position)
+	noped.emit(player)
 	return true
 
 
@@ -560,7 +565,14 @@ func _press() -> void:
 	# Chuck narrates his own zaps and blames the partner when one is refused (GAME.md "Audio");
 	# at most one bark per zap, through the gate.
 	reactions.own_zap(changed, _refused)
+	if _refused:
+		noped.emit(player)
 	zapped.emit(player, g.id, target)
+
+
+## Holding A on the size gun with a target latched (stick up / down grows / shrinks). For the hint panel.
+func sizing() -> bool:
+	return is_instance_valid(_size_latched)
 
 
 func _stick_down() -> bool:
@@ -586,6 +598,8 @@ func _size_step(dir: int) -> bool:
 	_refused = not ok
 	# The size ladder shows how big it is now; at a cap the end square blinks and a bar says stop.
 	Refusal.size_ladder(o, 0 if ok else dir)
+	if not ok:
+		noped.emit(player)
 	if ok:
 		o.speak()
 		o.last_touch = &"gun"

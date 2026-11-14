@@ -1,56 +1,29 @@
 {
-  "lane": "jyz-rules-followup-1",
-  "branch": "fix/jyz-rules-followup-1",
-  "base": "origin/dev @ 42491b1 (after PR #45)",
+  "lane": "jyz-hint-panel-1",
+  "branch": "feature/jyz-hint-panel-1",
+  "base": "origin/dev @ baf2ce5 (after PR #46)",
+  "status": "done",
   "ended": "done",
   "pushed": false,
   "commits": [
-    {
-      "sha": "6055388",
-      "msg": "gameplay: unbound buttons and an air B give the soft nope tick"
-    },
-    {
-      "sha": "see git log -1",
-      "msg": "docs: rules-followup-1 report, test output, handoff"
-    }
+    {"sha": "11a715b", "msg": "gameplay: in-play hint panel per player with context glyphs"},
+    {"sha": "see git log -1", "msg": "docs: hint-panel-1 report, frames, test output, handoff"}
   ],
   "tests": {
-    "command": "rm -rf .godot && godot --headless --import --path . ; godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue",
-    "summary": "Overall Summary: 387 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
+    "command": "rm -rf .godot/imported .godot/editor && godot --headless --path . --import ; godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests",
+    "summary": "Overall Summary: 402 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
     "log": "handoff/test-output.txt",
-    "new_tests": [
-      "test_feel_rules.gd::test_an_unbound_button_in_play_refuses_once_per_gap",
-      "test_feel_rules.gd::test_an_unbound_button_is_silent_outside_play",
-      "test_feel_rules.gd::test_a_b_press_in_the_air_refuses",
-      "test_feel_rules.gd::test_a_b_press_that_jumps_does_not_refuse"
-    ],
-    "flake": "first full run: test_exit_watchdog.gd::test_a_shutdown_that_never_ends_is_ended_by_the_watchdog failed (2 asserts, child process missed its PASS under load); alone 5/5 pass; second full run clean"
+    "new_suite": "tests/test_hint_panel.gd (15 tests: one per context, nope state, live zappers, main spawns a panel per player)"
   },
   "plan_status_moved": {
-    "built": [
-      "R-05"
-    ],
-    "proof": "test_feel_rules.gd::test_an_unbound_button_in_play_refuses_once_per_gap, ::test_a_b_press_in_the_air_refuses, ::test_a_b_press_that_jumps_does_not_refuse",
-    "totals": "195 rows: built 177 \u00b7 partial 3 \u00b7 missing 0 \u00b7 superseded 11 \u00b7 later 4 \u00b7 dropped 0"
+    "built": ["R-07"],
+    "totals": "195 rows: built 178 · partial 2 · missing 0 · superseded 11 · later 4 · dropped 0"
   },
-  "rows_skipped": [
-    {
-      "row": "R-07",
-      "why": "button hints in play are still Kaden's decision (rule 7); out of scope by the brief"
-    }
+  "frames": [
+    "handoff/frames/hint_panel/hint_on_foot_and_grab_ready.png",
+    "handoff/frames/hint_panel/hint_holding_gun_and_carrying.png",
+    "handoff/frames/hint_panel/hint_cooldown_and_frozen.png"
   ],
-  "game_md": "dated line under 'Decisions made without Kaden' (2026-11-13, Gary): soft refusal tick",
-  "frames": [],
-  "frames_note": "the cue is audio-only; proven by the test suite (Audio.history), no frame taken",
-  "not_changed": [
-    "D-pad",
-    "stick",
-    "Start fresh",
-    "statue refusal",
-    "menus",
-    "project.godot input map",
-    "art",
-    "audio files",
-    "data/camera.tres"
-  ]
+  "frames_command": "scripts/tools/shots.sh \"\" 2.3,4.0,4.9 <dir> --demo --demo-beat=hints",
+  "not_changed": ["lobby.gd", "settings_panel.gd", "pause_menu.gd", "physics tuning", "yard layout", "goal cards", "save format", "art files"]
 }

@@ -6,7 +6,7 @@
 ## Drop-in: whoever didn't ready in the lobby sleeps in the tire pile; any press of their pad (or a
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
-## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|bonk|cap|glue-snap|gags-<zone>|zone-<name> (staged
+## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|bonk|cap|glue-snap|hints|gags-<zone>|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --proto, --session-flow --flow-out=<dir>
 ## (scripts/tools/session_flow.gd on an export), --player-flow=<phase> (scripts/tools/player_flow.gd).
 extends Node3D
@@ -121,6 +121,7 @@ func _spawn(player: int, asleep := false) -> Zapper:
 	level.register_zapper(z)
 	z.gun_changed.connect(_on_gun_changed)
 	z.zapped.connect(hud.on_zapped)   # PT10-2: the first-fire beat
+	HintPanel.make(z, camera, hud)    # R-07: the buttons that matter right now (hint_panel.gd)
 	return z
 
 
@@ -196,6 +197,7 @@ func _start_demo() -> void:
 		"bonk": _beat_bonk()
 		"cap": _beat_cap()
 		"glue-snap": _beat_glue_snap()
+		"hints": _beat_hints()
 		_:
 			camera.overview = beat == "wide"
 			for p in _players:
@@ -615,3 +617,41 @@ func _beat_sign_hold() -> void:
 	var jeff: Zapper = _players[Players.P1]
 	jeff.input_override = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
 	get_tree().create_timer(0.6).timeout.connect(func() -> void: jeff.input_override["action"] = true)
+
+
+## R-07: the hint panels in three moments (after the belt wheel from the gun set-up has gone).
+## ~2.3 s: Jeff on foot (aiming up at nothing) and Chuck with
+## the grab gun on the crate (interaction ready, A blinks over him). ~4.0 s: Jeff holds the size gun on
+## the cow (fire) and Chuck carries the crate. 4.6 s: Jeff freezes Chuck; ~4.9 s: Jeff's A glyph sunk
+## after the zap, Chuck's row under ice.
+func _beat_hints() -> void:
+	_clear(-41.0, -29.0)
+	_place(Players.P1, -38.5, 1.0)
+	_place(Players.P2, -31.0, -1.0)
+	var crate := level.object(&"crate")
+	crate.global_position = Vector3(-33.0, 0.6, 0)
+	var cow := level.object(&"cow")
+	cow.global_position = Vector3(-41.5, 1.0, 0)
+	var jeff: Zapper = _players[Players.P1]
+	var chuck: Zapper = _players[Players.P2]
+	var idle := {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
+	camera.focus = [jeff, chuck]
+	(func() -> void:
+		jeff.set_gun(0, false)
+		for i in chuck.guns.size():
+			if chuck.guns[i].kind == GunData.Kind.GRAB:
+				chuck.set_gun(i, false)
+		jeff.input_override = idle.merged({"aim": Vector2.UP}, true)
+		chuck.input_override = idle.merged({"aim": Vector2.LEFT}, true)).call_deferred()
+	get_tree().create_timer(2.6).timeout.connect(func() -> void:
+		jeff.input_override["aim"] = Vector2.LEFT
+		chuck.input_override["action"] = true)
+	get_tree().create_timer(4.6).timeout.connect(func() -> void:
+		chuck.input_override["action"] = false
+		jeff.input_override["aim"] = Vector2.RIGHT
+		jeff._update_target()
+		for i in jeff.guns.size():
+			if jeff.guns[i].kind == GunData.Kind.FREEZE:
+				jeff.set_gun(i, false)
+		jeff.target = chuck
+		jeff._press())
