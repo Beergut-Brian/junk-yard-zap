@@ -208,6 +208,23 @@ same name and it replaces the synth; no code change.
 | `ui_card` | round card | cymbal swell |
 | `ui_pause` | pause menu opens | record-scratch dip into a low pad |
 | `char_swap` | chooser swap, when the character has no voice bark; pitch 1.08 P1, 0.92 P2 | soft puff + rising cartoon pop |
+| `nope` | a press that does nothing here (refusal, below). The template uses `honk`; this game has no `honk.ogg` and plays its own refusal, `nope_1/2.ogg`, the same "no" the zapper says | (existing file) |
+
+### Every press answers
+
+Kaden's rule 5: a press that does nothing says so (adopted from the template's
+`feature/template-press-answers-1`). In every menu (lobby, pause, Settings, the leave question, and this
+game's own New yard / Restore question) X, Y, LB, RB, LT, RT, the stick clicks, Select and Start either
+do their job or **refuse**: `MenuInput.refuse(item, button)` plays `MenuInput.REFUSE_CUE` (`nope` here)
+and the focused bar wobbles (`MenuItem.wobble()`, `IconButton.wobble()`, 0.32 s, three shakes; the New
+yard card shakes as a whole, `FreshCard.wobble()`). `MenuInput.read()` reports them as `other` (the
+player) and `button` ("x", "lt", "select", ...). They keep their jobs where they have one: Start in pause
+resumes (Game), Start in the lobby readies and then starts (PF-5), Select in the solo lobby switches
+podium, Select + Start held is the solo toggle, a pad's first press joins it. Also refused: B in the
+lobby with nothing to back out of, left / right on a locked (ready) podium, left / right on the pause
+list past its end (otherwise they step the list, right = down), Start in the lobby with nothing to do
+(counting down, or ready and waiting for the other player), and any stick / D-pad move on the New yard
+card. Full table: `docs/press-answers.md`.
 
 `Game` still plays its own `pause` and `round_start` cues through `Audio`.
 
@@ -297,8 +314,10 @@ Remove `p1_name` / `p2_name` from `data/menu_skin.tres` so the plates follow the
 ## Screenshots
 
 `scripts/tools/shots.sh "" 1.5 /tmp/shots --ui=lobby-ready` (also `lobby`, `lobby-joined`,
-`lobby-hold`, `lobby-settings`, `lobby-confirm`, `lobby-pick` (P1 choosing, arrows), `lobby-swap`
-(P1 posed mid-swap, poof), `pause`, `pause-settings`, `pause-confirm`, and the
+`lobby-hold`, `lobby-settings`, `lobby-confirm`, `lobby-refuse` (X refused, Play mid-shake),
+`lobby-fresh-refuse` (X refused on the New yard question, the card mid-shake; needs a yard saved),
+`lobby-pick` (P1 choosing, arrows), `lobby-swap` (P1 posed mid-swap, poof), `pause`, `pause-settings`,
+`pause-confirm`, `pause-door`, `pause-refuse` (right on Back to Open Jar refused, the bar mid-shake), and the
 motion strip `lobby-go1` .. `lobby-go6`: SETTINGS focused, up to PLAY, A + GO!, wipe, round card,
 into the game). Add `--ui-pixel` for a `pixel_art` skin (pixel forms on the podiums).
 

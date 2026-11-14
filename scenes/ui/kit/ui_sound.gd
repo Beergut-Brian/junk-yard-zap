@@ -8,7 +8,10 @@
 ## automatically. Pitch (pitch_scale) only applies to the synth; callers vary it per player.
 ##
 ## Cues: ui_move, ui_back, ui_confirm, ui_tick, ui_toggle, player_ready,
-## player_unready, player_join, count_tick, ui_go, ui_wipe, ui_card, ui_pause.
+## player_unready, player_join, count_tick, ui_go, ui_wipe, ui_card, ui_pause, char_swap.
+## Junk Yard Zap: no `honk` synth here. The template's menu refusal stand-in is left out because every
+## menu cue in this game is a designed file (test_launch_ready.gd); MenuInput.REFUSE_CUE plays the
+## yard's own refusal, nope_1/2.ogg, through Audio instead.
 class_name UiSound
 extends RefCounted
 
@@ -38,10 +41,13 @@ static var _cache: Dictionary = {}
 static var _warned: Dictionary = {}
 static var _pool_node: Node = null
 static var _next := 0
+## How many times each cue was asked for (tests read it; never reset by the kit).
+static var plays: Dictionary = {}
 
 
 ## Play a cue: real file through Audio if present, else the synth on a small pool.
 static func play(cue: String, pitch := 1.0) -> void:
+	plays[cue] = plays.get(cue, 0) + 1
 	if has_file(cue):
 		var audio := _audio()
 		if audio:

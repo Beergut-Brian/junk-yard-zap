@@ -42,6 +42,13 @@ static func run(lobby: Control) -> void:
 			pm.get_node("Settings").move_focus(1)
 		elif s == "pause-confirm":
 			pm.press(pm.Choice.DOOR)
+		elif s == "pause-door" or s == "pause-refuse":
+			pm.move_focus(4)
+			if s == "pause-refuse":
+				# Right on the door: no row that way, so the refusal sound and the bar shakes. Held mid-shake.
+				await lobby.get_tree().create_timer(0.4).timeout
+				pm.side_step(1)
+				pm.get_node("Card/Buttons/Door").pose_wobble(0.92)
 		return
 	if s.begins_with("lobby-go"):
 		_go(lobby, int(s.trim_prefix("lobby-go")))
@@ -77,6 +84,23 @@ static func run(lobby: Control) -> void:
 				for c in spot.get_children():
 					if c is Poof:
 						c.t = 0.3
+		"lobby-refuse":
+			# P1 ready, P2 joined; X does nothing here: the refusal sound, Play shakes. Held mid-shake.
+			Players.join_virtual(P2)
+			lobby.set_ready(P2, false, true)
+			await lobby.get_tree().create_timer(0.6).timeout
+			lobby.refuse("x")
+			lobby.get_node("Buttons/Play").pose_wobble(0.92)
+		"lobby-fresh-refuse":
+			# This game's New yard question; X does nothing on it: the refusal sound, the card shakes. Held mid-shake.
+			Players.join_virtual(P2)
+			lobby.set_ready(P1, false, true)
+			lobby.set_ready(P2, false, true)
+			lobby.focus_item(lobby.Choice.NEW)
+			lobby.press_a(P1)   # needs a yard saved (Continue / New yard), as the shots run has
+			await lobby.get_tree().create_timer(0.6).timeout
+			MenuInput.refuse(lobby.get_node("FreshCard"), "x")
+			lobby.get_node("FreshCard").pose_wobble(0.92)
 		"lobby-hold":
 			lobby.hold_step(P1, true, lobby.HOLD_TO_START * 0.6)
 

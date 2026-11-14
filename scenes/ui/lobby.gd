@@ -13,6 +13,10 @@
 ## Start fresh (feel rule, 2026-11-13): with a yard saved, Play reads Continue and a New yard bar
 ## appears under it. New yard asks first (FreshCard: hold A), keeps the old save as a backup and
 ## opens a fresh yard; Settings > Restore old yard brings the newest backup back (FreshStart).
+## Every press answers (docs/press-answers.md): X, Y, shoulders, triggers, stick clicks, Start, and
+## Select out of solo refuse (the soft refusal sound and a wobble on the focused bar), as do B when there is
+## nothing to back out of and left / right on a locked podium. Start keeps its PF-5 job here (ready,
+## then start) and refuses only when it has nothing to do (counting, or waiting for the other).
 ## Games customise it with a MenuSkin (UiStyle.use_skin, or res://data/menu_skin.tres), in code.
 ## title_texture / title_text here still work and win over the skin. Keep the node names.
 extends Control
@@ -66,6 +70,8 @@ var _tw: Tween
 var _wipe: ShowtimeWipe
 var _dpad := { P1: 0, P2: 0 }
 var _select_down := false
+## The frame each player joined on: the join press is the join, never also a refusal.
+var _joined_frame := { P1: -1, P2: -1 }
 ## Chooser voice: seconds until this player's catchphrase; < 0 nothing pending.
 var _say_in := { P1: -1.0, P2: -1.0 }
 
@@ -253,7 +259,8 @@ func _process(delta: float) -> void:
 	if _settings.active:
 		_settings.handle(MenuInput.read())
 		return
-	var move: int = MenuInput.read().move.y
+	var input := MenuInput.read()
+	var move: int = input.move.y
 	if move != 0:
 		move_focus(move)
 	for p in Players.active_players():
@@ -264,7 +271,10 @@ func _process(delta: float) -> void:
 		else:
 			var dir := _left_right(p)
 			if dir != 0:
-				choose(p, dir)
+				side(p, dir)
+	# Start is the lobby's own (PF-5, _input / press_start), and Select is solo's podium switch.
+	if input.other != -1 and input.button != "start" and not (input.button == "select" and Players.solo):
+		refuse(input.button)
 	_solo_select()
 	update_hint()
 	if freeze or in_submenu():
@@ -298,8 +308,13 @@ func _input(event: InputEvent) -> void:
 	press_start(player)
 
 
+## A Start with nothing to start (counting down already, or ready and waiting for the other
+## player) refuses: every press answers. In a submenu, the submenu answers it.
 func press_start(player: int) -> void:
-	if not _live() or in_submenu() or _launched or counting:
+	if not _live() or in_submenu() or _launched:
+		return
+	if counting:
+		refuse("start")
 		return
 	_set_focus(Choice.PLAY, false)
 	if not readied[player]:
@@ -307,7 +322,8 @@ func press_start(player: int) -> void:
 		return
 	var other: int = P2 if player == P1 else P1
 	if Players.is_active(other) and not readied[other]:
-		return   # the status already says who we are waiting for
+		refuse("start")   # the status line says who we are waiting for; the refusal says "not yet"
+		return
 	_buttons[Choice.PLAY].press()
 	start_countdown()
 
@@ -352,6 +368,22 @@ func solo_switch() -> void:
 	UiSound.play("ui_move", 1.12 if Players.solo_focus == P1 else 0.89)
 	_spots[Players.solo_focus].name_pop()
 	_update_choosers()
+
+
+## Left / right on the podium: choose, or refuse when the podium is locked (ready, counting down).
+func side(player: int, dir: int) -> void:
+	if can_choose(player):
+		choose(player, dir)
+	elif Players.is_active(player) and (not Players.solo or player == Players.solo_focus):
+		refuse("left" if dir < 0 else "right")
+
+
+## A press that does nothing here: the refusal sound and a wobble on the focused bar. Not once the wipe
+## has started (the screen is covered, the round is on its way).
+func refuse(button := "") -> void:
+	if _launched or not _live():
+		return
+	MenuInput.refuse(_buttons[focus], button)
 
 
 ## Can this player change character right now? Joined, not ready, nothing else going on.
@@ -465,6 +497,8 @@ func press_b(player: int) -> void:
 	elif focus != Choice.PLAY:
 		UiSound.play("ui_back")
 		_set_focus(Choice.PLAY, false)
+	elif _joined_frame[player] != Engine.get_process_frames():
+		refuse("b")   # not ready, already on Play: nothing to back out of
 
 
 func set_ready(player: int, on: bool, quiet := false) -> void:
@@ -665,6 +699,7 @@ func _apply_title() -> void:
 
 
 func _on_player_joined(player: int, device: int) -> void:
+	_joined_frame[player] = Engine.get_process_frames()
 	if not _live():
 		return
 	_set_joined(player, true)

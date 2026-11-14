@@ -1,29 +1,37 @@
 {
-  "lane": "jyz-hint-panel-1",
-  "branch": "feature/jyz-hint-panel-1",
-  "base": "origin/dev @ baf2ce5 (after PR #46)",
+  "lane": "press-answers-adopt-1",
+  "game": "junk-yard-zap",
+  "branch": "feature/press-answers-adopt-1",
+  "base": "origin/dev @ 42491b1 (after PR #45)",
+  "template_source": "openjar-template feature/template-press-answers-1 @ 9d99f29",
   "status": "done",
-  "ended": "done",
   "pushed": false,
   "commits": [
-    {"sha": "11a715b", "msg": "gameplay: in-play hint panel per player with context glyphs"},
-    {"sha": "see git log -1", "msg": "docs: hint-panel-1 report, frames, test output, handoff"}
+    { "sha": "a74fd12", "msg": "systems: every menu press answers (template press-answers adopted)" },
+    { "sha": "see git log -1", "msg": "docs: press-answers-adopt-1 handoff" }
   ],
-  "tests": {
-    "command": "rm -rf .godot/imported .godot/editor && godot --headless --path . --import ; godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests",
-    "summary": "Overall Summary: 402 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
-    "log": "handoff/test-output.txt",
-    "new_suite": "tests/test_hint_panel.gd (15 tests: one per context, nope state, live zappers, main spawns a panel per player)"
+  "moved_rows": {
+    "M-07": "added, built (every menu press answers; S17)",
+    "R-05": "note updated (menu half built via M-07); stays partial (in-play half needs a gameplay decision)"
   },
-  "plan_status_moved": {
-    "built": ["R-07"],
-    "totals": "195 rows: built 178 · partial 2 · missing 0 · superseded 11 · later 4 · dropped 0"
+  "fr_rows_note": "This game's PLAN-STATUS has no FR-5 / FR-3 rows; rule 5 is R-05, rule 3 is R-03 (already built, untouched).",
+  "tests": {
+    "command": "rm -rf .godot && godot --headless --path . --import && godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode",
+    "summary": "Overall Summary: 396 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
+    "baseline": 383,
+    "new_suites": ["tests/test_press_answers.gd (13)"],
+    "log": "handoff/test-output.txt"
   },
   "frames": [
-    "handoff/frames/hint_panel/hint_on_foot_and_grab_ready.png",
-    "handoff/frames/hint_panel/hint_holding_gun_and_carrying.png",
-    "handoff/frames/hint_panel/hint_cooldown_and_frozen.png"
+    "handoff/frames/press_pause_refused_right_on_door.png",
+    "handoff/frames/press_start_menu_refused_x_on_continue.png",
+    "handoff/frames/press_new_yard_card_refused_x.png"
   ],
-  "frames_command": "scripts/tools/shots.sh \"\" 2.3,4.0,4.9 <dir> --demo --demo-beat=hints",
-  "not_changed": ["lobby.gd", "settings_panel.gd", "pause_menu.gd", "physics tuning", "yard layout", "goal cards", "save format", "art files"]
+  "frames_tracked": false,
+  "decisions_for_producer": [
+    "Menu refusal plays the game's own 'nope' (nope_1/2.ogg), not the template's synth 'honk': no honk.ogg here and test_launch_ready requires every menu cue to be a file.",
+    "Lobby Start now refuses when it has nothing to do (waiting for the other player, or counting down).",
+    "New yard card footer still reads Move / Select / Back (R-07 hint area, unchanged)."
+  ],
+  "off_limits_respected": "no gameplay code, art, audio files, save format, .tscn, or template repo changed"
 }
