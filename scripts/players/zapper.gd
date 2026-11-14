@@ -51,7 +51,8 @@ var glue_first: PhysicsObject
 var held: PhysicsObject
 ## Tests and the demo bot drive the player through this instead of the InputMap:
 ## {"move": Vector2, "aim": Vector2, "action": bool, "jump": bool, "next": bool, "prev": bool,
-##  "reset": bool (Select), "start": bool (this player's Start)}
+##  "reset": bool (Select), "start": bool (this player's Start),
+##  "unbound": bool (X, Y, LT, RT, L3 or R3 down: bound to nothing in play)}
 var input_override: Dictionary = {}
 ## While > 0 the player is a statue (partner freeze) and ignores input.
 var statue_left := 0.0
@@ -72,6 +73,13 @@ var _action_was := false
 ## statue, so a fresh press on a frozen player is refused out loud (_statue_refusals).
 var _raw_was := {}
 var _statue_nope := 0.0
+## Soft refusals (2026-11-13, Gary): an unbound button or a B in the air that does nothing ticks
+## "nope", at most once every SOFT_NOPE_GAP s per player. Nothing else changes.
+const SOFT_NOPE_GAP := 0.25
+const UNBOUND_BUTTONS: Array[JoyButton] = [JOY_BUTTON_X, JOY_BUTTON_Y, JOY_BUTTON_LEFT_STICK,
+		JOY_BUTTON_RIGHT_STICK]
+var _unbound_was := false
+var _air_jump_pending := false   # a fresh B in the air: refused if its buffer runs out unjumped
 var _jump_was := false
 var _jump_held := false      # B still down since take-off: the rise isn't cut yet
 var _jump_cut := false       # B came up during this rise: the heavier released_rise_gravity
@@ -246,7 +254,20 @@ func _read() -> Dictionary:
 		"prev": Input.is_action_pressed(Players.action(player, "gun_prev")),
 		"reset": Input.is_action_pressed(Players.action(player, "reset")),
 		"start": Players.start_held(player),
+		"unbound": _unbound_down(),
 	}
+
+
+## X, Y, LT, RT, L3 or R3 on this player's pad (in solo, only the focused player reads the pad).
+func _unbound_down() -> bool:
+	var d := Players.device_of(player)
+	if d < 0 or (Players.solo and Players.solo_focus != player):
+		return false
+	for b in UNBOUND_BUTTONS:
+		if Input.is_joy_button_pressed(d, b):
+			return true
+	return Input.get_joy_axis(d, JOY_AXIS_TRIGGER_LEFT) > 0.5 \
+			or Input.get_joy_axis(d, JOY_AXIS_TRIGGER_RIGHT) > 0.5
 
 
 func _physics_process(delta: float) -> void:
@@ -265,6 +286,10 @@ func _physics_process(delta: float) -> void:
 	_tick_partner(delta)
 	_tick_reset(inp, delta, live)
 	_statue_refusals(inp, live)
+	var unbound: bool = inp.get("unbound", false)
+	if unbound and not _unbound_was and live:
+		_soft_refusal()
+	_unbound_was = unbound
 	if statue_left > 0.0 or not live:
 		inp = {"move": Vector2.ZERO, "aim": Vector2.ZERO, "action": false, "jump": false, "next": false, "prev": false}
 	var mv: Vector2 = inp.get("move", Vector2.ZERO)
@@ -284,11 +309,13 @@ func _physics_process(delta: float) -> void:
 	var jump: bool = inp.get("jump", false)
 	if jump and not _jump_was:
 		_jump_buffer = jt.buffer
+		_air_jump_pending = _coyote <= 0.0
 	_jump_was = jump
 	_jump_buffer -= delta
 	if _jump_buffer > 0.0 and _coyote > 0.0:
 		velocity.y = jt.takeoff_speed
 		_jump_buffer = 0.0
+		_air_jump_pending = false
 		_coyote = 0.0
 		_jump_held = true
 		_jump_cut = false
@@ -301,6 +328,11 @@ func _physics_process(delta: float) -> void:
 		_jump_cut = true
 		if velocity.y > jt.cut_speed:
 			velocity.y = jt.cut_speed
+	if _air_jump_pending and _jump_buffer <= 0.0:
+		# B in the air past coyote, and no landing inside the buffer: it did nothing, so say so.
+		_air_jump_pending = false
+		if live and statue_left <= 0.0:
+			_soft_refusal()
 	move_and_slide()
 	if on_floor and not _was_on_floor:
 		Audio.play("land", global_position)
@@ -384,6 +416,17 @@ func _statue_refusals(inp: Dictionary, live: bool) -> bool:
 	_statue_nope = 0.25
 	Audio.play("nope", global_position)
 	Fx.burst(get_tree(), center(), Color(0.75, 0.9, 1.0, 0.9), 6, 0.3, 0.3)
+	return true
+
+
+## The soft refusal (rule 5): the statue's "nope" tick, sound only (no ice chips, no effect on
+## play). Shares the statue refusal's 0.25 s gap (_statue_nope) so a mashing player never ticks more
+## than 4 times a second, whichever path refuses.
+func _soft_refusal() -> bool:
+	if _statue_nope > 0.0:
+		return false
+	_statue_nope = SOFT_NOPE_GAP
+	Audio.play("nope", global_position)
 	return true
 
 

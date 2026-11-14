@@ -1,7 +1,8 @@
 ## Kaden's standing feel rules, audited 2026-11-13 (REPORT.md of fix/jyz-rules-audit-1).
 ## Rule 5, every action beeps: a statue (partner freeze) ignores its buttons, but a fresh press
 ## says so (the refusal "nope" plus ice chips; the ice look is the cause), never a button that was
-## already down. Rule 7, show the buttons that matter: the lobby footer and Settings hint follow
+## already down; an unbound button (X, Y, LT, RT, L3, R3) or a B in the air that does nothing gives
+## the same "nope", sound only, at most once per 0.25 s (jyz-rules-followup-1). Rule 7, show the buttons that matter: the lobby footer and Settings hint follow
 ## the focus and who is joined / ready. Rule 4: solo is off at boot even when settings remember it
 ## on. Own settings and picks files, fixture roster.
 extends GdUnitTestSuite
@@ -157,3 +158,75 @@ func test_solo_remembered_in_settings_is_off_at_boot() -> void:
 	assert_bool(Players.solo).is_false()
 	assert_bool(Players.solo_from_args(PackedStringArray([]))).is_false()
 	assert_bool(Players.solo_from_args(PackedStringArray(["--solo"]))).is_true()
+
+
+func press(z: Zapper, k: String, frames := 2) -> void:
+	z.input_override[k] = true
+	await step(frames)
+	z.input_override[k] = false
+
+
+## Rule 5 soft refusal (Gary, 2026-11-13): X, Y, LT, RT, L3, R3 are bound to nothing in play; a
+## fresh press ticks "nope", at most once every 0.25 s per player, and a held button ticks once.
+func test_an_unbound_button_in_play_refuses_once_per_gap() -> void:
+	var a := zapper(P1, 0.0)
+	await step(10)
+	Audio.history.clear()
+	var at := a.global_position
+	await press(a, "unbound")
+	assert_int(nopes()).is_equal(1)
+	await step(2)
+	await press(a, "unbound")   # 6 frames after the first: inside the 0.25 s gap
+	assert_int(nopes()).is_equal(1)
+	await step(16)
+	await press(a, "unbound", 30)   # past the gap, then held: one more tick, not a stream
+	assert_int(nopes()).is_equal(2)
+	assert_float(a.global_position.distance_to(at)).is_less(0.05)   # no effect on play
+	assert_int(a.gun_index).is_equal(0)
+
+
+func test_an_unbound_button_is_silent_outside_play() -> void:
+	var a := zapper(P1, 0.0)
+	await step(5)
+	Game._set_state(Game.State.PAUSED)
+	Audio.history.clear()
+	await press(a, "unbound")
+	await step(4)
+	assert_int(nopes()).is_equal(0)
+
+
+## A B press in the air past coyote time, with no landing inside the buffer, does nothing: it ticks.
+func test_a_b_press_in_the_air_refuses() -> void:
+	var a := zapper(P1, 0.0)
+	a.position = Vector3(0.0, 6.0, 0.0)   # high up: falling, well past coyote time
+	await step(15)
+	assert_bool(a.is_on_floor()).is_false()
+	Audio.history.clear()
+	await press(a, "jump")
+	await step(14)   # past the 0.15 s buffer
+	assert_bool(a.is_on_floor()).is_false()
+	assert_int(nopes()).is_equal(1)
+	assert_int(Array(Audio.history).count("jump")).is_equal(0)
+
+
+## A B press that jumps (on the ground, or buffered into the landing) stays silent.
+func test_a_b_press_that_jumps_does_not_refuse() -> void:
+	var a := zapper(P1, 0.0)
+	await step(15)
+	assert_bool(a.is_on_floor()).is_true()
+	Audio.history.clear()
+	await press(a, "jump", 6)
+	await step(80)   # up, down, landed
+	assert_int(Array(Audio.history).count("jump")).is_equal(1)
+	assert_int(nopes()).is_equal(0)
+	# Buffered: dropped from 0.4 m, B goes down after coyote time but before the landing.
+	assert_bool(a.is_on_floor()).is_true()
+	a.global_position.y += 0.4
+	a.velocity = Vector3.ZERO
+	await step(12)   # 0.2 s: coyote (0.15 s) is spent, still in the air
+	assert_bool(a.is_on_floor()).is_false()
+	Audio.history.clear()
+	await press(a, "jump", 2)
+	await step(30)
+	assert_int(Array(Audio.history).count("jump")).is_equal(1)
+	assert_int(nopes()).is_equal(0)
