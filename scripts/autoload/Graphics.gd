@@ -3,8 +3,9 @@
 ## high = today's look (the GTX 1060): no overrides at all, nothing here touches a node.
 ## low  = the Intel HD 530 (Skylake GT2, Mesa ANV) on the TV box: no MSAA (FXAA), 0.75 render scale with
 ##        FSR 1, one short shadow cascade, SSAO / SSIL / SSR / SDFGI / glow / volumetrics off, LOD bias up,
-##        a shorter camera far with depth fog in the sky colour to hide it, half the particles, 60 fps cap,
-##        vsync on.
+##        half the particles, 60 fps cap, vsync on. camera_far + depth fog are supported keys but not used:
+##        the yard is a closed diorama whose painted sky is the farthest thing, so a shorter far only cut
+##        the sky off (see data/graphics.json _doc).
 ## Auto-pick at boot from the adapter (pick()): NVIDIA, or AMD discrete -> high; Intel, software, AMD
 ## integrated, anything unknown -> low. `--graphics=low|high` (either side of `--`) overrides. Headless runs
 ## (tests, tools) have no renderer and stay high unless the flag says otherwise. The pick is logged as one

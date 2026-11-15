@@ -86,6 +86,8 @@ func test_low_tunes_a_viewport() -> void:
 func test_low_tunes_the_yard_environment_light_and_camera() -> void:
 	var env := YardLight.environment()
 	Graphics.tune_environment(env, _low())
+	assert_bool(env.fog_enabled).is_false()   # low keeps the diorama clear (see graphics.json _doc)
+	Graphics.tune_environment(env, {"fog_depth_begin": 70.0, "fog_depth_end": 170.0, "fog_density": 0.6})
 	assert_bool(env.ssao_enabled).is_false()
 	assert_bool(env.ssil_enabled).is_false()
 	assert_bool(env.ssr_enabled).is_false()
@@ -103,8 +105,9 @@ func test_low_tunes_the_yard_environment_light_and_camera() -> void:
 	var cam := Camera3D.new()
 	cam.far = 300.0
 	Graphics.tune_camera(cam, _low())
-	assert_float(cam.far).is_equal(float(_low().camera_far))
-	assert_float(cam.far).is_greater_equal(float(_low().fog_depth_end))   # fog is solid before the cut
+	assert_float(cam.far).is_equal(300.0)   # low never cuts the painted sky off (the wide shot is ~150 m from it)
+	Graphics.tune_camera(cam, {"camera_far": 170.0})
+	assert_float(cam.far).is_equal(170.0)
 	cam.free()
 	holder.free()
 	var d := _low()
@@ -132,10 +135,10 @@ func test_low_applied_tunes_the_root_and_every_node_that_enters() -> void:
 	await get_tree().process_frame
 	var we := n.get_node("Environment") as WorldEnvironment
 	assert_bool(we.environment.ssao_enabled).is_false()
-	assert_bool(we.environment.fog_enabled).is_true()
+	assert_bool(we.environment.glow_enabled).is_false()
 	assert_int((n.get_node("KeyLight") as DirectionalLight3D).directional_shadow_mode).is_equal(DirectionalLight3D.SHADOW_ORTHOGONAL)
 	assert_int(p.amount).is_equal(8)
-	assert_float(cam.far).is_equal(float(_low().camera_far))
+	assert_float(cam.far).is_equal(300.0)
 	# back to high: the hook stops, the root and the engine are restored by hand
 	Graphics.apply("high", "headless")
 	root.msaa_3d = was[0]
