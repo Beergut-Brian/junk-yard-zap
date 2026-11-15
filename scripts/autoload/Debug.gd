@@ -31,8 +31,9 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if _label.visible:
-		_label.text = "fps %d\nstate %s\nround %d\nplayers %s" % [
+		_label.text = "fps %d\ngraphics %s\nstate %s\nround %d\nplayers %s" % [
 			Engine.get_frames_per_second(),
+			Graphics.tier,
 			Game.State.keys()[Game.state],
 			Game.round_index,
 			str(Players.active_players())]

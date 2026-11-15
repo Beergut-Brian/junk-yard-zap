@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Graphics="*res://scripts/autoload/Graphics.gd"
 Players="*res://scripts/autoload/Players.gd"
 Game="*res://scripts/autoload/Game.gd"
 Save="*res://scripts/autoload/Save.gd"

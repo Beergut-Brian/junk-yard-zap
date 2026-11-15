@@ -1,253 +1,123 @@
-# Gap-close 5: PF-6 (hang at exit) and S-18 (sleep when still)
+# jyz-igpu-1: playable on the TV box's Intel HD 530
 
-Lane jyz-gap-close-5, branch `feature/jyz-gap-close-5` (from `dev` @ `8c749f1`, after PR #43), 2026-11-13.
-Not pushed. Commits:
+Lane jyz-igpu-1 (Systems), branch `feature/jyz-igpu-1` from `origin/dev` @ `4866951` (after PR #50), 2026-11-14.
+Not pushed. Previous lane's report (jyz-launch-ready-3) is in git history (`git show 4866951:handoff/REPORT.md`).
 
-- `bf1193d` systems: exit watchdog ends a hung shutdown after quit (PF-6)
-- `1d3b947` gameplay: yard objects sleep when still (S-18)
-- `f4533d9` gameplay: see-saw plank sleeps with what it rests on (S-18)
-- docs commit: this report, handoff.json, test output, PLAN-STATUS
+## What was built
 
-PLAN-STATUS rows moved: **PF-6 missing -> built**. **S-18 stays partial** (sleep is now built; the GTX 1060
-frame rate is the weekend TV check). Totals: built 170 · partial 2 · missing 0.
+1. **Graphics tiers in data**: `data/graphics.json`. `high` is `{}` (no overrides, today's look, the GTX 1060).
+   `low` (the HD 530):
+   - no MSAA (project default is 2x), FXAA instead
+   - 0.75 render scale with FSR 1 (the 3D only; HUD and menus stay at full 1080p)
+   - one shadow cascade (orthogonal) at 45 m instead of 4 splits at 140 m; 2048 atlas; soft-very-low filter
+   - SSAO, SSIL, SSR, SDFGI, glow, volumetric fog off (the yard only had SSAO and glow on)
+   - LOD threshold 4 (the default is 1)
+   - half the particles in every burst
+   - 60 fps cap, vsync on
+   - SubViewports (lobby podiums, menu backdrop, fence cards): MSAA off, LOD 4
+2. **Auto-pick**: new first autoload `Graphics` (`scripts/autoload/Graphics.gd`). It reads
+   `RenderingServer.get_video_adapter_name()`, the vendor and the type:
+   - NVIDIA, or AMD discrete: high
+   - Intel, AMD integrated, software or unknown: low
+   - headless (tests, tools): high
+   - `--graphics=low|high` overrides the pick (it works on either side of `--`)
 
-## PF-6: the exported game hung at exit after an early close
+   The pick is logged once, e.g. `Graphics: tier=low (auto: Intel) adapter="..." vendor="..." type=1`.
+   Dev and debug builds show the tier next to the lobby version (`v0.1.0  ·  low`), and F3 shows it too.
+   In low, the autoload tunes the root viewport, the engine caps and every SubViewport, WorldEnvironment,
+   DirectionalLight3D, Camera3D and particles node that enters the tree, so no other lane's code reads
+   the tier. In high it connects nothing and touches nothing. Contract: `docs/contracts.md` "Graphics".
+3. **Benchmark**: `-- --bench` (`scripts/tools/bench.gd`, hooked in `scenes/main.gd`; Game treats it as
+   a demo). Both demo bots play with the soak's stress on (an effect every 0.4 s, glue made and undone).
+   Everything is seeded.
+   - After a 3 s warm-up that isn't counted, it times 60 s of wall clock: 20 s on the shared camera,
+     20 s on the yard-wide shot (every object on screen, the worst case), then 20 s on the shared camera.
+   - Every 5 s it prints `bench: t=… seg=… fps=… low1=… frame_ms=… worst_ms=…`.
+   - At the end it prints `BENCH avg=… low1=… frame_ms=… worst_ms=… frames=… seconds=… tier=… cap=… adapter="…"`
+     and quits with code 0.
+   - `--bench-seconds=<s>` shortens the run.
+   - The demo never writes the family's save.
+4. **Look check from the export**: high vs low, `handoff/shots/`:
+   - `demo_*` is the follow camera
+   - `wide_*` is the yard-wide shot
+   - `lobby_*` is the start screen
 
-### What hangs
+   The picture holds. Low is a little softer (FXAA at 0.75 scale) and the shadows are a bit softer and
+   shorter, but the shapes, colours, sky, faces and HUD are the same.
+5. **High is exactly today**: `test_high_is_todays_look_exactly` pins it:
+   - the high tier's settings are `{}`, and the project's MSAA 2x, Forward+ and vsync are unchanged
+   - the root viewport is unchanged and there is no fps cap
+   - the Golden Afternoon environment is the same, property for property, after a high tune
+   - the key light keeps 4 splits at 140 m and blur 1.5
 
-Repro: the release export (`.scratch/b/game.x86_64`), a save present (a `first` run left one), then
-`XDG_DATA_HOME=<scratch> run-export game.x86_64 -- --player-flow=close_early --flow-out=<dir>` (software
-Vulkan, lavapipe on Xvfb). The close happens at frame ~12, 20-50 s after launch on this renderer, which runs
-at about 1 fps while it compiles pipelines.
+## One thing tried and taken out
 
-**Unfixed export: 12 of 19 valid early closes hung** (runs on a pty 3/4, probe runs 3/6, override-matrix
-baseline 6/9; runs broken by my own harness, such as an X server killed mid-run, are not counted).
+The brief asked for a shorter draw distance with fog to hide it. The first low export did that (camera
+far 170, depth fog in the horizon colour), and `wide_low` came out wrong:
+- the painted sky is 95 m behind the fence and the yard-wide camera sits about 150 m from it, so the far
+  cut the sky off and left the flat background colour
+- the fog tinted the whole diorama teal
 
-### Where it hangs (the evidence)
+The yard is a closed diorama with nothing beyond the sky to cull, so low keeps the full far. Graphics
+still supports `camera_far` and `fog_depth_*` (tested); they're just not in low. This is recorded in
+`data/graphics.json` `_doc` and on PLAN-STATUS S-29. The shots in `handoff/shots/` are from the fixed export.
 
-1. **Not the game's code.** Markers on every root child (`tree_exiting`, `tree_exited`, and a predelete node
-   inside each autoload and Main) all print: every node leaves and is freed in about 0.2 s. The save is
-   written before that (Game.quit -> Save.flush). The game has no threads, threaded loads, HTTP or
-   processes of its own (grep).
-2. **Inside the engine's shutdown, before `Main::cleanup` prints anything.** A clean close prints
-   `XR: Clearing primary interface` about 1.5 s after the close; a hung one never does. A GDScript thread
-   kept printing for 40 s during the hang, so script languages were still up.
-3. **The main thread's stack.** A Python parent (Yama ptrace_scope=1 only lets an ancestor read
-   `/proc/<pid>/mem` and `/syscall`) scanned the hung main thread's stack: `main()` ->
-   (inlined `Main::cleanup`) -> `std::condition_variable::wait`. The disassembly at the return address
-   (`0x42ba69`) is `WorkerThreadPool::exit_languages_threads()`: `if threads.size()`, lock, `_switch_runlevel(1)`,
-   `while (num_idle != threads.size()) wait`, then `_switch_runlevel(2)` and a second loop. It is stuck in
-   the first loop.
-4. **The pool's state, read from the hung process.** WorkerThreadPool singleton: `threads.size = 6`,
-   `num_idle_threads = 1`. All 6 workers have the same shallow stack: thread start -> `_thread_function` ->
-   the idle condvar wait. None is running a task. A worker only counts as idle in that runlevel when both
-   task queues are empty, so **a low-priority task is left queued that no thread will run** (the pool prints
-   "6 threads, 1 max low-priority"). Queuing 12 no-op normal-priority tasks during the hang changed nothing
-   (3 of 3 stayed hung), which fits: the normal queue isn't the blocked one.
-5. **Config matrix** (override.cfg next to a copy of the export, never project.godot; 5-8 runs each):
+## Not claimed
 
-   | override | hung / valid runs |
-   | --- | --- |
-   | none (baseline) | 6 / 9 |
-   | `rendering_device/pipeline_cache/enable=false` | 3 / 5 |
-   | `shader_compiler/shader_cache/enabled=false` | 4 / 5 |
-   | navigation `map/region_use_async_iterations=false` | 4 / 6 |
-   | `--disable-vsync` | 5 / 5 |
-   | **`threading/worker_pool/low_priority_thread_ratio=0.5`** | **0 / 12** |
+**The HD 530 frame rate.** This machine renders in software (llvmpipe), so its fps numbers mean nothing.
+The export's own bench on it says `BENCH avg=0.5 … tier=low`, which only proves the mode runs, picks its
+tier, reports and quits (`handoff/bench-export.txt`). Gary, on the box:
 
-   GodotPhysics instead of Jolt still hung (1 of the 4 runs; the other 3 were crashed by a debug thread of
-   mine, so they don't count either way).
+```
+./junk-yard-zap.x86_64 -- --bench                     # ~65 s, quits by itself; first line: Graphics: tier=low (auto: Intel)
+./junk-yard-zap.x86_64 -- --bench --graphics=high     # optional: today's look on the same box
+```
 
-So the cause is in the engine (Godot 4.7.2 WorkerThreadPool's low-priority queue at shutdown), seen when the
-window closes while the software renderer is still busy right after launch. It never happened headless or on
-a later close (the earlier lane's `lobby_quit`, window close in play, pause Leave).
+Paste the `BENCH` line(s) into PLAN-STATUS S-29. Pass is `low1 >= 30`. If low misses 30, the next
+lever is `scaling_3d_scale` 0.6 or `0.5` in `data/graphics.json`, which needs no code change. Then shadows
+`"shadows": false`.
 
-### The fix (in the game, since the engine is not ours)
+Two notes on the brief:
+- The brief says "two players split screen". This game has one shared camera and never splits
+  (GAME.md "Camera and controls"), so the bench is both players on one screen.
+- Fixed route: the bots, the stress and the camera route are seeded and timed. Physics still steps
+  with real frame time on a slow GPU, so two boxes won't see identical frames, but they run the same
+  load.
 
-`Game.quit()` (scripts/autoload/Game.gd): `quit_requested` -> `Save.flush()` -> **`arm_exit_watchdog(6000)`** ->
-`get_tree().quit(code)`. The watchdog is a plain `Thread`, not a WorkerThreadPool task, so the engine's shutdown
-never waits for it. It sleeps in one native `OS.delay_msec(6000)`; if the process is still alive when it wakes,
-it prints `Game: shutdown still running 6000 ms after quit(); ending the process (PF-6)` and calls
-`OS.kill(own pid)`. On a clean shutdown the process is gone long before it wakes, so no script runs after
-teardown (no crash, no warnings in the clean runs' logs).
+## PLAN-STATUS
 
-**Proof on the real export (fixed build `.scratch/bf/game.x86_64`, same scratch save):**
+- **S-29 added** (S19, partial): playable on the Intel HD 530, with the low tier, the auto-pick and the bench.
+  The open half is the box's BENCH line.
+- **S-18** is linked to S-29 and stays partial (the GTX 1060).
+- Totals: 198 rows, built 180 · partial 3 · missing 0 · superseded 11 · later 4.
+- GAME.md producer note (2026-11-14) quotes the brief.
+- `docs/launch-checklist.md` has a new box check.
 
-| run | close at | process ended | how |
-| --- | --- | --- | --- |
-| 81 | 24.7 s | 30.9 s | watchdog (exit 137) |
-| 82 | 19.5 s | 25.8 s | watchdog (exit 137) |
-| 83 | 25.8 s | 28.2 s | clean, exit 0 |
-| 84 | 49.0 s | 51.8 s | clean, exit 0 |
-| 85 | 39.4 s | 41.9 s | clean, exit 0 |
-| 86 | 28.3 s | 34.6 s | watchdog (exit 137) |
-| 87 | 31.4 s | 37.7 s | watchdog (exit 137) |
-| 88 | 27.2 s | 33.5 s | watchdog (exit 137) |
+## Evidence
 
-8 of 8 ended (before: 12 of 19 never did). The final HEAD's export (with the S-18 changes too), 2 more runs:
-both ended by the watchdog 6.2 s after the close. The save parsed after every run. `lobby_quit` (Back to Open Jar ->
-Leave) on the fixed build: 2 of 2 exit 0.
+- Tests: clean import (`rm -rf .godot`), then the full gdUnit suite with `--continue`, written to
+  `handoff/test-output.txt`. The summary is in `handoff/handoff.json`.
+  - New: `tests/test_graphics_tier.gd`, 13 cases:
+    - Intel HD 530 and Mesa Intel pick low; the GTX 1060 picks high
+    - AMD discrete picks high; AMD integrated, llvmpipe and unknown adapters pick low
+    - the flag overrides the pick; headless stays high
+    - low is applied to a viewport, a SubViewport, the yard environment, the key light, a camera, and
+      through the node hook (particles 16 → 8)
+    - high is pinned
+    - the dev label shows the tier
+    - bench stats (avg, 1%-low)
+    - the bench route drives the camera follow → wide → follow and ends with the summary line
+    - a real headless child `-- --bench --bench-seconds=3 --graphics=low` exits 0 and prints `BENCH avg=… tier=low`
+  - Changed: `test_launch_ready.gd::test_the_lobby_footer_shows_the_project_version` now expects the dev
+    tier suffix. It was the only red test in the first full run (428 cases, 1 failure).
+- Export: `godot --headless --export-release "Linux" build/junk-yard-zap.x86_64`. The pack completes
+  (`DONE`). The editor process then aborts on its own exit, which is known (previous REPORT, line 98).
+  The export boots: 7 runs on the software renderer (6 shots + the bench), all `exit 0`, and none
+  printed a `SCRIPT ERROR` line (`handoff/export_runs.sh`, `handoff/bench-export.txt`).
+- Every scripted run used `XDG_DATA_HOME=<worktree>/.scratch/xdg`, so its `players.json` and saves were
+  scratch. Tests point `Roster.picks_path` at `user://` (`test_graphics_tier.gd` `before()`); the bench
+  child gets its own scratch `XDG_DATA_HOME`.
 
-**Tests** (tests/test_exit_watchdog.gd, 5 cases): the save is on disk before the tree quits; the watchdog fires
-after its grace and not before; the grace covers a clean shutdown; then two real child processes (headless
-Godot on a scratch `XDG_DATA_HOME`, a save present): `close_early` **exits 0**, and `hang_exit` (a node whose
-predelete blocks the main thread for 10 minutes, a shutdown that never ends on purpose) **is ended by the
-watchdog** (about 9 s including boot). Negative control: with the watchdog call removed, the `hang_exit` test
-fails ("still running after 90 s").
+## Commits
 
-### Left open on PF-6
-
-- **Exit code on a hung shutdown is 137, not 0.** docs/contracts.md asks for 0 on a clean quit. A killed process
-  can't choose its code; the save is already written and the launcher gets its process end within ~6 s instead
-  of never. If the launcher treats non-zero as a crash, it should treat this as a normal return (the launcher
-  is out of my scope).
-- **Engine-side cure for Systems:** `threading/worker_pool/low_priority_thread_ratio=0.5` in project.godot made
-  12 of 12 early closes exit 0 here. I didn't apply it (project.godot is off-limits). With it, the watchdog
-  would very likely never fire.
-- **TV box:** does the engine hang happen on the GTX 1060 at all? Look for the "shutdown still running" line in
-  the log after an early close. Either way the launcher now gets the process back.
-
-## S-18: 60 fps on a GTX 1060; sleep when still
-
-### Finding: nothing ever slept
-
-Running the soak with a calm phase showed 55 of 56 bodies awake 55 s after the stress stopped. A staged quiet
-yard (nothing touching it) had **55 of 55 awake** after 15 s, every resting body reading exactly
-`v = 0.163 m/s` = g x dt. The yard's gravity is its own: `PhysicsObject._integrate_forces` adds it and writes
-`state.linear_velocity` every step, and a write wakes a Jolt body, so `can_sleep = true` never had an effect.
-(The old S-18 note, "balloons keep nothing else awake: 52 -> 55 awake bodies", was this: 52 awake without them.)
-
-### Fix
-
-`PhysicsObject._settled()` (scripts/physics/physics_object.gd): if the solver has held a body still
-(|v| < 0.05, |w| < 0.05, on the plane) for 12 steps in a row, each time cancelling the gravity we applied (which
-proves something holds it up), the body puts itself to sleep through the direct state. Never while we steer it
-(grab, a size change and its clamp, the chute) or with gravity off. Jolt wakes it on any contact, zap or push as
-before. Two details found by staging:
-
-- **Woken without a push** (a stack-mate settling, a neighbour resized), a body gets one step of gravity before it
-  can sleep again. If its support is gone, that step moves it and the count resets, so it never sleeps in mid-air.
-- **Piles:** two touching bodies took turns, each falling asleep on the step the other woke it. Settled bodies
-  now sleep only on even physics frames, so a pile falls asleep together.
-- **The see-saw plank** (yard_level.gd, the yard's one plain RigidBody3D, engine gravity and a hinge) rests its
-  low end on the hay. The first full-suite run caught it: the quiet-yard test saw "hay" awake again after the
-  yard slept. The hay fell asleep on an even frame, the awake plank woke it by contact, and that waking kept the
-  plank's own sleep timer from running out (plank asleep 0 of 120 frames). The plank now follows the same rule
-  (`SeesawPlank`: still for 12 steps, sleep on an even frame): asleep 120 of 120, and the hay stays asleep.
-
-### Headless proof (this machine, CPU only; frame times are not GTX 1060 numbers)
-
-- **tests/test_sleep_when_still.gd** (4 cases): a quiet full yard is all asleep (but the 3 balloons, which bob by
-  design, Y-11) at frame 496 (8.3 s) and stays asleep; a lone crate sleeps, wakes and moves when pushed, then
-  sleeps again on the floor; a crate thrown up from 5 m never sleeps above the floor; a sleeping 2-crate stack whose
-  bottom crate is knocked away: the top falls from 1.50 to 0.50 m (floor rest height 0.50), no hovering. Staged
-  with `Stage.clear_all`, so no pile decides the outcome.
-- **Stress soak, 35 simulated minutes** (`godot --headless --path . --fixed-fps 60 --quit-after 126000 -- --demo
-  --soak --soak-calm=1800`, 11 min 46 s wall):
-
-  | t (sim) | nodes | objects | orphans | joints | effects on | zaps / glues | frame ms (mean / worst) | memory |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-  | 0 | 2696 | 6149 | 0 | 0 | 0 | 0 / 0 | - | 194.1 MB |
-  | 300 | 4198 | 10232 | 0 | 6 | 135 | 609 / 104 | 5.67 / 16.1 | 213.5 MB |
-  | 600 | 4556 | 11116 | 0 | 6 | 145 | 1165 / 210 | 5.00 / 15.2 | 217.0 MB |
-  | 900 | 4741 | 11644 | 0 | 6 | 146 | 1735 / 316 | 5.94 / 18.7 | 218.9 MB |
-  | 1200 | 5050 | 12288 | 0 | 6 | 157 | 2306 / 402 | 6.43 / 42.2 | 220.8 MB |
-  | 1500 | 5069 | 12432 | 0 | 6 | 150 | 2850 / 490 | 5.18 / 10.5 | 221.3 MB |
-  | 1800 | 5036 | 12432 | 0 | 6 | 139 | 3417 / 578 | 5.44 / 15.7 | 221.3 MB |
-
-  0 orphans the whole run, 0 recalls, no script errors. Nodes, objects and memory grow with the stacked
-  effects (each carries its own visuals) and are flat over the last 10 minutes (5050 -> 5036 nodes, 221 MB).
-  At exit: "10 ObjectDB instances leaked / 5 resources still in use"; that's `--quit-after` skipping the
-  game's quit. A 2-minute soak run before the Game.gd and physics changes printed the same kind of line
-  ("11 resources still in use at exit"). The stress test
-  `test_more_objects.gd::test_stress_whole_yard_stays_clean` passes in the full suite.
-- **Calm after the stress, effects left on** (`--soak-calm=600`): 45-54 awake, and **every one has an effect
-  acting on it** (`plain=0 fx=45..54`: magnets, glue joints, balloon lift and bouncy push them every step), so
-  they are not still. Correct as is.
-- **Calm after Reset Yard** (`--soak-calm=30 --soak-calm-reset`, after the see-saw fix): **56 -> 10 awake in 5 s,
-  4 by 10 s, and 4 for the remaining 45 s**: the 3 balloons and the crane hook (by design), with one TV blip at
-  75 s. Before the see-saw fix the same calm had a few more (hay, pumpkin, and floaters after a 10-minute stress,
-  `--soak-calm=600 --soak-calm-reset`: 4-11 awake).
-
-### Not claimed
-
-**60 fps at 1920x1080 on the GTX 1060.** Not measurable here. Weekend TV check: F3 overlay with the whole yard
-awake, both pads, the real TV. Row note says so.
-
-## Tests
-
-`godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue --ignoreHeadlessMode`:
-see the last lines of handoff/test-output.txt (the run finished after this report's numbers; the summary
-line is copied into handoff.json). New: test_exit_watchdog.gd (5), test_sleep_when_still.gd (4). The first full run (before the see-saw fix) had one
-failure, the quiet-yard test ("hay" awake again): a real bug, fixed at the cause above, not by a longer wait.
-
-## Still open
-
-- C-14 (playtest #2), S-18's GTX 1060 frame rate, PF-6 on the TV box (whether the engine hang happens there):
-  all wait on Kaden or the TV box.
-- For Systems: `low_priority_thread_ratio=0.5` (see PF-6). For whoever owns the launcher: a 137 after
-  "shutdown still running" is a normal return.
-
-No frames this lane: no visual change.
-
----
-
-# CI fix: `test_balloons.gd::test_stress_frame_time_within_budget` (PR 44)
-
-CI-fix lane, same branch, 2026-11-13. dev had not moved (`git merge origin/dev`: already up to date).
-
-## Cause: test staging, not the balloons
-
-CI failed twice with "30.4 awake with vs 26.7 without" (bound base + 3 + 0.5). I reproduced it here
-before changing anything: **27.1 with vs 23.5 without**, same failure.
-
-The old test counted every body in the whole yard (about 50) over 240 frames, starting 0.5 s after the
-level loaded, with a seeded kick every 6 frames, once with a layout that had no balloon entries and
-once with the full layout. Before S-18 nothing ever slept, so both counts were "everything" and the gap
-was exactly the 3 balloons. Now that bodies sleep, the count measures how a kicked, still-settling yard
-falls asleep, and that is chaotic:
-
-- **Not repeatable.** The same staging gave 23.0, then 24.0, as the "without" average in two runs on
-  this box. Single bodies swung by 20 to 91 awake frames (out of 240) between runs.
-- **Not the balloons.** The bodies that swung most (the pipe pile at x = -12, piano and kettle) were not
-  near a balloon, and they swung both ways (piano -39 in one pair, +41 in another). I logged which
-  bodies came within reach of a balloon (boat, gnome, swim ring...). None of them showed a consistent
-  extra awake count.
-- **Control with the balloons out of reach.** With the balloons moved to y = 60, touching nothing, the
-  run still came out 2.7 to 3.4 above "without" plus 3, the same spread as the real run. Three extra
-  bodies change the order Jolt builds and solves the yard, and a chaotic pile turns that into ±1 awake
-  body per frame. CI's different machine landed on the bad side.
-- Separately, the pond floaters (swim ring, boat, duck, beach ball...) are still awake 25 s after the
-  kicks, **with or without balloons** (5 to 8 bodies either way). They are not caused by the balloons,
-  so this is not a gameplay decision for this test. It is noted here in case S-18 wants a quiet pond.
-
-So nothing goes in "Needs a gameplay decision". Measured over the bodies around them, the balloons keep
-nothing else awake (see below).
-
-## What changed (tests/test_balloons.gd only)
-
-- Both runs now build the **same full layout**, so every body is made in the same order. In the
-  "without" run the balloons are benched with the existing `tests/fixtures/stage.gd`.
-- Only the **balloons' neighbours** stay in play: bodies within 4 m (along x, plus their radius) of a
-  balloon. That is 16 bodies (ball, tire, bucket, crates; duck, boat, kiddie pool, rubber chicken, fish,
-  beach ball; piano, kettle, tractor, anvil, bowling pin). Everything else is benched. The kicks pick
-  from these neighbours (same seed and schedule), and the count is over these bodies.
-- The assert and bound are unchanged: `with <= base + KEYS.size() + 0.5`. The physics clock was already
-  pinned to 60 Hz for this suite (`tests/fixtures/physics_clock.gd` in `before()`). The poke-scan half of
-  the test is unchanged.
-
-Prototype numbers (4 pairs in one process, with different start frames): without 12.56 to 12.85, with
-15.56 to 15.76, gap 2.72 to 3.15. The balloons are awake every frame (3.0), so the non-balloon bodies
-differ by -0.3 to +0.15 per frame with balloons vs without.
-
-## Runs
-
-- `test_balloons.gd`, 5 runs in a row: 11/11 each, **without 13.4, with 16.3** every time (gap 2.9,
-  bound 3.5).
-- Once under `taskset -c 0 nice -n 19`: 11/11, without 13.4, with 16.3.
-- Full suite from a clean import (log: `handoff/test-output.txt`) (`rm -rf .godot`, `godot --headless --path . --import`, then
-  `godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue --ignoreHeadlessMode`):
-  **366 test cases, 0 errors, 0 failures, 0 flaky, 0 orphans**. In the suite this test read without 13.2,
-  with 16.1 (gap 2.9): the suites that run before it shift the start slightly, but the gap holds.
-
-Not pushed; the producer ships.
+See `handoff/handoff.json` "commits" (prefix `jyz:`).

@@ -1,0 +1,26 @@
+{
+  "_doc": "Graphics tiers (scripts/autoload/Graphics.gd). high = today's look (the GTX 1060): no overrides, so the yard renders exactly as YardLight and project.godot set it. low = the Intel HD 530 (Skylake GT2): every key below overrides one setting. Auto-pick at boot from the adapter; -- --graphics=low|high overrides. Not in low on purpose: camera_far / fog_depth_* (Graphics supports them). The yard is a closed diorama with its painted sky 95 m behind the fence; the wide shot sits ~150 m from the sky, so a shorter far cut the sky off and the depth fog tinted the whole yard the horizon teal (jyz-igpu-1 shots). Nothing lies beyond the sky to cull.",
+  "high": {},
+  "low": {
+    "msaa_3d": 0,
+    "screen_space_aa": "fxaa",
+    "scaling_3d_mode": "fsr",
+    "scaling_3d_scale": 0.75,
+    "mesh_lod_threshold": 4.0,
+    "shadow_mode": "orthogonal",
+    "shadow_max_distance": 45.0,
+    "shadow_blur": 1.0,
+    "shadow_atlas_size": 2048,
+    "soft_shadow_quality": "soft_very_low",
+    "ssao": false,
+    "ssil": false,
+    "ssr": false,
+    "sdfgi": false,
+    "glow": false,
+    "volumetric_fog": false,
+    "particles": 0.5,
+    "max_fps": 60,
+    "vsync": true,
+    "subviewport_msaa_3d": 0
+  }
+}

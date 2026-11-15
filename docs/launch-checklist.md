@@ -47,6 +47,10 @@ C-14 (needs playtest #2 on the TV) and S-18 (needs the GTX 1060 frame rate).
 
 ## Needs the TV box (weekend, Kaden)
 
+- [ ] **Playable on the Intel HD 530** (S-29, the box today): from a terminal on the box,
+      `./junk-yard-zap.x86_64 -- --bench` (about 70 s, quits by itself). The first line says
+      `Graphics: tier=low (auto: Intel)`; paste the last line (`BENCH avg=... low1=...`) into S-29.
+      Pass: low1 >= 30. If it fails, run `-- --bench --graphics=high` too and paste both.
 - [ ] **60 fps on the GTX 1060** (S-18, L-11): launch from the tile, both pads in, press F3 on a
       keyboard; zap every object in the yard with grow, balloon, bouncy and magnet for a minute and
       glue a few pairs. Pass: the F3 number stays at 60 (note the lowest you see).

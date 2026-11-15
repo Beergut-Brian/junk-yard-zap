@@ -1,67 +1,58 @@
 {
-  "lane": "jyz-launch-ready-3",
-  "game": "junk-yard-zap",
-  "branch": "feature/jyz-launch-ready-3",
-  "base": "origin/dev @ b70c955 (after PR #48)",
-  "status": "done: launch-ready except the TV-box checks",
+  "packet": "maker/openjar jyz-igpu-1",
+  "ended": "done",
+  "branch": "feature/jyz-igpu-1",
+  "base": "origin/dev @ 4866951 (after PR #50)",
   "pushed": false,
+  "did": [
+    "data/graphics.json: tiers high ({} = today's look, GTX 1060) and low (Intel HD 530: no MSAA + FXAA, 0.75 FSR 1, one 45 m shadow cascade, SSAO/SSIL/SSR/SDFGI/glow/volumetrics off, LOD 4, half particles, 60 fps cap, vsync on)",
+    "scripts/autoload/Graphics.gd (first autoload): auto-pick from adapter name/vendor/type (Intel/unknown/software -> low, NVIDIA/AMD discrete -> high, headless -> high), --graphics=low|high override, one logged 'Graphics:' line, tier next to the version in dev builds and on F3; low applied to root viewport, engine, and every SubViewport/WorldEnvironment/DirectionalLight3D/Camera3D/particles node; high touches nothing",
+    "-- --bench (scripts/tools/bench.gd): seeded two-player demo with the soak stress, 3 s warm-up + 60 s follow/wide/follow, a line every 5 s, final 'BENCH avg=... low1=... tier=...', quits 0",
+    "Shorter draw distance + fog tried and removed from low: it cut the painted sky in the yard-wide shot and tinted the yard teal (keys stay supported)",
+    "Look checked from the export, high vs low: handoff/shots/{demo,wide,lobby}_{high,low}",
+    "tests/test_graphics_tier.gd (13 cases) incl. a real headless --bench child; test_launch_ready lobby version test expects the dev tier suffix",
+    "PLAN-STATUS S-29 added (partial: the box's BENCH line), S-18 linked, totals 198; GAME.md producer note quoting the brief; docs/contracts.md Graphics; docs/launch-checklist.md box check"
+  ],
+  "next_action": "Gary: ship, run --bench on the box",
+  "box_command": "./junk-yard-zap.x86_64 -- --bench   (paste the BENCH line into PLAN-STATUS S-29; pass low1 >= 30; if not, lower scaling_3d_scale in data/graphics.json)",
+  "blocked": [],
+  "not_claimed": [
+    "HD 530 frame rate: this machine renders on llvmpipe; fps numbers here are meaningless"
+  ],
   "commits": [
+    "2d3710f jyz: igpu-1 handoff (report, shots, test output)  (this handoff commit; a later 'handoff sha' commit only records this list)",
+    "4c6a501 jyz: test uid",
+    "67e6dff jyz: low keeps the full draw distance (far + fog cut the painted sky)",
+    "dcdf694 jyz: lobby version test expects the dev tier suffix",
+    "784f579 jyz: plan rows S-29 / S-18, producer note, Graphics contract, box check",
+    "07ce123 jyz: tests for the tier pick, low applied, high pinned, bench",
+    "4ad87f5 jyz: -- --bench, a 60 s two-player route that prints BENCH and quits",
+    "6d932b9 jyz: graphics tiers (high = today, low = Intel HD 530) with auto-pick"
+  ],
+  "evidence": [
     {
-      "sha": "ad86b89",
-      "msg": "systems: launch-ready-3 session flow, checklist, plan sync"
+      "kind": "test",
+      "command": "rm -rf .godot && godot --headless --path . --import && godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue  (XDG_DATA_HOME=.scratch/xdg)",
+      "exit": 0,
+      "summary": "Overall Summary: 428 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans",
+      "ref": "handoff/test-output.txt"
     },
     {
-      "sha": "see git log -1",
-      "msg": "docs: launch-ready-3 handoff sha"
+      "kind": "export",
+      "command": "godot --headless --path . --export-release \"Linux\" build/junk-yard-zap.x86_64",
+      "exit": 0,
+      "note": "pack DONE; exit 0 on the final export (an earlier export aborted after DONE on editor exit, known, previous REPORT line 98)"
+    },
+    {
+      "kind": "export-boot",
+      "command": "handoff/export_runs.sh (run-export, software Vulkan)",
+      "exit": 0,
+      "note": "7 runs exit 0, 0 SCRIPT ERROR; auto-pick on llvmpipe -> low; bench printed BENCH line and quit",
+      "ref": "handoff/bench-export.txt"
+    },
+    {
+      "kind": "shots",
+      "ref": "handoff/shots/"
     }
-  ],
-  "plan_status_moved": {
-    "L-18": "added, built (session flow: ready-up alone with a held A, quit from the main menu; 42/42 steps in real frames)",
-    "totals": "197 rows: built 180, partial 2, missing 0, superseded 11, later 4 (the previous line missed M-07)"
-  },
-  "open_rows": {
-    "C-14": "partial: playtest #2 on the TV (Kaden)",
-    "S-18": "partial: GTX 1060 frame rate (TV box)"
-  },
-  "skipped": [
-    "C-14",
-    "S-18",
-    "L-11",
-    "C-15",
-    "C-20",
-    "G-12",
-    "art / palette / logo / store-art / jar rows (Art Director process; none open)"
-  ],
-  "tests": {
-    "command": "rm -rf .godot && godot --headless --path . --import && godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue",
-    "summary": "Overall Summary: 415 test cases | 0 errors | 0 failures | 0 flaky | 0 skipped | 0 orphans |",
-    "log": "handoff/test-output.txt"
-  },
-  "session_flow": {
-    "command": "scripts/tools/session_flow.sh handoff/frames/flow3",
-    "steps": 42,
-    "failed": 0
-  },
-  "soak": {
-    "command": "godot --headless --path . --fixed-fps 60 --quit-after 108000 -- --demo --soak",
-    "simulated_minutes": 30,
-    "script_errors": 0,
-    "orphans": 0
-  },
-  "frames": {
-    "tracked": [
-      "handoff/frames/flow3/23_ready_p1_alone.png",
-      "handoff/frames/flow3/24_hold_a_alone_starts.png",
-      "handoff/frames/flow3/27_menu_door_asks.png",
-      "handoff/frames/flow3/17_pause.png",
-      "handoff/frames/flow3/29_solo_on.png",
-      "handoff/frames/launch3/solo_flag_boot.png"
-    ],
-    "untracked_in_worktree": "handoff/frames/flow3/*.png (42 steps, 16 MB)"
-  },
-  "needs_kaden": [
-    "Screen shake is a saved on/off restored at boot (like volume); keep, or reset every boot like solo?",
-    "Playtest #2 on the TV (C-14), then v1.0.0 (C-15)",
-    "TV-box list in docs/launch-checklist.md"
   ]
 }

@@ -270,6 +270,19 @@ Menu cues (Audio lane supplies the files): `ui_move`, `ui_confirm`, `ui_back`, `
 F3 toggles the overlay (fps, state, player count). F12 saves `user://screenshots/<timestamp>.png`
 and prints the path. `--screenshot-after=<seconds>` CLI flag does it headlessly for the Reviewer.
 
+### `Graphics` (`scripts/autoload/Graphics.gd`, first autoload; data `data/graphics.json`)
+
+`tier` (`"high"` or `"low"`), `reason`, `settings` (the tier's overrides; `{}` for high). Picked once at
+boot from `RenderingServer.get_video_adapter_name()` / vendor / type: NVIDIA or AMD discrete -> high,
+Intel, AMD integrated, software or unknown -> low, headless -> high; `--graphics=low|high` (either side
+of `--`) overrides. One `Graphics: tier=...` line is printed. In low it tunes the root viewport, the
+engine caps and every SubViewport, WorldEnvironment, DirectionalLight3D, Camera3D and CPU/GPU particles
+node that enters the tree, so lanes do not need to read the tier. High touches nothing: a lane that wants
+a heavier effect adds it to the scene as usual, and if it needs a cheaper path on low it adds a key to
+`data/graphics.json` and a `tune_*` case here (Systems), not a tier check in its own code.
+`label_suffix()` is `"  ·  <tier>"` in dev / debug builds (the lobby version label), `""` in release.
+F3 shows the tier. `-- --bench` (scripts/tools/bench.gd) is a timed demo that prints `BENCH ...` and quits.
+
 ## Launcher handshake
 
 The launcher starts a game with `--profile=<id>` and expects the game to:

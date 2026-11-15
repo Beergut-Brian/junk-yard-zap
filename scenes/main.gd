@@ -7,7 +7,8 @@
 ## key from their keys) wakes them with a snort. Players who readied start awake.
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
 ## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|bonk|cap|glue-snap|hints|gags-<zone>|zone-<name> (staged
-## shots), --soak (with --demo: stress + a log line every 30 s), --proto, --session-flow --flow-out=<dir>
+## shots), --soak (with --demo: stress + a log line every 30 s), --bench (a 60 s timed demo with the soak's
+## stress, prints BENCH avg=... low1=... and quits; scripts/tools/bench.gd), --proto, --session-flow --flow-out=<dir>
 ## (scripts/tools/session_flow.gd on an export), --player-flow=<phase> (scripts/tools/player_flow.gd).
 extends Node3D
 
@@ -204,7 +205,13 @@ func _start_demo() -> void:
 				var b := DemoBot.new(_players[p], 20261109 + p)
 				_bots[p] = b
 				add_child(b)
-			if OS.get_cmdline_user_args().has("--soak"):   # scripts/tools/soak.gd
+			var bench := OS.get_cmdline_user_args().has("--bench")
+			if bench:   # scripts/tools/bench.gd: the fixed 60 s route, then quit
+				var b := BenchProbe.new()
+				b.camera = camera
+				b.duration = BenchProbe.seconds_from_args(OS.get_cmdline_user_args())
+				add_child(b)
+			if bench or OS.get_cmdline_user_args().has("--soak"):   # scripts/tools/soak.gd (the bench keeps its stress on)
 				var probe := SoakProbe.new()
 				probe.level = level
 				add_child(probe)

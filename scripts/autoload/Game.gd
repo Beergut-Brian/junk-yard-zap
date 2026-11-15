@@ -1,6 +1,7 @@
 ## Session state machine. Autoload: Game.
 ## LOBBY (start screen / main menu) -> PLAYING <-> PAUSED, ROUND_END between rounds.
-## CLI (after --): --demo skips the lobby and plays with two virtual players.
+## CLI (after --): --demo skips the lobby and plays with two virtual players; --bench is a timed demo
+## (scripts/tools/bench.gd).
 extends Node
 
 ## TITLE is the old name of LOBBY, kept so games written against it still compile.
@@ -28,7 +29,7 @@ static var _exit_watch: Thread
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().auto_accept_quit = false
-	demo = OS.get_cmdline_user_args().has("--demo")
+	demo = OS.get_cmdline_user_args().has("--demo") or OS.get_cmdline_user_args().has("--bench")   # the bench is a demo
 
 
 func _notification(what: int) -> void:
