@@ -1,0 +1,30 @@
+{
+  "_doc": "Graphics tiers (scripts/autoload/Graphics.gd). high = today's look (the GTX 1060): no overrides, so the yard renders exactly as YardLight and project.godot set it. low = the Intel HD 530 (Skylake GT2): every key below overrides one setting. Auto-pick at boot from the adapter; -- --graphics=low|high overrides.",
+  "high": {},
+  "low": {
+    "msaa_3d": 0,
+    "screen_space_aa": "fxaa",
+    "scaling_3d_mode": "fsr",
+    "scaling_3d_scale": 0.75,
+    "mesh_lod_threshold": 4.0,
+    "shadow_mode": "orthogonal",
+    "shadow_max_distance": 45.0,
+    "shadow_blur": 1.0,
+    "shadow_atlas_size": 2048,
+    "soft_shadow_quality": "soft_very_low",
+    "ssao": false,
+    "ssil": false,
+    "ssr": false,
+    "sdfgi": false,
+    "glow": false,
+    "volumetric_fog": false,
+    "camera_far": 170.0,
+    "fog_depth_begin": 70.0,
+    "fog_depth_end": 170.0,
+    "fog_density": 0.6,
+    "particles": 0.5,
+    "max_fps": 60,
+    "vsync": true,
+    "subviewport_msaa_3d": 0
+  }
+}
