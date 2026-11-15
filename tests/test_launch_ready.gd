@@ -164,7 +164,9 @@ func test_the_lobby_footer_shows_the_project_version() -> void:
 	_boot()
 	await get_tree().process_frame
 	var label: Label = _main.get_node("UI/Lobby/Footer/Version")
-	assert_str(label.text).is_equal("v%s" % ProjectSettings.get_setting("application/config/version"))
+	# jyz-igpu-1: dev / debug builds add the graphics tier after the version ("v0.1.0  ·  high").
+	assert_str(label.text).is_equal("v%s%s" % [ProjectSettings.get_setting("application/config/version"), Graphics.label_suffix()])
+	assert_str(label.text).starts_with("v%s" % ProjectSettings.get_setting("application/config/version"))
 	assert_str(label.text).is_not_equal("v0.0.1")
 
 
