@@ -20,6 +20,7 @@
     "HD 530 frame rate: this machine renders on llvmpipe; fps numbers here are meaningless"
   ],
   "commits": [
+    "2d3710f jyz: igpu-1 handoff (report, shots, test output)  (this handoff commit; a later 'handoff sha' commit only records this list)",
     "4c6a501 jyz: test uid",
     "67e6dff jyz: low keeps the full draw distance (far + fog cut the painted sky)",
     "dcdf694 jyz: lobby version test expects the dev tier suffix",
