@@ -105,3 +105,16 @@ func test_the_tint_overlay_is_prewarmed_on_both_formats() -> void:
 			formats[fmt((c as MeshInstance3D).mesh)] = true
 	assert_bool(formats.has(fmt(RenderPrewarm.flat_mesh()))).is_true()
 	assert_bool(formats.has(fmt(ArtKit.sphere(0.3)))).is_true()
+
+
+func test_the_bench_line_says_the_present_mode_and_refresh() -> void:
+	var b := BenchProbe.new()
+	b.quit_when_done = false
+	b.warmup = 0.0
+	b.duration = 1.0
+	add_child(b)
+	for i in 60:
+		b.feed(16667)
+	var line := b.lines[b.lines.size() - 1]
+	assert_str(line).starts_with("BENCH avg=").contains(" vsync=").contains(" hz=").contains(" adapter=")
+	b.free()
