@@ -1,32 +1,39 @@
 {
-  "packet": "maker/openjar jyz-hitch-1",
-  "ended": "done",
-  "branch": "feature/jyz-hitch-1",
-  "base": "origin/dev @ 82a9a59 (after PR #52)",
-  "pushed": false,
+  "packet": "maker/openjar jyz-hitch-2",
+  "ended": "partial",
   "did": [
-    "Found the S-18 hitches headless on the --bench route with a per-frame probe and timers: slow frames were GDScript in the physics tick at a zap or landing, not the Jolt step: Ogg decoder built per Audio.play (0.7-1.5 ms each, 3-4 a frame), effect-look rounded boxes built in the frame (1-2.5 ms each), a new mesh + material per burst/ring (.scratch/hitch-findings.md, handoff/REPORT.md)",
-    "Audio.gd: SFX loaded at boot, decoded once to 16-bit PCM on a worker (307 files, 1.6 s, ~20 MB); play uses the PCM copy (1548 -> 21 us a play, same samples)",
-    "ArtKit.rbox split into pure rbox_arrays + cache; prewarm_rboxes on a worker; EffectLook.rbox_specs is the one source of look boxes; YardLevel prewarms on spawn",
-    "Fx / GunHits: burst meshes cached by shape+colour (bounded), one shared torus per ring kind; ring materials stay per ring",
-    "tests/test_hitch.gd (7 cases); full suite 435/435",
-    "Headless 40 s bench route: frames > 15 ms 29 -> 0-9, worst 23-33 -> 15-18 ms, BENCH low1 61-67 -> 72-84; export 60 s headless BENCH low1=82.0 worst_ms=17.0",
-    "PLAN-STATUS S-18 note updated (stays partial: needs the 1060 BENCH line); no IDs moved"
+    "Found the first-run stalls with a renderer (lavapipe, per-frame pipeline-compilation counters, cold vs warm cache): each material kind made only during play compiles its shader and pipelines in the frame it is first drawn (.scratch/hitch2-findings.md, handoff/REPORT.md)",
+    "Added RenderPrewarm (scripts/fx/render_prewarm.gd): at boot, behind the lobby, draws every play-made material kind as a mesh and as particles for 6 frames and keeps the materials; main.gd runs it; inline materials moved to static factories, unchanged",
+    "Measured warm on lavapipe: bench-route in-play draw compiles 21 -> 14; lobby-first 5 -> 3",
+    "tests/test_hitch_2.gd (4 cases); full suite 439/439",
+    "S-18 note updated, stays partial; no IDs moved",
+    "Export built, --demo and --demo-beat=wide boot with 0 script errors; looked at handoff/shots/demo_auto/t010.0s.png"
   ],
-  "next_action": "Gary: ship, then bench on the 1060 (bench-game.sh junk-yard-zap) and set S-18 from the numbers",
+  "not_done": [
+    "Steady 1%-low >= 50 not shown: likely GPU time in the yard-wide third, which can't be measured here",
+    "Player-spawn and gun-spark pipelines still compile 1-2 times in play",
+    "Cold in-play numbers not measured (a cold lavapipe frame takes 10-40 s)"
+  ],
+  "next_action": "Gary: ship, then bench on the 1060 (box-jyz-rerun style: cold run, then two warm runs at high) and set S-18 from the numbers",
   "blocked": [],
-  "not_claimed": [
-    "Any GTX 1060 or HD 530 number: this lane measured main-thread CPU headless only",
-    "1%-low >= 50 on the 1060; shader first-use spikes (not visible headless)",
-    "A delete-and-reimport: the import was incremental (exit 0, 0 errors)"
-  ],
-  "left": [
-    "Voice-pack barks still load() their line from disk (<= 1 per zap)",
-    "Grow steps' shape queries + rebuild: 4-7 ms now and then"
-  ],
   "evidence": [
-    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue", "exit": 0, "ref": "handoff/test-output.txt"},
-    {"kind": "export", "command": "bash handoff/export_runs.sh", "exit": 0, "ref": "handoff/REPORT.md#results"},
-    {"kind": "frame", "ref": "handoff/shots/demo_auto/t010.0s.png"}
+    {
+      "kind": "test",
+      "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue --ignoreHeadlessMode",
+      "exit": 0,
+      "ref": "handoff/test-output.txt",
+      "note": "439/439, 0 errors, 0 failures, 0 orphans; exit status inferred from the summary (see REPORT)"
+    },
+    {
+      "kind": "export",
+      "command": "bash handoff/export_runs.sh",
+      "exit": 0,
+      "ref": "handoff/REPORT.md#results",
+      "note": "export savepack DONE (editor aborts on exit, PF-6); demo and wide boots exit 0, 0 script errors"
+    },
+    {
+      "kind": "frame",
+      "ref": "handoff/shots/demo_auto/t010.0s.png"
+    }
   ]
 }
