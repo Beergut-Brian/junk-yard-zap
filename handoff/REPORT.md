@@ -4,7 +4,7 @@ Branch `feature/jyz-hitch-5` off `origin/dev` @ `500bcaa` (after PR #56). Not pu
 Starting point (Gary, the box, v0.1.7-dev.5, `--bench --graphics=high`, warm): avg 71.7-75.4, 1%-low 42.9-45.9,
 worst 35-41 ms. Headless CPU isn't it (busy p99 4-6 ms); hitch-3 already ruled out draw calls and batching.
 
-## Findings (full table: `handoff/hitch5-findings.md`)
+## Findings (full table: `handoff/hitch5-findings.md`; probe, micro scene, analysis script and CSVs: `handoff/hitch5-probe/`, run from `.scratch/`)
 I probed the renderer per frame on the bench route: lavapipe through `godot-render`, high tier, warm cache, the
 bench's follow / wide / follow route by frame count, the soak's stress on. Each frame logged render-thread CPU and
 frame setup, objects / draw calls / primitives in the colour and shadow passes, all five pipeline-compilation
