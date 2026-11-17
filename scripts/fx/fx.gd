@@ -107,6 +107,15 @@ static func torus() -> TorusMesh:
 	return _torus
 
 
+## A zap ring's material: flat, see-through (RenderPrewarm draws one).
+static func ring_mat(color: Color) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = color
+	return mat
+
+
 ## Zap ring in the gun's colour.
 static func ring(tree: SceneTree, at: Vector3, color: Color, radius := 1.0) -> void:
 	bursts += 1
@@ -114,10 +123,7 @@ static func ring(tree: SceneTree, at: Vector3, color: Color, radius := 1.0) -> v
 		return
 	var mi := MeshInstance3D.new()
 	mi.mesh = torus()
-	var mat := StandardMaterial3D.new()   # its own: the ring fades its alpha
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.albedo_color = color
+	var mat := ring_mat(color)   # its own: the ring fades its alpha
 	mi.material_override = mat
 	mi.rotation_degrees.x = 90
 	tree.current_scene.add_child(mi)

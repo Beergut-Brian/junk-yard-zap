@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Export runs for jyz-hitch-1: export, boot the export in --demo (script errors, one real frame), and a
+# Export runs for jyz-hitch-2: export, boot the export in --demo (script errors, one real frame), and a
 # headless --bench from the export (CPU only). Scratch XDG (picks file + saves).
 cd "$(dirname "$0")/.."
 B="$PWD/build/junk-yard-zap.x86_64"

@@ -40,6 +40,7 @@ func _ready() -> void:
 	add_child(cursor)
 	hud.attach(level, camera)
 	camera.make_current()
+	RenderPrewarm.run(self, camera)   # S-18: compile what play makes later, behind the lobby
 	Players.player_joined.connect(_on_player_joined)
 	Players.player_left.connect(_on_player_left)
 	Game.lobby_ready.connect(_on_lobby_ready)

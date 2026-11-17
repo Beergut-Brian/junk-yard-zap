@@ -1,114 +1,120 @@
-# jyz-hitch-1: S-18 frame spikes (60 fps on a GTX 1060)
+# jyz-hitch-2: S-18 cold-start stalls and the steady 1%-low (GTX 1060)
 
-Lane jyz-hitch-1 (Gary), branch `feature/jyz-hitch-1` from `origin/dev` @ `82a9a59` (after PR #52), 2026-11-17.
-Not pushed. The previous lane's report (jyz-igpu-1) is in git history (`git show 82a9a59:handoff/REPORT.md`).
+Lane jyz-hitch-2 (Gary), branch `feature/jyz-hitch-2` from `origin/dev` @ `5d6a184` (after PR #53), 2026-11-17.
+Not pushed. The previous report (jyz-hitch-1) is in git history (`git show 5d6a184:handoff/REPORT.md`).
 
-**Moved IDs: none.** S-18 stays `partial`; its note now says what changed and what to expect on the 1060.
-The 1060 BENCH line after the ship decides it.
+**Moved IDs: none.** S-18 stays `partial`. Its note now says what changed and what to expect on the 1060.
+S-29 is unchanged: the low tier is untouched, and the HD 530 BENCH line is still its open half.
 
 ## The gap
-GTX 1060 bench 2026-11-17 (high, 60 s `--bench`): avg 68.5 fps, **1%-low 33.5, worst frame 43-45 ms**.
-Low tier: avg 57.6, 1%-low 27.7. Goal: no spikes past ~25 ms, 1%-low >= 50.
+Gary's 1060 bench of v0.1.7-dev.2 (`--bench`, 60 s): on a warm cache, high tier averages 67.5-68.4 fps with a
+1%-low of 31.6-31.7 and worst frames of 45-57 ms. The first run on a fresh build stalls in single frames:
+2328 ms on low, 3940 ms on high. Goal: 1%-low >= 50 and worst < ~25 ms warm; no frame > ~200 ms cold.
 
-## 1. Finding the hitches (before changing anything)
-Full notes: `.scratch/hitch-findings.md` (not committed; `.scratch/` is ignored). Method: the bench route
-(`--bench`, seeded bots, the soak's stress) headless on this machine, plus a scratch probe scene that boots
-main.tscn and logs every frame: wall ms, process-script ms, physics wall ms, physics-script ms, and every
-node created that frame. A second pass used temporary timers (reverted) around the physics scripts, Fx,
-GunHits, EffectLook, ArtKit.rbox, Audio and Effects.zap.
+## 1. Findings (before changing anything)
+Full notes: `.scratch/hitch2-findings.md` (not committed; `.scratch/` is ignored).
 
-Headless only shows main-thread CPU (no renderer). Before: 40 s, mean 6.92 ms, slowest 1% 15.4 ms,
-worst 23-33 ms, 29 frames > 15 ms. The render / idle part stayed flat in the slow frames, and so did
-the Jolt step (~1 ms). **The spikes were GDScript running inside a physics tick at the moment of a zap or a
-landing.** In the slow frames the physics-script time was 7-21 ms, against a 0.76 ms mean:
+Headless has no renderer, so it can't show shader or pipeline work. I used `godot-render` instead (Xvfb +
+Mesa lavapipe, Forward+, CPU) at 480x270, low tier, on the bench route. A scratch per-frame probe logged
+wall ms, the RenderingServer **pipeline-compilation counters by source** (canvas / mesh / surface / draw /
+specialization), and the nodes added each frame. Cold = fresh `XDG_DATA_HOME` and `XDG_CACHE_HOME` under
+`.scratch/` (no Godot shader cache, no Vulkan or Mesa pipeline cache), which matches the box after a fresh
+seed. Warm = the same directories on a second run. lavapipe frame times aren't fps. What counts is which
+frames compile and how they compare with their neighbours.
 
-| Cause | Cost here | Fixed |
+A "draw" compilation is a pipeline the renderer didn't have at draw time, built inside that frame. That's
+the stutter.
+
+| frame (bench route, dev) | cold | warm | draw / spec compiles | new that frame |
+| --- | --- | --- | --- | --- |
+| first yard frame | 29.2 s | 8.3 s | 15 / 20 | the yard loads (that's load) |
+| second | 12.7 s | 2.0 s | 9 / 12 | the first burst particles |
+| later, warm | | 0.7-11.9 s | 3, 5, 2, 1, 1, 1 | bursts, first effect looks (bouncy, freeze, grab), a ball |
+
+- **Cold stalls:** the same frame costs 12.7 s cold and 2.0 s warm. The difference is the shader itself.
+  Each material kind made only during play (burst dots, dust, rings, glue, tint overlay, puffs, the effect
+  looks) compiles its shader from source in the frame it's first drawn, then compiles its pipelines. On
+  the 1060 box that's the 2-4 s first-run stall.
+- **Warm runs still compile in play:** 21 draw-time compiles after the first two frames of a 40 s run, in
+  6 frames. On a real driver each costs a few to tens of ms. That fits the 45-57 ms worst frames.
+- These frames don't come from physics, audio, GDScript allocations or a resource load. hitch-1 cleared
+  the main-thread spikes (headless worst frame 15-18 ms), and the stall frames add only a few nodes.
+- **The 1%-low isn't just this.** About 32 fps is the mean of the slowest ~40 of ~4000 frames. A handful of
+  compile frames can't account for all of them. The rest is probably GPU time in the "yard wide" third
+  (every object on screen, high tier), which this machine can't measure.
+
+## 2. The fix (nothing seen changes, both tiers)
+- **`scripts/fx/render_prewarm.gd` (RenderPrewarm).** `main.gd` runs it at boot, behind the lobby. It draws
+  one of each play-made material kind in front of the camera, both as a 1 mm mesh and as a 1-particle
+  CPUParticles3D (particles are a multimesh, which has its own pipelines), with shadow casting on, for 6
+  frames. Then the kit frees itself. The materials stay referenced for the session (`RenderPrewarm.keep`),
+  so a transient ring or puff never has to bring its shader back from nothing. In `--demo` and `--bench`
+  there's no lobby, so the prewarm falls in the bench's 3 s warmup.
+- The kinds come from the same factories play uses. The inline materials moved to static functions
+  without change: `Fx.ring_mat`, `Effects.Glue.glow_mat`, `Refusal.strand_mat`, `PhysicsObject.overlay_mat`
+  (in `_tint_art`; the sleep-when-still code isn't touched), `LooseBalloon.puff_mat`. Plus `Fx.flat_mat`,
+  `Refusal.flat_mat` and the ArtKit `mat` / `glow` / `glass` kinds the effect looks use.
+- No art, particle, light or shadow change. The kit is 1 mm, 0.5 m past the near plane, for 6 frames.
+
+## 3. Measured here (lavapipe, warm cache)
+
+| run | draw compiles in play | frames with one |
 | --- | --- | --- |
-| Every `Audio.play()` started an Ogg Vorbis file, and `AudioStreamPlayer.play()` builds a new Vorbis decoder on the main thread | 0.7 ms idle, 1.5 ms mean (3.1 max) in a running game; a busy frame plays 3-4 cues = 4-8 ms | yes |
-| The first effect look (bouncy / freeze / magnet / grab) on an object built its rounded boxes (`ArtKit.rbox`, SurfaceTool in GDScript) in the frame | 1-2.5 ms per box, up to 6 per look; one look took 8.4 ms | yes |
-| Every `Fx.burst` / GunHits burst made a new sphere or box mesh plus a material, and every ring a new 64x32 torus | 0.1-0.7 ms CPU here; on the 1060 each one is also a new mesh upload and material | yes |
-| A voice-pack bark loads its line from disk (`load()`) | 0.8-3.3 ms, at most one per zap (bark gate) | no (see Left) |
-| Grow steps (`_scale_step` shape queries + `_rebuild_shape`), now and then | 4-7 ms | no |
+| bench route, dev | 21 | 6 |
+| bench route, prewarm v1 (fx, glue, refusal, overlay, puff) | 15 | 4 |
+| bench route, this branch (+ the look materials) | 14 | 5 |
+| lobby first, then play, kit removed before it draws | 5 | 4 |
+| lobby first, then play, this branch | 3 | 3 |
 
-One zap frame shows how they stacked: `zapper.phys = 18.6 ms` = Effects.zap 5.5 (rounded boxes 4.9) +
-three Audio.play 8.1 + a bark 3.3 + GunHits 0.7.
+The load frame takes on the moved work (draw compiles 15 -> 26 on the bench route, 21 -> 32 lobby-first).
+"Lobby first" is a scratch probe that boots to the lobby, waits 12 frames, then starts the same bots. That's
+how the game really starts. The lobby's own sparkles already warm most particle pipelines, so the bench's
+big second frame (8-9 compiles) comes from `--bench` skipping the lobby. It falls in the warmup and isn't
+counted.
 
-## 2. The fix (smallest that proves it; nothing seen or heard changes, both tiers)
-- **Audio.gd: SFX play from PCM.** At boot the main thread loads every `assets/audio/sfx/*.ogg` (307 files).
-  Loading inside the worker deadlocked the engine's shutdown on an early close, so the load stays on the
-  main thread. A WorkerThreadPool task then decodes each file once into a 16-bit AudioStreamWAV at the
-  mixer's rate (`decode_pcm`), in 1.6 s. `_start()` plays `pcm(stream)`: the decoded copy once it exists,
-  else the Ogg as before. Cost of one play: **1548 us -> 21 us**. It's the same sound: the samples
-  match the Ogg decoder's output to 16-bit rounding (test), at the same length, pitch and volume.
-  Music, voice packs and synth beeps are untouched. Memory: about 20 MB of PCM. `_exit_tree` stops and
-  waits for the worker.
-- **ArtKit / EffectLook: rounded boxes prewarmed off the main thread.** `ArtKit.rbox` is split into the
-  pure `rbox_arrays()` and the cache. `prewarm_rboxes()` builds the arrays on a worker, and `rbox()` takes
-  them from there, so only the ArrayMesh is made on the main thread (microseconds). `EffectLook.rbox_specs()`
-  is now the single source of every box `_build()` makes, so the prewarm and the build can't drift
-  apart. `YardLevel.spawn_layout()` calls `EffectLook.prewarm()` for every object it spawns (Reset Yard too;
-  boxes already built are skipped). `_exit_tree` claims the task.
-- **Fx / GunHits: bursts and rings share meshes.** A burst's dot mesh plus its flat material is cached by
-  (radius, colour). GunHits caches its sphere and box templates by size, plus one coloured copy per colour.
-  The cache is bounded at 256, because fireworks pick random hues. Both rings use one shared torus each.
-  Each ring keeps its own material, because it fades its own alpha. Same shapes and colours, just reused.
-- The sleep-when-still logic is untouched (test_sleep_when_still.gd: 4 / 4 pass).
+**Not measured:** cold in-play numbers. A cold lavapipe frame takes 10-40 s, so a 40 s run draws only 2-4
+frames. What the kit does on a cold cache is by construction: every listed kind's shader compiles from
+source in the lobby's first frame, not at the first ring, glue, look or puff in play.
 
-## 3. Tests
-`tests/test_hitch.gd` (7 cases):
-- every SFX file is decoded at boot
-- `Audio.play` starts the PCM copy, which has the Ogg's length at the mixer rate
-- the decoded samples match the Ogg decoder's output to 16-bit rounding
-- looping streams, null streams and synth beeps are left alone
-- once the yard has spawned, building every look on every object builds **0** rounded boxes in the frame
-- a prewarmed box has the same vertices as one built on the spot, and is cached from then on
-- the second burst or gun hit of a kind builds no mesh, a new colour gets its own mesh, and rings share
-  the torus but not the material
+## 4. What to expect on the 1060
+- **Cold first run:** the multi-second single frames should move into the warmup (bench) or the lobby's
+  first frame (play). If a stall over 200 ms is left after the warmup, it's a kind the kit misses. The
+  likely ones are a player spawn and a gun's sparks, which still compile 1-2 pipelines in play here.
+- **Warm:** a few fewer compile frames, so worst frames should drop somewhat. **Not claimed: 1%-low >= 50.**
+  That most likely needs GPU time in the wide shot, which this lane can't see. If the warm worst frame
+  stays at 45-57 ms after this, profile the wide third on the box (F3 monitors, GPU time per frame).
 
-No physics outcome is tested here, so no staging was needed.
+## 5. Tests
+`tests/test_hitch_2.gd` (4 cases):
+- every material play makes (bursts, dust, gun hits, rings, glue, refusals, tint overlay, puffs, the
+  effect looks' kinds) has a prewarmed kind with the same shader flags
+- each kind is drawn as a mesh and as emitting particles, inside the camera's view, at 1 mm
+- the kit leaves after its frames and the materials stay; a second boot replaces the set and doesn't grow it
+- `main.tscn` runs the prewarm when it boots
 
-Full suite, `--continue`: see "Results" below and `handoff/test-output.txt`.
-
-## 4. Measured here (headless, CPU only) and what to expect on the 1060
-Same route, 40 s `--bench --bench-seconds=40`. Three runs before and three after (frame times from the
-probe, BENCH line from bench.gd, format unchanged):
-
-| | worst frame | slowest 1% | frames > 15 ms | frames > 12 ms | BENCH low1 |
-| --- | --- | --- | --- | --- | --- |
-| before | 23.0-33.2 ms | 15.4 ms | 29 | 106 | 61.3-67.8 |
-| after | 14.6-17.9 ms | 11.9-13.4 ms | 0, 2, 9 | 26-50 | 72.4-84.6 |
-
-The averages here mean nothing (headless paces at ~6.9 ms). The 60 s export bench is in "Results".
-
-**Expect on the 1060:** the spikes were main-thread CPU at zaps and landings. The 43-45 ms worst frames
-should drop toward the 25 ms goal, and the 1%-low should rise well above 33.5. The box's CPU and the
-renderer's own share decide by how much, and this lane can't measure either. Not claimed: that the
-1%-low reaches 50, or anything about the low tier (its 27.7 also has HD 530 GPU limits). Run
-`bench-game.sh junk-yard-zap` on the 1060 after the ship and set S-18 from its BENCH lines. If spikes remain,
-the next suspects are the two left below and shader first use, which can't be seen headless.
-
-## Left (not fixed, noted in S-18)
-- A voice-pack bark still `load()`s its line from disk: 198 files, ~5 MB Ogg, about 30 MB as PCM, so they
-  weren't decoded wholesale. At most one per zap.
-- Grow steps' shape queries plus shape rebuild: 4-7 ms now and then.
+No physics outcome is tested, so no staging was needed. test_sleep_when_still.gd passes 4 / 4, and
+test_hitch.gd passes 7 / 7.
 
 ## Results
-- **Import:** `godot --headless --path . --import` exit 0, 0 script errors. This was an incremental import over
-  the worktree's `.godot`, not a delete-and-reimport: the 60-minute limit didn't leave time for that.
-- **Full suite** (`-a tests --continue`): **435 / 435 passed**, 0 errors, 0 orphans, exit 0
-  (`handoff/test-output.txt`; 428 before + 7 new). The first full run had 1 failure:
-  test_exit_watchdog `close_early` was killed by the exit watchdog. The decode worker was `load()`ing
-  files while the main thread waited on it at shutdown. Moving the loads to the main thread fixed it
-  (3 / 3 direct runs exit 0, then the whole second suite run). test_sleep_when_still 4 / 4.
-- **Export:** `--export-release "Linux"` wrote the pack (`savepack DONE`). The editor process then aborts
-  on its own exit, which is known (PF-6, previous REPORTs). Commands: `handoff/export_runs.sh`.
-- **Boot the export with `--demo`** (Xvfb + lavapipe; the software renderer auto-picks the low tier):
-  exit 0, **0 script errors**, in both the demo run and the `--demo-beat=wide` run.
-- **Export, headless `--bench` 60 s** (CPU only, same line format):
-  `BENCH avg=144.9 low1=82.0 frame_ms=6.90 worst_ms=17.0 frames=8696 seconds=60.0 tier=high cap=0`.
-  No 5 s window had a worst frame over 17 ms. Before this lane's fix, the source build's 60 s run here
-  was `low1=66.0 worst_ms=22.1`.
+- **Import:** `godot --headless --path . --import` exit 0, 0 script errors. This worktree had no `.godot`,
+  so it was a full import from nothing, then incremental re-imports after each edit.
+- **Full suite** (`-a tests --continue --ignoreHeadlessMode`): **439 / 439 passed**, 0 errors, 0 failures,
+  0 orphans (`handoff/test-output.txt`; 435 before + 4 new). The process's own exit status went to a task
+  log this lane can't read. gdUnit exits 0 when nothing fails, and the targeted run of test_hitch_2,
+  test_hitch and test_sleep_when_still exited 0. The "Cannot convert argument 1 from Object to Object" line
+  in the output comes from `UiPreview.run.call_deferred` in lobby.gd. It's already in hitch-1's test output
+  (5 times), not from this change.
+- **Export:** `--export-release "Linux"` wrote the pack (`savepack DONE`, no script errors). The editor then
+  aborts on its own exit (exit 134), which is known (PF-6, earlier reports). Commands: `handoff/export_runs.sh`.
+- **Boot the export with `--demo`** (Xvfb + lavapipe, auto low tier): exit 0, **0 script errors**, in both
+  the demo run and the `--demo-beat=wide` run.
+- **Export, headless `--bench` 60 s** (CPU only):
+  `BENCH avg=144.9 low1=83.7 frame_ms=6.90 worst_ms=22.1 frames=8695 seconds=60.0 tier=high cap=0`.
+  hitch-1 got low1 82.0 / worst 17.0. This run shared the CPU with the full suite, so its worst frame
+  isn't comparable. The prewarm adds no per-frame work after its 6 frames.
 - **The frame I looked at:** `handoff/shots/demo_auto/t010.0s.png`, from the export at 10 s of `--demo`.
-  It shows the yard, Jeff on a cloud with his gun, Chuck in yellow by the junk pile with a beam, both HUD
-  rings (green P1, red P2) with their button hints, and the goal card top right. Nothing is missing or
-  broken; it looks like the igpu-1 shots. Also `demo_auto/t004.0s.png` and `wide_auto/t010.0s.png`.
+  It shows the yard, Jeff on a cloud with his gun beam, Chuck in yellow by the junk pile, both HUD rings
+  (green P1, red P2) with their button hints, and the goal card top right. Nothing stray from the
+  prewarm, and nothing missing. Also `demo_auto/t004.0s.png` and `wide_auto/t010.0s.png`.
+- Commits: `perf: prewarm play-made materials behind the lobby` (code + the S-18 note),
+  `tests: pin S-18 render prewarm (...)`, `perf: hitch-2 handoff (...)`.
