@@ -622,7 +622,8 @@ func _art_bounds() -> AABB:
 	for mi in _art_meshes:
 		var vi := mi as VisualInstance3D
 		var local: Transform3D = _visual.global_transform.affine_inverse() * vi.global_transform if vi.is_inside_tree() else _rel(vi)
-		var b: AABB = local * vi.get_aabb()
+		# S-18: a merged mesh keeps its parts' own boxes (ObjectArt.merge_static), so the look wraps as before.
+		var b: AABB = local * (vi.get_meta(&"parts_aabb") if vi.has_meta(&"parts_aabb") else vi.get_aabb())
 		box = b if first else box.merge(b)
 		first = false
 	return box
