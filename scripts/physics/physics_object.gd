@@ -279,7 +279,9 @@ func _physics_process(delta: float) -> void:
 		_scale_step(delta)
 	elif _clamp_left > 0.0:
 		_clamp_left -= delta
-	_visual.scale = squash * current_scale * _wobble()
+	var vs := squash * current_scale * _wobble()
+	if _visual.scale != vs:   # S-18 (hitch-4): even a same-value write re-sends every part's transform to the renderer
+		_visual.scale = vs
 	_rattle(delta)
 	_gag(delta)
 	if sleeping and absf(global_position.z) > 0.02:
