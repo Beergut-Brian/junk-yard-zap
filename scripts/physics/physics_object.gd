@@ -645,15 +645,21 @@ func _wobble() -> Vector3:
 	return Vector3(1.0 + w, 1.0 - w, 1.0 + w)
 
 
+## The additive glow laid over an object's art while an effect tints it (RenderPrewarm draws one).
+static func overlay_mat() -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	return m
+
+
 func _tint_art(glow: Color) -> void:
 	if _art_meshes.is_empty():
 		return
 	var on := glow != Color.BLACK
 	if on and _overlay == null:
-		_overlay = StandardMaterial3D.new()
-		_overlay.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		_overlay.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-		_overlay.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_overlay = overlay_mat()
 	if on:
 		_overlay.albedo_color = Color(glow.r, glow.g, glow.b, 1.0) * 0.55
 	if on != _overlay_on:

@@ -267,6 +267,15 @@ class Glue extends Effect:
 		var dir := _dir()
 		return a.global_position + dir * (a.half_extent_along(dir) + gap() * 0.5)
 
+	## The glue's string and blob: its colour, glowing, drawn over everything (RenderPrewarm draws one).
+	static func glow_mat(c: Color, glow: float) -> StandardMaterial3D:
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = c
+		mat.emission_enabled = true
+		mat.emission = c * glow
+		mat.no_depth_test = true
+		return mat
+
 	func _make_string() -> void:
 		if not a.is_inside_tree():
 			return
@@ -279,12 +288,7 @@ class Glue extends Effect:
 		m.radial_segments = 8
 		m.rings = 1
 		string_mesh.mesh = m
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = color
-		mat.emission_enabled = true
-		mat.emission = color * 0.6
-		mat.no_depth_test = true   # visible even where it runs behind a thing
-		string_mesh.material_override = mat
+		string_mesh.material_override = glow_mat(color, 0.6)   # visible even where it runs behind a thing
 		string_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		string_mesh.top_level = true
 		a.add_child(string_mesh)
@@ -333,12 +337,7 @@ class Glue extends Effect:
 		var m := SphereMesh.new()
 		m.radius = 0.3
 		m.height = 0.6
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = color
-		mat.emission_enabled = true
-		mat.emission = color * 0.8
-		mat.no_depth_test = true   # always visible, even inside the pair
-		m.material = mat
+		m.material = glow_mat(color, 0.8)   # always visible, even inside the pair
 		blob.mesh = m
 		joint.add_child(blob)
 		a.stack.recompute()   # label, look and the island's mass floor

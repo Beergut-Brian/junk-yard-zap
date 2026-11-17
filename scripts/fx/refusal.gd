@@ -133,11 +133,7 @@ static func recoil(parent: Node, from: Vector3, to: Vector3, c: Color) -> void:
 	m.radial_segments = 6
 	m.rings = 1
 	strand.mesh = m
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.no_depth_test = true
-	mat.albedo_color = c
+	var mat := strand_mat(c)
 	strand.material_override = mat
 	strand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(strand)
@@ -211,6 +207,16 @@ static func _flat(mesh: Mesh, c: Color, priority: int) -> MeshInstance3D:
 	mi.material_override = flat_mat(c, priority)
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return mi
+
+
+## The snapped glue strand: flat, see-through, over everything (RenderPrewarm draws one).
+static func strand_mat(c: Color) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.no_depth_test = true
+	mat.albedo_color = c
+	return mat
 
 
 static func flat_mat(c: Color, priority: int) -> StandardMaterial3D:

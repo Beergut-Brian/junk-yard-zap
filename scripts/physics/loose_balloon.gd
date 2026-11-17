@@ -187,15 +187,21 @@ func respawn() -> void:
 	respawned.emit(self)
 
 
+## The puff's soft cloud white (RenderPrewarm draws one).
+static func puff_mat() -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(1, 0.97, 0.9, 0.95)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.roughness = 1.0
+	return m
+
+
 ## A tiny cloud puff with a smile: swells, drifts up and fades out.
 static func make_puff(d: float) -> Node3D:
 	var root := Node3D.new()
 	root.name = "BalloonPuff"
 	var r := maxf(0.18, d * 0.32)
-	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(1, 0.97, 0.9, 0.95)
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.roughness = 1.0
+	var m := puff_mat()
 	for off in [Vector3(-0.8, 0, 0), Vector3(0.8, 0, 0), Vector3(0, 0.55, 0), Vector3(0, -0.2, 0.2), Vector3(-0.35, 0.4, 0), Vector3(0.4, 0.35, 0)]:
 		var mi := MeshInstance3D.new()
 		var s := SphereMesh.new()
