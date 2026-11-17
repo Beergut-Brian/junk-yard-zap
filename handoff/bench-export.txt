@@ -1,9 +1,1 @@
---- auto pick + bench (export, no flag)
-ERROR: 6 resources still in use at exit (run with --verbose for details).
-Graphics: tier=low (auto: software renderer) adapter="llvmpipe (LLVM 21.1.8, 256 bits)" vendor="Unknown" type=4
-bench: start tier=low warmup=3s seconds=15 route=follow,wide,follow cap=60 adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
-bench: t=  8.7 seg=wide fps=0.1 low1=0.1 frame_ms=8719.19 worst_ms=8719.2
-bench: t= 11.1 seg=follow fps=0.8 low1=0.5 frame_ms=1178.06 worst_ms=1894.7
-bench: t= 15.2 seg=follow fps=1.0 low1=0.6 frame_ms=1032.99 worst_ms=1563.3
-BENCH avg=0.5 low1=0.1 frame_ms=2172.47 worst_ms=8719.2 frames=7 seconds=15.2 tier=low cap=60 adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
-exit 0
+BENCH avg=143.2 low1=54.9 frame_ms=6.98 worst_ms=41.8 frames=8593 seconds=60.0 tier=high cap=0 adapter=""

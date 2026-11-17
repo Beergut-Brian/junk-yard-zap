@@ -1,120 +1,126 @@
-# jyz-hitch-2: S-18 cold-start stalls and the steady 1%-low (GTX 1060)
+# jyz-hitch-3: S-18 steady 1%-low (GTX 1060, warm, high)
 
-Lane jyz-hitch-2 (Gary), branch `feature/jyz-hitch-2` from `origin/dev` @ `5d6a184` (after PR #53), 2026-11-17.
-Not pushed. The previous report (jyz-hitch-1) is in git history (`git show 5d6a184:handoff/REPORT.md`).
+Lane jyz-hitch-3 (Gary), branch `feature/jyz-hitch-3` from `origin/dev` @ `6392ed1` (after PR #54), 2026-11-17.
+Not pushed. The previous report (jyz-hitch-2) is in git history (`git show 6392ed1:handoff/REPORT.md`).
 
-**Moved IDs: none.** S-18 stays `partial`. Its note now says what changed and what to expect on the 1060.
-S-29 is unchanged: the low tier is untouched, and the HD 530 BENCH line is still its open half.
+**Moved IDs: none.** S-18 stays `partial`, and its note now says what changed and what to expect on the 1060.
+S-29 is unchanged. The low tier gets the same merge, and nothing it shows changes.
 
 ## The gap
-Gary's 1060 bench of v0.1.7-dev.2 (`--bench`, 60 s): on a warm cache, high tier averages 67.5-68.4 fps with a
-1%-low of 31.6-31.7 and worst frames of 45-57 ms. The first run on a fresh build stalls in single frames:
-2328 ms on low, 3940 ms on high. Goal: 1%-low >= 50 and worst < ~25 ms warm; no frame > ~200 ms cold.
+Gary's 1060 bench of v0.1.7-dev.3 (`--bench`, high, 60 s): the cold stall is gone, but on a warm cache the
+1%-low is 39.4-42.8 fps and the worst frame is 38.6-43.3 ms (avg 66.5-69.0). Goal: 1%-low >= 50, worst
+under ~25 ms warm, and the cold run kept (no frame over ~200 ms).
 
 ## 1. Findings (before changing anything)
-Full notes: `.scratch/hitch2-findings.md` (not committed; `.scratch/` is ignored).
+Full notes are in `handoff/hitch3-findings.md` (a copy of `.scratch/hitch3-findings.md`).
 
-Headless has no renderer, so it can't show shader or pipeline work. I used `godot-render` instead (Xvfb +
-Mesa lavapipe, Forward+, CPU) at 480x270, low tier, on the bench route. A scratch per-frame probe logged
-wall ms, the RenderingServer **pipeline-compilation counters by source** (canvas / mesh / surface / draw /
-specialization), and the nodes added each frame. Cold = fresh `XDG_DATA_HOME` and `XDG_CACHE_HOME` under
-`.scratch/` (no Godot shader cache, no Vulkan or Mesa pipeline cache), which matches the box after a fresh
-seed. Warm = the same directories on a second run. lavapipe frame times aren't fps. What counts is which
-frames compile and how they compare with their neighbours.
+I ran a per-frame probe (`.scratch/p3_node.gd`) on the bench route with a renderer (`godot-render`, lavapipe,
+Forward+, high tier, 480x270, `--fixed-fps 30`). It drives the route by frame count: 30 warmup frames,
+then 60 follow, 60 wide, 60 follow, with the soak's stress on. BenchProbe's wall-clock route only gets one
+lavapipe frame per third, which is why I didn't use it. Each frame the probe logs the root viewport's
+measured render CPU and GPU time, plus objects, primitives and draw calls for the colour pass and the
+shadow pass. lavapipe timings are only good for comparisons; the counters are exact.
 
-A "draw" compilation is a pipeline the renderer didn't have at draw time, built inside that frame. That's
-the stutter.
+| baseline, median | objects | draw calls | primitives | shadow objects | shadow draws | render CPU | lavapipe GPU |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| follow (121 frames) | 773 | 403 | 546k | 415 | 269 | 1.6 ms | 636 ms |
+| **wide** (60 frames) | **2092** | **1055** | 1051k | 864 | **601** | **2.8 ms** | 631 ms |
 
-| frame (bench route, dev) | cold | warm | draw / spec compiles | new that frame |
-| --- | --- | --- | --- | --- |
-| first yard frame | 29.2 s | 8.3 s | 15 / 20 | the yard loads (that's load) |
-| second | 12.7 s | 2.0 s | 9 / 12 | the first burst particles |
-| later, warm | | 0.7-11.9 s | 3, 5, 2, 1, 1, 1 | bursts, first effect looks (bouncy, freeze, grab), a ball |
+- **Hitch-2's suspicion was half right.** The wide third is the heavy one, but not because of GPU fill or
+  triangles. lavapipe's GPU time doesn't change between the thirds even though the wide shot has twice the
+  triangles. What does grow is the instance count. The wide third draws 2.7x the objects, 2.6x the draw
+  calls in the colour pass and +330 shadow draws, and render-thread CPU almost doubles (1.6 to 2.8 ms on
+  this CPU). On the box, that CPU work shares a desktop quad-core with the main thread.
+- **Where the instances come from:** every yard object is 10-50 separate ArtKit parts, each its own
+  MeshInstance3D. That's 1746 in the tree, 266 of them with the outline pass. The dressing already uses
+  MultiMeshes (28, holding 1186 instances), and Forward+ already instances runs of identical mesh and
+  material, so the objects' many small parts are what's left.
+- The slow single frames in the baseline (frames 93-97, the cut to wide, 2-6 s against 0.67 s) didn't
+  come back in the fix run. That run had a warmer cache, so I don't credit the merge with it.
+- The slow frames don't come from particles (3-7 CPUParticles3D at a time), glow, or a light or shadow
+  setting changing.
 
-- **Cold stalls:** the same frame costs 12.7 s cold and 2.0 s warm. The difference is the shader itself.
-  Each material kind made only during play (burst dots, dust, rings, glue, tint overlay, puffs, the effect
-  looks) compiles its shader from source in the frame it's first drawn, then compiles its pipelines. On
-  the 1060 box that's the 2-4 s first-run stall.
-- **Warm runs still compile in play:** 21 draw-time compiles after the first two frames of a 40 s run, in
-  6 frames. On a real driver each costs a few to tens of ms. That fits the 45-57 ms worst frames.
-- These frames don't come from physics, audio, GDScript allocations or a resource load. hitch-1 cleared
-  the main-thread spikes (headless worst frame 15-18 ms), and the stall frames add only a few nodes.
-- **The 1%-low isn't just this.** About 32 fps is the mean of the slowest ~40 of ~4000 frames. A handful of
-  compile frames can't account for all of them. The rest is probably GPU time in the "yard wide" third
-  (every object on screen, high tier), which this machine can't measure.
+## 2. The fix: `ObjectArt.merge_static` (nothing seen changes, both tiers)
+When an object is built (`ObjectArt.build`), its still parts that share a material are baked into one
+ArrayMesh, in place. The triangles, normals, material (outline pass included), shadow setting and layers
+all stay the same. The parts' own boxes are kept as the mesh's custom AABB, and as a `parts_aabb` meta that
+`PhysicsObject._art_bounds` reads, so the effect look wraps the same box. That's a 2-line change in
+physics_object.gd, away from the sleep-when-still code.
 
-## 2. The fix (nothing seen changes, both tiers)
-- **`scripts/fx/render_prewarm.gd` (RenderPrewarm).** `main.gd` runs it at boot, behind the lobby. It draws
-  one of each play-made material kind in front of the camera, both as a 1 mm mesh and as a 1-particle
-  CPUParticles3D (particles are a multimesh, which has its own pipelines), with shadow casting on, for 6
-  frames. Then the kit frees itself. The materials stay referenced for the session (`RenderPrewarm.keep`),
-  so a transient ring or puff never has to bring its shader back from nothing. In `--demo` and `--bench`
-  there's no lobby, so the prewarm falls in the bench's 3 s warmup.
-- The kinds come from the same factories play uses. The inline materials moved to static functions
-  without change: `Fx.ring_mat`, `Effects.Glue.glow_mat`, `Refusal.strand_mat`, `PhysicsObject.overlay_mat`
-  (in `_tint_art`; the sleep-when-still code isn't touched), `LooseBalloon.puff_mat`. Plus `Fx.flat_mat`,
-  `Refusal.flat_mat` and the ArtKit `mat` / `glow` / `glass` kinds the effect looks use.
-- No art, particle, light or shadow change. The kit is 1 mm, 0.5 m past the near plane, for 6 frames.
+These are left as separate parts:
+- named parts (a balloon's Body and Knot are found by name)
+- anything under a gag pivot (Y-19, those swing)
+- inside an instanced model (the cow's glb)
+- scripted parts, parts with children, parts with an overlay
+- see-through or textured materials
+- outlined parts that have a scale. The outline grows in the mesh's own space, so baking the scale in
+  would change the ink line's width.
 
-## 3. Measured here (lavapipe, warm cache)
+Merged meshes are cached by their parts, so a Reset Yard or a recall reuses them (117 meshes for 49
+object types, and they don't grow on rebuild). The first build costs ~5 ms an object at yard load, behind
+the lobby or warmup. A cached rebuild adds ~0.3 ms an object.
 
-| run | draw compiles in play | frames with one |
-| --- | --- | --- |
-| bench route, dev | 21 | 6 |
-| bench route, prewarm v1 (fx, glue, refusal, overlay, puff) | 15 | 4 |
-| bench route, this branch (+ the look materials) | 14 | 5 |
-| lobby first, then play, kit removed before it draws | 5 | 4 |
-| lobby first, then play, this branch | 3 | 3 |
+## 3. Measured here (same route, same probe, warm)
+| median | objects | draw calls | primitives | shadow objects | shadow draws | render CPU |
+| --- | --- | --- | --- | --- | --- | --- |
+| follow | 773 -> 452 | 403 -> 268 | 546k -> 473k | 415 -> 394 | 269 -> 264 | 1.6 -> 1.4 ms |
+| **wide** | **2092 -> 1677** | **1055 -> 921** | 1051k -> 1052k | 864 -> 701 | **601 -> 537** | **2.8 -> 2.5 ms** |
 
-The load frame takes on the moved work (draw compiles 15 -> 26 on the bench route, 21 -> 32 lobby-first).
-"Lobby first" is a scratch probe that boots to the lobby, waits 12 frames, then starts the same bots. That's
-how the game really starts. The lobby's own sparkles already warm most particle pipelines, so the bench's
-big second frame (8-9 compiles) comes from `--bench` skipping the lobby. It falls in the warmup and isn't
-counted.
+- The wide shot's primitives are the same: it's the same geometry in fewer instances. (Follow's
+  primitives move because the bots' camera framing differs between runs.)
+- Headless counts (test_hitch_3): object draws 895 -> 549, whole yard 1919 -> 1543 (outline passes counted).
+- **The look:** all 49 art objects rendered with parts vs merged, 1920x1080, same camera and light. They
+  differ in 101 of 2,073,600 pixels (mean channel diff 0.002). The diff sits on the cow, which isn't merged
+  (its glb idles), and a few pixels of depth tie on the cannon's fuse dot. See `handoff/shots/lineup_parts.png`,
+  `lineup_merged.png`, `lineup_diff_cow.png` and `lineup_diff_cannon.png`.
+- **This is a modest cut, not a halving.** Wide colour draws drop 13%, shadow draws 11% and render CPU 11%.
+  The rest of the wide shot's draws are mostly the outlined parts that have a scale, plus the dressing and
+  the players.
 
-**Not measured:** cold in-play numbers. A cold lavapipe frame takes 10-40 s, so a 40 s run draws only 2-4
-frames. What the kit does on a cold cache is by construction: every listed kind's shader compiles from
-source in the lobby's first frame, not at the first ring, glue, look or puff in play.
-
-## 4. What to expect on the 1060
-- **Cold first run:** the multi-second single frames should move into the warmup (bench) or the lobby's
-  first frame (play). If a stall over 200 ms is left after the warmup, it's a kind the kit misses. The
-  likely ones are a player spawn and a gun's sparks, which still compile 1-2 pipelines in play here.
-- **Warm:** a few fewer compile frames, so worst frames should drop somewhat. **Not claimed: 1%-low >= 50.**
-  That most likely needs GPU time in the wide shot, which this lane can't see. If the warm worst frame
-  stays at 45-57 ms after this, profile the wide third on the box (F3 monitors, GPU time per frame).
+## 4. What to expect on the 1060 (not measured here)
+- **Warm high:** the wide third's slow frames should shrink by the render-thread work saved (about 10-15%
+  of the per-instance cost). Expect the 1%-low to rise by a few fps from 39-43. **I don't claim 1%-low >= 50.**
+  If the box still shows 1%-low < 50 after this, the next step is an outline shell per object: bake every
+  outlined part's grown shell into one ink mesh, so an object's outline is one draw. That takes most of the
+  remaining wide-shot draws. It needs a new ink material with no grow, and a check of how next_pass outlines
+  behave in the shadow pass. It isn't done here because it can change the look if that check is wrong.
+  Then check F3's render-thread time against the main thread on the box: if the box's CPU is the limit,
+  draw-count work is the right lever.
+- **Cold run:** unchanged. The merge adds no new material or shader. The baked meshes use the parts' own
+  materials, which RenderPrewarm and the load frame already compile. There should be no frame over 200 ms
+  after the warmup.
 
 ## 5. Tests
-`tests/test_hitch_2.gd` (4 cases):
-- every material play makes (bursts, dust, gun hits, rings, glue, refusals, tint overlay, puffs, the
-  effect looks' kinds) has a prewarmed kind with the same shader flags
-- each kind is drawn as a mesh and as emitting particles, inside the camera's view, at 1 mm
-- the kit leaves after its frames and the materials stay; a second boot replaces the set and doesn't grow it
-- `main.tscn` runs the prewarm when it boots
+`tests/test_hitch_3.gd` (6 cases):
+- every art object keeps the same triangle count, corner-position sum and normal sum per material and
+  shadow setting, and its draws drop below 70%
+- gag parts, named parts and instanced models stay
+- outlined parts with a scale aren't baked; details and unscaled outlined parts are
+- the effect look wraps the same box, merged or not
+- a second build reuses the merged meshes
+- the yard's draw count stays under a ceiling of 1600 (1543 now) and below the unmerged count
 
-No physics outcome is tested, so no staging was needed. test_sleep_when_still.gd passes 4 / 4, and
-test_hitch.gd passes 7 / 7.
+The physics-outcome tests (test_sleep_when_still.gd 4 / 4) pass unchanged. I added no physics test, so
+there was nothing to stage.
 
 ## Results
 - **Import:** `godot --headless --path . --import` exit 0, 0 script errors. This worktree had no `.godot`,
-  so it was a full import from nothing, then incremental re-imports after each edit.
-- **Full suite** (`-a tests --continue --ignoreHeadlessMode`): **439 / 439 passed**, 0 errors, 0 failures,
-  0 orphans (`handoff/test-output.txt`; 435 before + 4 new). The process's own exit status went to a task
-  log this lane can't read. gdUnit exits 0 when nothing fails, and the targeted run of test_hitch_2,
-  test_hitch and test_sleep_when_still exited 0. The "Cannot convert argument 1 from Object to Object" line
-  in the output comes from `UiPreview.run.call_deferred` in lobby.gd. It's already in hitch-1's test output
-  (5 times), not from this change.
-- **Export:** `--export-release "Linux"` wrote the pack (`savepack DONE`, no script errors). The editor then
-  aborts on its own exit (exit 134), which is known (PF-6, earlier reports). Commands: `handoff/export_runs.sh`.
-- **Boot the export with `--demo`** (Xvfb + lavapipe, auto low tier): exit 0, **0 script errors**, in both
-  the demo run and the `--demo-beat=wide` run.
-- **Export, headless `--bench` 60 s** (CPU only):
-  `BENCH avg=144.9 low1=83.7 frame_ms=6.90 worst_ms=22.1 frames=8695 seconds=60.0 tier=high cap=0`.
-  hitch-1 got low1 82.0 / worst 17.0. This run shared the CPU with the full suite, so its worst frame
-  isn't comparable. The prewarm adds no per-frame work after its 6 frames.
+  so it was a full import, then a re-import after the edits.
+- **Full suite** (`-a tests --continue --ignoreHeadlessMode`): **445 / 445 passed**, 0 errors, 0 failures,
+  0 orphans, exit 0 (`handoff/test-output.txt`). That's 439 before plus 6 new.
+- **Export:** `--export-release "Linux"` wrote the pack with 0 script errors. The editor then aborts on its
+  own exit (134), which is known (PF-6, earlier reports). Commands are in `handoff/export_runs.sh`.
+- **Boot the export with `--demo`** (Xvfb + lavapipe, auto low tier): exit 0, **0 script errors**, for both
+  the demo run and `--demo-beat=wide`.
+- **Export, headless `--bench` 60 s** (CPU only): `BENCH avg=143.2 low1=54.9 worst_ms=41.8`
+  (`handoff/bench-export.txt`). Hitch-2 measured 83.7 here, but this box was shared during the run: another
+  lane's lavapipe was at 371% CPU, with load average 6-11 on 6 cores. An interleaved A/B under that load,
+  merge off vs on from the project (`handoff/bench-ab.txt`), gave low1 49.7 vs 52.9, then 10.8 vs 30.7 as
+  the load rose. The merge costs nothing per frame, and these headless numbers say nothing about the 1060.
 - **The frame I looked at:** `handoff/shots/demo_auto/t010.0s.png`, from the export at 10 s of `--demo`.
-  It shows the yard, Jeff on a cloud with his gun beam, Chuck in yellow by the junk pile, both HUD rings
-  (green P1, red P2) with their button hints, and the goal card top right. Nothing stray from the
-  prewarm, and nothing missing. Also `demo_auto/t004.0s.png` and `wide_auto/t010.0s.png`.
-- Commits: `perf: prewarm play-made materials behind the lobby` (code + the S-18 note),
-  `tests: pin S-18 render prewarm (...)`, `perf: hitch-2 handoff (...)`.
+  It shows Jeff with the balloon gun and Chuck by the crate stack. The crates' planks, the wheelbarrow, the
+  tyre, the gnome and the cone all have their parts and ink lines, and both HUD rings (green P1, red P2),
+  the hints and the goal card are there. Also `wide_auto/t010.0s.png` (the whole yard, every object in place)
+  and `demo_auto/t004.0s.png`.
+- Commits: `perf: merge each yard object's still parts per material` (code + the S-18 note),
+  `tests: pin S-18 part merge (...)`, `perf: hitch-3 handoff (...)`.
