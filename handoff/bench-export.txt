@@ -1,14 +1,15 @@
+--- export, headless --bench 60 s (CPU only, no renderer)
 bench: start tier=high warmup=3s seconds=60 route=follow,wide,follow cap=0 adapter=""
-bench: t=  5.0 seg=follow fps=144.9 low1=88.1 frame_ms=6.90 worst_ms=12.9
-bench: t= 10.0 seg=follow fps=144.9 low1=80.6 frame_ms=6.90 worst_ms=15.9
-bench: t= 15.0 seg=follow fps=144.7 low1=69.8 frame_ms=6.91 worst_ms=16.0
-bench: t= 20.0 seg=wide fps=144.6 low1=67.7 frame_ms=6.91 worst_ms=15.7
-bench: t= 25.0 seg=wide fps=144.6 low1=72.2 frame_ms=6.92 worst_ms=16.0
-bench: t= 30.0 seg=wide fps=145.0 low1=87.0 frame_ms=6.90 worst_ms=14.1
-bench: t= 35.0 seg=wide fps=144.9 low1=88.7 frame_ms=6.90 worst_ms=12.2
-bench: t= 40.0 seg=follow fps=144.9 low1=88.5 frame_ms=6.90 worst_ms=13.8
-bench: t= 45.0 seg=follow fps=144.9 low1=79.9 frame_ms=6.90 worst_ms=20.1
-bench: t= 50.0 seg=follow fps=144.9 low1=88.5 frame_ms=6.90 worst_ms=11.9
-bench: t= 55.0 seg=follow fps=143.0 low1=66.8 frame_ms=6.99 worst_ms=16.6
-bench: t= 60.0 seg=follow fps=144.8 low1=77.2 frame_ms=6.91 worst_ms=17.3
-BENCH avg=144.7 low1=75.5 frame_ms=6.91 worst_ms=20.1 frames=8681 seconds=60.0 tier=high cap=0 adapter=""
+bench: t=  5.0 seg=follow fps=144.8 low1=81.5 frame_ms=6.91 worst_ms=14.7
+bench: t= 10.0 seg=follow fps=145.0 low1=78.5 frame_ms=6.90 worst_ms=15.1
+bench: t= 15.0 seg=follow fps=144.9 low1=76.9 frame_ms=6.90 worst_ms=15.9
+bench: t= 20.0 seg=wide fps=143.7 low1=50.6 frame_ms=6.96 worst_ms=33.4
+bench: t= 25.0 seg=wide fps=144.4 low1=62.6 frame_ms=6.92 worst_ms=21.6
+bench: t= 30.0 seg=wide fps=144.9 low1=92.0 frame_ms=6.90 worst_ms=11.8
+bench: t= 35.0 seg=wide fps=144.9 low1=88.1 frame_ms=6.90 worst_ms=14.3
+bench: t= 40.0 seg=follow fps=145.0 low1=85.2 frame_ms=6.90 worst_ms=14.1
+bench: t= 45.0 seg=follow fps=144.9 low1=94.0 frame_ms=6.90 worst_ms=11.3
+bench: t= 50.0 seg=follow fps=144.7 low1=70.5 frame_ms=6.91 worst_ms=15.6
+bench: t= 55.0 seg=follow fps=144.7 low1=76.0 frame_ms=6.91 worst_ms=17.5
+bench: t= 60.0 seg=follow fps=144.9 low1=88.6 frame_ms=6.90 worst_ms=12.9
+BENCH avg=144.7 low1=72.7 frame_ms=6.91 worst_ms=33.4 frames=8684 seconds=60.0 tier=high cap=0 vsync=on hz=-1 adapter=""
