@@ -34,6 +34,11 @@ const OUTLINE := 0.022   # metres at scale 1: thin enough to read as a pen line,
 
 static var _mats := {}
 static var _meshes := {}
+static var _rbox_ready := {}    # key -> surface arrays a prewarm worker built (S-18)
+static var _rbox_lock := Mutex.new()
+## Rounded boxes built on the spot, not by a prewarm (tests).
+static var rbox_built_now := 0
+static var _rbox_task := -1
 static var _outline_mat: StandardMaterial3D
 
 
@@ -120,11 +125,32 @@ static func outline_mat() -> StandardMaterial3D:
 
 # --- meshes ----------------------------------------------------------------------------------------
 
-## A box with rounded edges and smooth normals: the toy look. Cached by size and radius.
+## A box with rounded edges and smooth normals: the toy look. Cached by size and radius. S-18: a box
+## prewarm_rboxes() already built on a worker thread only gets its ArrayMesh made here (microseconds);
+## any other is built on the spot as before (rbox_built_now counts those, so tests can pin the prewarm).
 static func rbox(size: Vector3, r: float, k := 4) -> ArrayMesh:
-	var key := "rbox|%.3f,%.3f,%.3f|%.3f|%d" % [size.x, size.y, size.z, r, k]
+	var key := rbox_key(size, r, k)
 	if _meshes.has(key):
 		return _meshes[key]
+	_rbox_lock.lock()
+	var arrays: Array = _rbox_ready.get(key, [])
+	_rbox_ready.erase(key)
+	_rbox_lock.unlock()
+	if arrays.is_empty():
+		arrays = rbox_arrays(size, r, k)
+		rbox_built_now += 1
+	var m := ArrayMesh.new()
+	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	_meshes[key] = m
+	return m
+
+
+static func rbox_key(size: Vector3, r: float, k := 4) -> String:
+	return "rbox|%.3f,%.3f,%.3f|%.3f|%d" % [size.x, size.y, size.z, r, k]
+
+
+## The rounded box's surface arrays. Pure maths on a local SurfaceTool, so a worker thread may run it.
+static func rbox_arrays(size: Vector3, r: float, k := 4) -> Array:
 	var h := size * 0.5
 	r = minf(r, minf(h.x, minf(h.y, h.z)) * 0.98)
 	var inner := h - Vector3.ONE * r
@@ -151,9 +177,40 @@ static func rbox(size: Vector3, r: float, k := 4) -> ArrayMesh:
 			for ui in us.size() - 1:
 				for vi in vs.size() - 1:
 					_quad(st, grid[ui][vi], grid[ui + 1][vi], grid[ui + 1][vi + 1], grid[ui][vi + 1])
-	var m := st.commit()
-	_meshes[key] = m
-	return m
+	return st.commit_to_arrays()
+
+
+## S-18: builds these rounded boxes' arrays on a worker thread ([size, r, k] each; ones already made or
+## queued are skipped), so a zap's first effect look on an object never builds meshes in the frame.
+## Returns the WorkerThreadPool task id, or -1 when there was nothing to do.
+static func prewarm_rboxes(specs: Array) -> int:
+	var todo := []
+	var seen := {}
+	_rbox_lock.lock()
+	for sp in specs:
+		var key := rbox_key(sp[0], sp[1], sp[2])
+		if _meshes.has(key) or _rbox_ready.has(key) or seen.has(key):
+			continue
+		seen[key] = true
+		todo.append([key, sp])
+	_rbox_lock.unlock()
+	if todo.is_empty():
+		return -1
+	wait_rbox_prewarm()   # the last batch is long done by now; claim it so no task is left unwaited
+	_rbox_task = WorkerThreadPool.add_task(func() -> void:
+		for t in todo:
+			var a := rbox_arrays(t[1][0], t[1][1], t[1][2])
+			_rbox_lock.lock()
+			_rbox_ready[t[0]] = a
+			_rbox_lock.unlock(), false, "ArtKit rbox prewarm")
+	return _rbox_task
+
+
+## Blocks until the last prewarm batch is built (tests, leaving the yard).
+static func wait_rbox_prewarm() -> void:
+	if _rbox_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(_rbox_task)
+		_rbox_task = -1
 
 
 static func _samples(hh: float, r: float, k: int) -> PackedFloat32Array:

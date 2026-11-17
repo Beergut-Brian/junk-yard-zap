@@ -12,6 +12,10 @@ extends RefCounted
 
 ## Tests: the last kind played.
 static var last_kind := -1
+## S-18: the hit ring's torus (inner 0.82, outer 1), shared by every ring.
+static var _ring_torus: TorusMesh
+## S-18: shape templates by size (never drawn: _shared() copies one per colour the first time).
+static var _shapes := {}
 
 
 static func play(tree: SceneTree, kind: GunData.Kind, at: Vector3, col: Color, radius := 1.0) -> void:
@@ -47,8 +51,7 @@ static func play(tree: SceneTree, kind: GunData.Kind, at: Vector3, col: Color, r
 			Fx.ring(tree, at, col, r)
 		GunData.Kind.FREEZE:
 			_ring(tree, at, Color(0.92, 0.98, 1.0), r * 0.4, r * 1.7, 0.6)
-			var b := BoxMesh.new()
-			b.size = Vector3(0.05, 0.22, 0.05) * r
+			var b := _box(Vector3(0.05, 0.22, 0.05) * r)
 			var p := _burst(tree, at, b, col.lightened(0.5), 16, 0.9, 1.5, 3.2, Vector3(0, -3, 0), Vector3.UP, 180.0)
 			if p:
 				p.particle_flag_align_y = true
@@ -58,19 +61,53 @@ static func play(tree: SceneTree, kind: GunData.Kind, at: Vector3, col: Color, r
 		GunData.Kind.MAGNET:
 			Fx.ring(tree, at, col, r)
 			_ring(tree, at, Color(1, 1, 1, 0.9), r * 0.3, r * 1.3, 0.2)
-			var b := BoxMesh.new()
-			b.size = Vector3(0.03, 0.3, 0.03) * r
+			var b := _box(Vector3(0.03, 0.3, 0.03) * r)
 			var p := _burst(tree, at, b, col.lightened(0.6), 20, 0.25, 6.0, 10.0, Vector3.ZERO, Vector3.UP, 180.0)
 			if p:
 				p.particle_flag_align_y = true
 
 
 static func _sphere(radius: float) -> SphereMesh:
+	var key := "s%.4f" % radius
+	if _shapes.has(key):
+		return _shapes[key]
 	var m := SphereMesh.new()
 	m.radius = radius
 	m.height = radius * 2.0
 	m.radial_segments = 8
 	m.rings = 4
+	_shapes[key] = m
+	return m
+
+
+static func _box(size: Vector3) -> BoxMesh:
+	var key := "b%.4f,%.4f,%.4f" % [size.x, size.y, size.z]
+	if _shapes.has(key):
+		return _shapes[key]
+	var b := BoxMesh.new()
+	b.size = size
+	_shapes[key] = b
+	return b
+
+
+## S-18: the burst mesh with its colour, made once per shape and colour and then shared (Fx's cache), so
+## a hit builds no mesh and no material during play. `mesh` is a shape template (_sphere / _box).
+static func _shared(mesh: PrimitiveMesh, col: Color) -> PrimitiveMesh:
+	var shape := ""
+	if mesh is SphereMesh:
+		var sm := mesh as SphereMesh
+		shape = "s%.4f,%d,%d" % [sm.radius, sm.radial_segments, sm.rings]
+	elif mesh is BoxMesh:
+		shape = "b%.4f,%.4f,%.4f" % [(mesh as BoxMesh).size.x, (mesh as BoxMesh).size.y, (mesh as BoxMesh).size.z]
+	else:
+		mesh.material = _mat(col)
+		return mesh
+	var key := "hit|%s|%s" % [shape, col.to_html(true)]
+	var m := Fx.cached_mesh(key) as PrimitiveMesh
+	if m == null:
+		m = mesh.duplicate()
+		m.material = _mat(col)
+		Fx.remember_mesh(key, m)
 	return m
 
 
@@ -98,8 +135,7 @@ static func _burst(tree: SceneTree, at: Vector3, mesh: PrimitiveMesh, col: Color
 	p.gravity = gravity
 	p.scale_amount_min = 0.7
 	p.scale_amount_max = 1.2
-	(mesh as PrimitiveMesh).material = _mat(col)
-	p.mesh = mesh
+	p.mesh = _shared(mesh, col)
 	tree.current_scene.add_child(p)
 	p.global_position = at
 	p.emitting = true
@@ -110,10 +146,11 @@ static func _burst(tree: SceneTree, at: Vector3, mesh: PrimitiveMesh, col: Color
 ## A flat ring in the play plane from radius a to b over secs, fading (squash: per-axis scale).
 static func _ring(tree: SceneTree, at: Vector3, col: Color, a: float, b: float, secs: float, squash := Vector3.ONE) -> void:
 	var mi := MeshInstance3D.new()
-	var t := TorusMesh.new()
-	t.inner_radius = 0.82
-	t.outer_radius = 1.0
-	mi.mesh = t
+	if _ring_torus == null:
+		_ring_torus = TorusMesh.new()
+		_ring_torus.inner_radius = 0.82
+		_ring_torus.outer_radius = 1.0
+	mi.mesh = _ring_torus
 	var mat := _mat(Color(col, col.a))
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mi.material_override = mat

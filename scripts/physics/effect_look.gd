@@ -32,6 +32,39 @@ func sync(effects: Array[Effect]) -> void:
 						.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
+## S-18: every rounded box _build() makes for a look of this size, as [size, r, k] (ArtKit.rbox's
+## arguments). _build() takes its boxes from here, so the prewarm and the build can never drift apart.
+static func rbox_specs(sz: Vector3) -> Dictionary:
+	var th := clampf(sz.y * 0.07, 0.05, 0.22)
+	var h := clampf(sz.y * 0.4, 0.3, 0.7)
+	return {
+		&"bouncy": [Vector3(sz.x * 1.04, th, sz.z * 1.04), th * 0.5, 3],
+		&"freeze": [sz * 1.08 + Vector3.ONE * 0.06, minf(sz.length() * 0.08, 0.2), 3],
+		&"magnet_seg": [Vector3(h * 0.27, h * 0.3, h * 0.28), h * 0.08, 2],
+		&"magnet_leg": [Vector3(h * 0.27, h * 0.4, h * 0.28), h * 0.06, 2],
+		&"magnet_tip": [Vector3(h * 0.29, h * 0.2, h * 0.3), h * 0.05, 2],
+		&"grab": [sz * 1.12 + Vector3.ONE * 0.12, minf(sz.length() * 0.15, 0.35), 3],
+	}
+
+
+## S-18: builds every look's rounded boxes for these objects on a worker thread (the yard calls it once its
+## objects are spawned), so the first zap of an effect on an object makes no meshes in the frame.
+static func prewarm(objects: Array) -> int:
+	var specs := []
+	var sizes := {}
+	for o in objects:
+		var l: EffectLook = o.get("look") as EffectLook
+		if l == null or sizes.has(l.size):
+			continue
+		sizes[l.size] = true
+		specs.append_array(rbox_specs(l.size).values())
+	return ArtKit.prewarm_rboxes(specs)
+
+
+static func _rb(sp: Array) -> ArrayMesh:
+	return ArtKit.rbox(sp[0], sp[1], sp[2])
+
+
 func has_look(kind: StringName) -> bool:
 	return _on.has(kind)
 
@@ -58,14 +91,14 @@ func _build(kind: StringName, c: Color) -> Node3D:
 	var root := Node3D.new()
 	root.name = "look_%s" % kind
 	var top := size.y * 0.5
+	var rb := rbox_specs(size)
 	match kind:
 		&"bouncy":
 			# Rubber bands of yellow wrapped round the object.
 			var band := c.lightened(0.05)
 			for i in 3:
 				var y := (i - 1) * size.y * 0.3
-				var th := clampf(size.y * 0.07, 0.05, 0.22)
-				var mi := _mesh(ArtKit.rbox(Vector3(size.x * 1.04, th, size.z * 1.04), th * 0.5, 3), ArtKit.mat(band, ArtKit.EMIT, 0.3))
+				var mi := _mesh(_rb(rb[&"bouncy"]), ArtKit.mat(band, ArtKit.EMIT, 0.3))
 				mi.position.y = y
 				root.add_child(mi)
 		&"balloon":
@@ -93,7 +126,7 @@ func _build(kind: StringName, c: Color) -> Node3D:
 			tie.position.y = 0.01
 			hold.add_child(tie)
 		&"freeze":
-			var ice := _mesh(ArtKit.rbox(size * 1.08 + Vector3.ONE * 0.06, minf(size.length() * 0.08, 0.2), 3), ArtKit.glass(Color(c.lightened(0.35), 0.42), 0.15))
+			var ice := _mesh(_rb(rb[&"freeze"]), ArtKit.glass(Color(c.lightened(0.35), 0.42), 0.15))
 			root.add_child(ice)
 			var frost := ArtKit.glass(Color(0.92, 0.98, 1.0, 0.85), 0.25)
 			for k in 5:
@@ -115,7 +148,7 @@ func _build(kind: StringName, c: Color) -> Node3D:
 			root.add_child(hold)
 			# The horseshoe: an arch of rounded blocks, two legs, silver tips.
 			var blue := ArtKit.mat(c, ArtKit.EMIT, 0.35)
-			var seg := ArtKit.rbox(Vector3(h * 0.27, h * 0.3, h * 0.28), h * 0.08, 2)
+			var seg := _rb(rb[&"magnet_seg"])
 			for k in 7:
 				var a := PI * k / 6.0
 				var piece := _mesh(seg, blue)
@@ -123,10 +156,10 @@ func _build(kind: StringName, c: Color) -> Node3D:
 				piece.rotation.z = a - PI * 0.5
 				hold.add_child(piece)
 			for side in [-1.0, 1.0]:
-				var leg := _mesh(ArtKit.rbox(Vector3(h * 0.27, h * 0.4, h * 0.28), h * 0.06, 2), blue)
+				var leg := _mesh(_rb(rb[&"magnet_leg"]), blue)
 				leg.position = Vector3(side * h * 0.38, -h * 0.18, 0)
 				hold.add_child(leg)
-				var tip := _mesh(ArtKit.rbox(Vector3(h * 0.29, h * 0.2, h * 0.3), h * 0.05, 2), ArtKit.mat(Color(0.88, 0.9, 0.94), 0.0, 0.2))
+				var tip := _mesh(_rb(rb[&"magnet_tip"]), ArtKit.mat(Color(0.88, 0.9, 0.94), 0.0, 0.2))
 				tip.position = Vector3(side * h * 0.38, -h * 0.46, 0)
 				hold.add_child(tip)
 			var sparks := Node3D.new()
@@ -151,7 +184,7 @@ func _build(kind: StringName, c: Color) -> Node3D:
 				root.add_child(drip)
 		&"grab":
 			# A soft shell of the player's colour, and a ring under it like a tractor beam.
-			var shell := _mesh(ArtKit.rbox(size * 1.12 + Vector3.ONE * 0.12, minf(size.length() * 0.15, 0.35), 3), ArtKit.glow(Color(c, 0.22), 1.3))
+			var shell := _mesh(_rb(rb[&"grab"]), ArtKit.glow(Color(c, 0.22), 1.3))
 			root.add_child(shell)
 			var ring := _mesh(ArtKit.torus(maxf(size.x, size.z) * 0.55, maxf(size.x, size.z) * 0.55 + 0.07, 28), ArtKit.glow(c, 1.4))
 			ring.position.y = -size.y * 0.5 - 0.1

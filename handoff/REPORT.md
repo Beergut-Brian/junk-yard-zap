@@ -1,123 +1,114 @@
-# jyz-igpu-1: playable on the TV box's Intel HD 530
+# jyz-hitch-1: S-18 frame spikes (60 fps on a GTX 1060)
 
-Lane jyz-igpu-1 (Systems), branch `feature/jyz-igpu-1` from `origin/dev` @ `4866951` (after PR #50), 2026-11-14.
-Not pushed. Previous lane's report (jyz-launch-ready-3) is in git history (`git show 4866951:handoff/REPORT.md`).
+Lane jyz-hitch-1 (Gary), branch `feature/jyz-hitch-1` from `origin/dev` @ `82a9a59` (after PR #52), 2026-11-17.
+Not pushed. The previous lane's report (jyz-igpu-1) is in git history (`git show 82a9a59:handoff/REPORT.md`).
 
-## What was built
+**Moved IDs: none.** S-18 stays `partial`; its note now says what changed and what to expect on the 1060.
+The 1060 BENCH line after the ship decides it.
 
-1. **Graphics tiers in data**: `data/graphics.json`. `high` is `{}` (no overrides, today's look, the GTX 1060).
-   `low` (the HD 530):
-   - no MSAA (project default is 2x), FXAA instead
-   - 0.75 render scale with FSR 1 (the 3D only; HUD and menus stay at full 1080p)
-   - one shadow cascade (orthogonal) at 45 m instead of 4 splits at 140 m; 2048 atlas; soft-very-low filter
-   - SSAO, SSIL, SSR, SDFGI, glow, volumetric fog off (the yard only had SSAO and glow on)
-   - LOD threshold 4 (the default is 1)
-   - half the particles in every burst
-   - 60 fps cap, vsync on
-   - SubViewports (lobby podiums, menu backdrop, fence cards): MSAA off, LOD 4
-2. **Auto-pick**: new first autoload `Graphics` (`scripts/autoload/Graphics.gd`). It reads
-   `RenderingServer.get_video_adapter_name()`, the vendor and the type:
-   - NVIDIA, or AMD discrete: high
-   - Intel, AMD integrated, software or unknown: low
-   - headless (tests, tools): high
-   - `--graphics=low|high` overrides the pick (it works on either side of `--`)
+## The gap
+GTX 1060 bench 2026-11-17 (high, 60 s `--bench`): avg 68.5 fps, **1%-low 33.5, worst frame 43-45 ms**.
+Low tier: avg 57.6, 1%-low 27.7. Goal: no spikes past ~25 ms, 1%-low >= 50.
 
-   The pick is logged once, e.g. `Graphics: tier=low (auto: Intel) adapter="..." vendor="..." type=1`.
-   Dev and debug builds show the tier next to the lobby version (`v0.1.0  ·  low`), and F3 shows it too.
-   In low, the autoload tunes the root viewport, the engine caps and every SubViewport, WorldEnvironment,
-   DirectionalLight3D, Camera3D and particles node that enters the tree, so no other lane's code reads
-   the tier. In high it connects nothing and touches nothing. Contract: `docs/contracts.md` "Graphics".
-3. **Benchmark**: `-- --bench` (`scripts/tools/bench.gd`, hooked in `scenes/main.gd`; Game treats it as
-   a demo). Both demo bots play with the soak's stress on (an effect every 0.4 s, glue made and undone).
-   Everything is seeded.
-   - After a 3 s warm-up that isn't counted, it times 60 s of wall clock: 20 s on the shared camera,
-     20 s on the yard-wide shot (every object on screen, the worst case), then 20 s on the shared camera.
-   - Every 5 s it prints `bench: t=… seg=… fps=… low1=… frame_ms=… worst_ms=…`.
-   - At the end it prints `BENCH avg=… low1=… frame_ms=… worst_ms=… frames=… seconds=… tier=… cap=… adapter="…"`
-     and quits with code 0.
-   - `--bench-seconds=<s>` shortens the run.
-   - The demo never writes the family's save.
-4. **Look check from the export**: high vs low, `handoff/shots/`:
-   - `demo_*` is the follow camera
-   - `wide_*` is the yard-wide shot
-   - `lobby_*` is the start screen
+## 1. Finding the hitches (before changing anything)
+Full notes: `.scratch/hitch-findings.md` (not committed; `.scratch/` is ignored). Method: the bench route
+(`--bench`, seeded bots, the soak's stress) headless on this machine, plus a scratch probe scene that boots
+main.tscn and logs every frame: wall ms, process-script ms, physics wall ms, physics-script ms, and every
+node created that frame. A second pass used temporary timers (reverted) around the physics scripts, Fx,
+GunHits, EffectLook, ArtKit.rbox, Audio and Effects.zap.
 
-   The picture holds. Low is a little softer (FXAA at 0.75 scale) and the shadows are a bit softer and
-   shorter, but the shapes, colours, sky, faces and HUD are the same.
-5. **High is exactly today**: `test_high_is_todays_look_exactly` pins it:
-   - the high tier's settings are `{}`, and the project's MSAA 2x, Forward+ and vsync are unchanged
-   - the root viewport is unchanged and there is no fps cap
-   - the Golden Afternoon environment is the same, property for property, after a high tune
-   - the key light keeps 4 splits at 140 m and blur 1.5
+Headless only shows main-thread CPU (no renderer). Before: 40 s, mean 6.92 ms, slowest 1% 15.4 ms,
+worst 23-33 ms, 29 frames > 15 ms. The render / idle part stayed flat in the slow frames, and so did
+the Jolt step (~1 ms). **The spikes were GDScript running inside a physics tick at the moment of a zap or a
+landing.** In the slow frames the physics-script time was 7-21 ms, against a 0.76 ms mean:
 
-## One thing tried and taken out
+| Cause | Cost here | Fixed |
+| --- | --- | --- |
+| Every `Audio.play()` started an Ogg Vorbis file, and `AudioStreamPlayer.play()` builds a new Vorbis decoder on the main thread | 0.7 ms idle, 1.5 ms mean (3.1 max) in a running game; a busy frame plays 3-4 cues = 4-8 ms | yes |
+| The first effect look (bouncy / freeze / magnet / grab) on an object built its rounded boxes (`ArtKit.rbox`, SurfaceTool in GDScript) in the frame | 1-2.5 ms per box, up to 6 per look; one look took 8.4 ms | yes |
+| Every `Fx.burst` / GunHits burst made a new sphere or box mesh plus a material, and every ring a new 64x32 torus | 0.1-0.7 ms CPU here; on the 1060 each one is also a new mesh upload and material | yes |
+| A voice-pack bark loads its line from disk (`load()`) | 0.8-3.3 ms, at most one per zap (bark gate) | no (see Left) |
+| Grow steps (`_scale_step` shape queries + `_rebuild_shape`), now and then | 4-7 ms | no |
 
-The brief asked for a shorter draw distance with fog to hide it. The first low export did that (camera
-far 170, depth fog in the horizon colour), and `wide_low` came out wrong:
-- the painted sky is 95 m behind the fence and the yard-wide camera sits about 150 m from it, so the far
-  cut the sky off and left the flat background colour
-- the fog tinted the whole diorama teal
+One zap frame shows how they stacked: `zapper.phys = 18.6 ms` = Effects.zap 5.5 (rounded boxes 4.9) +
+three Audio.play 8.1 + a bark 3.3 + GunHits 0.7.
 
-The yard is a closed diorama with nothing beyond the sky to cull, so low keeps the full far. Graphics
-still supports `camera_far` and `fog_depth_*` (tested); they're just not in low. This is recorded in
-`data/graphics.json` `_doc` and on PLAN-STATUS S-29. The shots in `handoff/shots/` are from the fixed export.
+## 2. The fix (smallest that proves it; nothing seen or heard changes, both tiers)
+- **Audio.gd: SFX play from PCM.** At boot the main thread loads every `assets/audio/sfx/*.ogg` (307 files).
+  Loading inside the worker deadlocked the engine's shutdown on an early close, so the load stays on the
+  main thread. A WorkerThreadPool task then decodes each file once into a 16-bit AudioStreamWAV at the
+  mixer's rate (`decode_pcm`), in 1.6 s. `_start()` plays `pcm(stream)`: the decoded copy once it exists,
+  else the Ogg as before. Cost of one play: **1548 us -> 21 us**. It's the same sound: the samples
+  match the Ogg decoder's output to 16-bit rounding (test), at the same length, pitch and volume.
+  Music, voice packs and synth beeps are untouched. Memory: about 20 MB of PCM. `_exit_tree` stops and
+  waits for the worker.
+- **ArtKit / EffectLook: rounded boxes prewarmed off the main thread.** `ArtKit.rbox` is split into the
+  pure `rbox_arrays()` and the cache. `prewarm_rboxes()` builds the arrays on a worker, and `rbox()` takes
+  them from there, so only the ArrayMesh is made on the main thread (microseconds). `EffectLook.rbox_specs()`
+  is now the single source of every box `_build()` makes, so the prewarm and the build can't drift
+  apart. `YardLevel.spawn_layout()` calls `EffectLook.prewarm()` for every object it spawns (Reset Yard too;
+  boxes already built are skipped). `_exit_tree` claims the task.
+- **Fx / GunHits: bursts and rings share meshes.** A burst's dot mesh plus its flat material is cached by
+  (radius, colour). GunHits caches its sphere and box templates by size, plus one coloured copy per colour.
+  The cache is bounded at 256, because fireworks pick random hues. Both rings use one shared torus each.
+  Each ring keeps its own material, because it fades its own alpha. Same shapes and colours, just reused.
+- The sleep-when-still logic is untouched (test_sleep_when_still.gd: 4 / 4 pass).
 
-## Not claimed
+## 3. Tests
+`tests/test_hitch.gd` (7 cases):
+- every SFX file is decoded at boot
+- `Audio.play` starts the PCM copy, which has the Ogg's length at the mixer rate
+- the decoded samples match the Ogg decoder's output to 16-bit rounding
+- looping streams, null streams and synth beeps are left alone
+- once the yard has spawned, building every look on every object builds **0** rounded boxes in the frame
+- a prewarmed box has the same vertices as one built on the spot, and is cached from then on
+- the second burst or gun hit of a kind builds no mesh, a new colour gets its own mesh, and rings share
+  the torus but not the material
 
-**The HD 530 frame rate.** This machine renders in software (llvmpipe), so its fps numbers mean nothing.
-The export's own bench on it says `BENCH avg=0.5 … tier=low`, which only proves the mode runs, picks its
-tier, reports and quits (`handoff/bench-export.txt`). Gary, on the box:
+No physics outcome is tested here, so no staging was needed.
 
-```
-./junk-yard-zap.x86_64 -- --bench                     # ~65 s, quits by itself; first line: Graphics: tier=low (auto: Intel)
-./junk-yard-zap.x86_64 -- --bench --graphics=high     # optional: today's look on the same box
-```
+Full suite, `--continue`: see "Results" below and `handoff/test-output.txt`.
 
-Paste the `BENCH` line(s) into PLAN-STATUS S-29. Pass is `low1 >= 30`. If low misses 30, the next
-lever is `scaling_3d_scale` 0.6 or `0.5` in `data/graphics.json`, which needs no code change. Then shadows
-`"shadows": false`.
+## 4. Measured here (headless, CPU only) and what to expect on the 1060
+Same route, 40 s `--bench --bench-seconds=40`. Three runs before and three after (frame times from the
+probe, BENCH line from bench.gd, format unchanged):
 
-Two notes on the brief:
-- The brief says "two players split screen". This game has one shared camera and never splits
-  (GAME.md "Camera and controls"), so the bench is both players on one screen.
-- Fixed route: the bots, the stress and the camera route are seeded and timed. Physics still steps
-  with real frame time on a slow GPU, so two boxes won't see identical frames, but they run the same
-  load.
+| | worst frame | slowest 1% | frames > 15 ms | frames > 12 ms | BENCH low1 |
+| --- | --- | --- | --- | --- | --- |
+| before | 23.0-33.2 ms | 15.4 ms | 29 | 106 | 61.3-67.8 |
+| after | 14.6-17.9 ms | 11.9-13.4 ms | 0, 2, 9 | 26-50 | 72.4-84.6 |
 
-## PLAN-STATUS
+The averages here mean nothing (headless paces at ~6.9 ms). The 60 s export bench is in "Results".
 
-- **S-29 added** (S19, partial): playable on the Intel HD 530, with the low tier, the auto-pick and the bench.
-  The open half is the box's BENCH line.
-- **S-18** is linked to S-29 and stays partial (the GTX 1060).
-- Totals: 198 rows, built 180 · partial 3 · missing 0 · superseded 11 · later 4.
-- GAME.md producer note (2026-11-14) quotes the brief.
-- `docs/launch-checklist.md` has a new box check.
+**Expect on the 1060:** the spikes were main-thread CPU at zaps and landings. The 43-45 ms worst frames
+should drop toward the 25 ms goal, and the 1%-low should rise well above 33.5. The box's CPU and the
+renderer's own share decide by how much, and this lane can't measure either. Not claimed: that the
+1%-low reaches 50, or anything about the low tier (its 27.7 also has HD 530 GPU limits). Run
+`bench-game.sh junk-yard-zap` on the 1060 after the ship and set S-18 from its BENCH lines. If spikes remain,
+the next suspects are the two left below and shader first use, which can't be seen headless.
 
-## Evidence
+## Left (not fixed, noted in S-18)
+- A voice-pack bark still `load()`s its line from disk: 198 files, ~5 MB Ogg, about 30 MB as PCM, so they
+  weren't decoded wholesale. At most one per zap.
+- Grow steps' shape queries plus shape rebuild: 4-7 ms now and then.
 
-- Tests: clean import (`rm -rf .godot`), then the full gdUnit suite with `--continue`, written to
-  `handoff/test-output.txt`. The summary is in `handoff/handoff.json`.
-  - New: `tests/test_graphics_tier.gd`, 13 cases:
-    - Intel HD 530 and Mesa Intel pick low; the GTX 1060 picks high
-    - AMD discrete picks high; AMD integrated, llvmpipe and unknown adapters pick low
-    - the flag overrides the pick; headless stays high
-    - low is applied to a viewport, a SubViewport, the yard environment, the key light, a camera, and
-      through the node hook (particles 16 → 8)
-    - high is pinned
-    - the dev label shows the tier
-    - bench stats (avg, 1%-low)
-    - the bench route drives the camera follow → wide → follow and ends with the summary line
-    - a real headless child `-- --bench --bench-seconds=3 --graphics=low` exits 0 and prints `BENCH avg=… tier=low`
-  - Changed: `test_launch_ready.gd::test_the_lobby_footer_shows_the_project_version` now expects the dev
-    tier suffix. It was the only red test in the first full run (428 cases, 1 failure).
-- Export: `godot --headless --export-release "Linux" build/junk-yard-zap.x86_64`. The pack completes
-  (`DONE`). The editor process then aborts on its own exit, which is known (previous REPORT, line 98).
-  The export boots: 7 runs on the software renderer (6 shots + the bench), all `exit 0`, and none
-  printed a `SCRIPT ERROR` line (`handoff/export_runs.sh`, `handoff/bench-export.txt`).
-- Every scripted run used `XDG_DATA_HOME=<worktree>/.scratch/xdg`, so its `players.json` and saves were
-  scratch. Tests point `Roster.picks_path` at `user://` (`test_graphics_tier.gd` `before()`); the bench
-  child gets its own scratch `XDG_DATA_HOME`.
-
-## Commits
-
-See `handoff/handoff.json` "commits" (prefix `jyz:`).
+## Results
+- **Import:** `godot --headless --path . --import` exit 0, 0 script errors. This was an incremental import over
+  the worktree's `.godot`, not a delete-and-reimport: the 60-minute limit didn't leave time for that.
+- **Full suite** (`-a tests --continue`): **435 / 435 passed**, 0 errors, 0 orphans, exit 0
+  (`handoff/test-output.txt`; 428 before + 7 new). The first full run had 1 failure:
+  test_exit_watchdog `close_early` was killed by the exit watchdog. The decode worker was `load()`ing
+  files while the main thread waited on it at shutdown. Moving the loads to the main thread fixed it
+  (3 / 3 direct runs exit 0, then the whole second suite run). test_sleep_when_still 4 / 4.
+- **Export:** `--export-release "Linux"` wrote the pack (`savepack DONE`). The editor process then aborts
+  on its own exit, which is known (PF-6, previous REPORTs). Commands: `handoff/export_runs.sh`.
+- **Boot the export with `--demo`** (Xvfb + lavapipe; the software renderer auto-picks the low tier):
+  exit 0, **0 script errors**, in both the demo run and the `--demo-beat=wide` run.
+- **Export, headless `--bench` 60 s** (CPU only, same line format):
+  `BENCH avg=144.9 low1=82.0 frame_ms=6.90 worst_ms=17.0 frames=8696 seconds=60.0 tier=high cap=0`.
+  No 5 s window had a worst frame over 17 ms. Before this lane's fix, the source build's 60 s run here
+  was `low1=66.0 worst_ms=22.1`.
+- **The frame I looked at:** `handoff/shots/demo_auto/t010.0s.png`, from the export at 10 s of `--demo`.
+  It shows the yard, Jeff on a cloud with his gun, Chuck in yellow by the junk pile with a beam, both HUD
+  rings (green P1, red P2) with their button hints, and the goal card top right. Nothing is missing or
+  broken; it looks like the igpu-1 shots. Also `demo_auto/t004.0s.png` and `wide_auto/t010.0s.png`.
