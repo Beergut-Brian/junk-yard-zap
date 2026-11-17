@@ -1,126 +1,90 @@
-# jyz-hitch-3: S-18 steady 1%-low (GTX 1060, warm, high)
+# jyz-hitch-4: S-18 steady 1%-low (Gary lane, 2026-11-17)
 
-Lane jyz-hitch-3 (Gary), branch `feature/jyz-hitch-3` from `origin/dev` @ `6392ed1` (after PR #54), 2026-11-17.
-Not pushed. The previous report (jyz-hitch-2) is in git history (`git show 6392ed1:handoff/REPORT.md`).
+Branch `feature/jyz-hitch-4` off dev cc09753 (v0.1.7-dev.4). Not pushed. Ended: **partial**. One fix built, measured
+headless and tested. I don't claim it reaches the 1060 target (1%-low >= 50, worst < 25 ms) alone. See "Expected on the 1060".
 
-**Moved IDs: none.** S-18 stays `partial`, and its note now says what changed and what to expect on the 1060.
-S-29 is unchanged. The low tier gets the same merge, and nothing it shows changes.
+## Findings (full numbers: `handoff/hitch4-findings.md`)
+Method: a per-frame probe on the real `--bench --graphics=high` route (headless, wall clock). It splits each frame into
+all `_process` callbacks, all `_physics_process` callbacks and the Jolt step + flush. A temporary timer wrapped every
+`_process` / `_physics_process` / `_integrate_forces` in the game to attribute the time (reverted, not committed).
 
-## The gap
-Gary's 1060 bench of v0.1.7-dev.3 (`--bench`, high, 60 s): the cold stall is gone, but on a warm cache the
-1%-low is 39.4-42.8 fps and the worst frame is 38.6-43.3 ms (avg 66.5-69.0). Goal: 1%-low >= 50, worst
-under ~25 ms warm, and the cold run kept (no frame over ~200 ms).
+1. **No script or physics step makes a 25 ms frame here.** Headless busy time (scripts + physics) on the bench route:
+   median 1.3 ms, p90 3.7, p99 5.9, max 12.4 ms. Every slow-1% frame contains a physics step. The worst single script
+   call is a zap (`Zapper._press`, max 4-6.5 ms), but that cost is spread over the size step (2.2), the bark (1.8),
+   the zapped listeners (1.8) and Audio (1.4 ms), so there's no single culprit, and it's rare (44 ms in total over 60 s).
+   Jolt step + flush: median 0.5, p99 1.2-1.5 ms. There are no in-play shader compiles headless.
+2. **Steady waste: same-value transform writes.** Godot 4.7 doesn't skip a same-value `position` / `scale` /
+   `rotation` write (checked: 10 writes of the same scale -> 10 child notifications). Each write re-sends the
+   transform of every render instance under the node. `PhysicsObject` wrote its art's scale **every physics step,
+   asleep or not** (1299 of the yard's 1719 visual instances sit under object art). `ObjectFace` wrote its 13 parts
+   **every frame** (46 faces, 736 instances). On the bench route that re-sent 694 instances a frame on frames without a
+   physics step and 1152 on frames with one. It was also the biggest script cost: ObjectFace 0.7 ms a frame, more than
+   all the physics callbacks together.
+3. **Renderer cost of a re-sent instance** (godot-render micro-bench, 1288 instances, shadowed sun, per-thread CPU):
+   main thread 0.82 -> 1.32 ms a frame, other Godot threads +0.44 ms: about 0.7 us an instance on this i5-8500T.
 
-## 1. Findings (before changing anything)
-Full notes are in `handoff/hitch3-findings.md` (a copy of `.scratch/hitch3-findings.md`).
+## What changed
+- `scripts/physics/physics_object.gd` `_physics_process`: write `_visual.scale` only when the value changes.
+- `scripts/physics/object_face.gd` `_pose`: every eye / pupil / brow / mouth / sweat write goes through
+  `_put_pos` / `_put_scale` / `_put_rot`, which write only on a change. The brow's `rotation_degrees` became the
+  same angle in radians.
 
-I ran a per-frame probe (`.scratch/p3_node.gd`) on the bench route with a renderer (`godot-render`, lavapipe,
-Forward+, high tier, 480x270, `--fixed-fps 30`). It drives the route by frame count: 30 warmup frames,
-then 60 follow, 60 wide, 60 follow, with the soak's stress on. BenchProbe's wall-clock route only gets one
-lavapipe frame per third, which is why I didn't use it. Each frame the probe logs the root viewport's
-measured render CPU and GPU time, plus objects, primitives and draw calls for the colour pass and the
-shadow pass. lavapipe timings are only good for comparisons; the counters are exact.
+The same values are written when they change, so nothing seen changes in either tier (export frames at low and
+high: `handoff/shots/`). No art, particle, light, shadow or render-scale change. Sleep-when-still logic,
+render_prewarm and the hitch-3 merge are untouched.
 
-| baseline, median | objects | draw calls | primitives | shadow objects | shadow draws | render CPU | lavapipe GPU |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| follow (121 frames) | 773 | 403 | 546k | 415 | 269 | 1.6 ms | 636 ms |
-| **wide** (60 frames) | **2092** | **1055** | 1051k | 864 | **601** | **2.8 ms** | 631 ms |
+### A/B, headless bench route, 40 s back to back (base dev cc09753 / fix)
+| | base | fix |
+| --- | --- | --- |
+| render instances re-sent a frame (mean) | 884 | 322 |
+| frames without a physics step (median) | 694 | 37 |
+| frames with a step (median) | 1153 | 756 (bodies really moving under the stress) |
+| busy p90 / p99 / max ms | 3.74 / 5.93 / 12.4 | 3.14 / 4.25 / 10.4 |
+| Jolt step + flush mean / p99 ms | 0.34 / 1.49 | 0.17 / 0.69 |
+| quiet yard: 51 sleeping objects over 30 steps | 31518 updates | 0 |
+| headless BENCH low1 (wall clock, includes idle sleep) | 68.8 | 81.0 |
 
-- **Hitch-2's suspicion was half right.** The wide third is the heavy one, but not because of GPU fill or
-  triangles. lavapipe's GPU time doesn't change between the thirds even though the wide shot has twice the
-  triangles. What does grow is the instance count. The wide third draws 2.7x the objects, 2.6x the draw
-  calls in the colour pass and +330 shadow draws, and render-thread CPU almost doubles (1.6 to 2.8 ms on
-  this CPU). On the box, that CPU work shares a desktop quad-core with the main thread.
-- **Where the instances come from:** every yard object is 10-50 separate ArtKit parts, each its own
-  MeshInstance3D. That's 1746 in the tree, 266 of them with the outline pass. The dressing already uses
-  MultiMeshes (28, holding 1186 instances), and Forward+ already instances runs of identical mesh and
-  material, so the objects' many small parts are what's left.
-- The slow single frames in the baseline (frames 93-97, the cut to wide, 2-6 s against 0.67 s) didn't
-  come back in the fix run. That run had a warmer cache, so I don't credit the merge with it.
-- The slow frames don't come from particles (3-7 CPUParticles3D at a time), glow, or a light or shadow
-  setting changing.
+Another lane's test suite ran on this machine during most runs, so the absolute numbers are noisy. The counts are exact.
 
-## 2. The fix: `ObjectArt.merge_static` (nothing seen changes, both tiers)
-When an object is built (`ObjectArt.build`), its still parts that share a material are baked into one
-ArrayMesh, in place. The triangles, normals, material (outline pass included), shadow setting and layers
-all stay the same. The parts' own boxes are kept as the mesh's custom AABB, and as a `parts_aabb` meta that
-`PhysicsObject._art_bounds` reads, so the effect look wraps the same box. That's a 2-line change in
-physics_object.gd, away from the sleep-when-still code.
+## Tests
+- New `tests/test_hitch_4.gd` (3 tests). A sleeping crate's art gets 0 transform updates in 60 steps, and a squash
+  still reaches it. A calm face's mouth gets 0 in 60 frames, and a mood change still moves it. In a quiet yard, every
+  object asleep for the whole 30-step window gets 0 (51 objects counted). The crate is staged alone on open ground;
+  the yard test only counts bodies that stayed asleep, so no pile decides it. **All 3 fail on the old code**
+  (60 / 1488 / 31518 updates).
+- Full suite `--continue`: **448 test cases, 0 errors, 0 failures, 0 orphans, 48 suites** (`handoff/test-output.txt`).
+  test_sleep_when_still passes, as do test_hitch / _2 / _3.
+- Clean import (`.godot` removed): exit 0. The only lines are the usual "resources still in use at exit" and
+  "ObjectDB leaked at exit".
+- Export (`handoff/export_runs.sh`): the pack is written; Godot's own exit is 134 after savepack (known, PF-6, same as
+  hitch-3). Booting the export with `--demo`: 0 script errors at the auto tier (low on this software GPU), 0 at
+  `--graphics=high`, 0 in the wide beat. Headless `--bench --graphics=high` from the export: `BENCH avg=144.7 low1=75.5
+  worst_ms=20.1` (CPU only; a headless frame includes Godot's idle sleep, so this isn't a GPU number; `handoff/bench-export.txt`).
 
-These are left as separate parts:
-- named parts (a balloon's Body and Knot are found by name)
-- anything under a gag pivot (Y-19, those swing)
-- inside an instanced model (the cow's glb)
-- scripted parts, parts with children, parts with an overlay
-- see-through or textured materials
-- outlined parts that have a scale. The outline grows in the mesh's own space, so baking the scale in
-  would change the ink line's width.
+## The frame I looked at
+`handoff/shots/demo_high/t010.0s.png` (export, `--demo --graphics=high`, 10 s, 1080p, lavapipe). Every face reads
+correctly: eyes, brows and mouths in place. The bouncy balloon shows its smug face mid-wobble, so the wobble scale
+still animates, and the crate under the green ring has its face on. Also `demo_auto/t004.0s.png`,
+`demo_auto/t010.0s.png` (low tier) and `wide_auto/t010.0s.png`.
 
-Merged meshes are cached by their parts, so a Reset Yard or a recall reuses them (117 meshes for 49
-object types, and they don't grow on rebuild). The first build costs ~5 ms an object at yard load, behind
-the lobby or warmup. A cached rebuild adds ~0.3 ms an object.
+## Expected on the 1060
+- Every frame does less main-thread work: ~560 fewer render instances re-sent a frame on average (~690 -> ~40 on a
+  frame with no step). At ~0.7 us each here, plus the node-side notifications, that's about 0.5-1 ms a frame on this
+  CPU and maybe 1-2 ms on the box. It falls most on the frames that carry a physics step, which are the slow ones.
+- That's a few fps on the 1%-low at most (42 -> ~45-47 is my guess), not 42 -> 50. Headless busy time at p99 is
+  only 4-6 ms here, so most of the box's 24 ms dip frames are render-side main-thread work or GPU, which this lane
+  can't see. hitch-3's renderer probe had viewport render CPU at p99 2.4-3.6 ms.
+- Cold run: nothing in the boot path changed, so the "no frame over 200 ms" result should hold.
 
-## 3. Measured here (same route, same probe, warm)
-| median | objects | draw calls | primitives | shadow objects | shadow draws | render CPU |
-| --- | --- | --- | --- | --- | --- | --- |
-| follow | 773 -> 452 | 403 -> 268 | 546k -> 473k | 415 -> 394 | 269 -> 264 | 1.6 -> 1.4 ms |
-| **wide** | **2092 -> 1677** | **1055 -> 921** | 1051k -> 1052k | 864 -> 701 | **601 -> 537** | **2.8 -> 2.5 ms** |
+## Next candidates (not done)
+- On the box, log `Performance` and frame times with the renderer on, using the probe's split (`.scratch/p4_node.gd`
+  works with a renderer too). If the dips are frames with 2 physics steps, look at physics interpolation or the
+  step cost. If they're render CPU, profile with the Godot profiler on the box.
+- Zap frames (`_press` 4-6 ms here): the bark line load and the zapped-signal listeners.
+- Small same-value writers left: `yard_dressing` sky follow, `reset_sign_fx` bulbs' material every frame,
+  `YardFan` blades `rotate_z(0)` while off.
 
-- The wide shot's primitives are the same: it's the same geometry in fewer instances. (Follow's
-  primitives move because the bots' camera framing differs between runs.)
-- Headless counts (test_hitch_3): object draws 895 -> 549, whole yard 1919 -> 1543 (outline passes counted).
-- **The look:** all 49 art objects rendered with parts vs merged, 1920x1080, same camera and light. They
-  differ in 101 of 2,073,600 pixels (mean channel diff 0.002). The diff sits on the cow, which isn't merged
-  (its glb idles), and a few pixels of depth tie on the cannon's fuse dot. See `handoff/shots/lineup_parts.png`,
-  `lineup_merged.png`, `lineup_diff_cow.png` and `lineup_diff_cannon.png`.
-- **This is a modest cut, not a halving.** Wide colour draws drop 13%, shadow draws 11% and render CPU 11%.
-  The rest of the wide shot's draws are mostly the outlined parts that have a scale, plus the dressing and
-  the players.
-
-## 4. What to expect on the 1060 (not measured here)
-- **Warm high:** the wide third's slow frames should shrink by the render-thread work saved (about 10-15%
-  of the per-instance cost). Expect the 1%-low to rise by a few fps from 39-43. **I don't claim 1%-low >= 50.**
-  If the box still shows 1%-low < 50 after this, the next step is an outline shell per object: bake every
-  outlined part's grown shell into one ink mesh, so an object's outline is one draw. That takes most of the
-  remaining wide-shot draws. It needs a new ink material with no grow, and a check of how next_pass outlines
-  behave in the shadow pass. It isn't done here because it can change the look if that check is wrong.
-  Then check F3's render-thread time against the main thread on the box: if the box's CPU is the limit,
-  draw-count work is the right lever.
-- **Cold run:** unchanged. The merge adds no new material or shader. The baked meshes use the parts' own
-  materials, which RenderPrewarm and the load frame already compile. There should be no frame over 200 ms
-  after the warmup.
-
-## 5. Tests
-`tests/test_hitch_3.gd` (6 cases):
-- every art object keeps the same triangle count, corner-position sum and normal sum per material and
-  shadow setting, and its draws drop below 70%
-- gag parts, named parts and instanced models stay
-- outlined parts with a scale aren't baked; details and unscaled outlined parts are
-- the effect look wraps the same box, merged or not
-- a second build reuses the merged meshes
-- the yard's draw count stays under a ceiling of 1600 (1543 now) and below the unmerged count
-
-The physics-outcome tests (test_sleep_when_still.gd 4 / 4) pass unchanged. I added no physics test, so
-there was nothing to stage.
-
-## Results
-- **Import:** `godot --headless --path . --import` exit 0, 0 script errors. This worktree had no `.godot`,
-  so it was a full import, then a re-import after the edits.
-- **Full suite** (`-a tests --continue --ignoreHeadlessMode`): **445 / 445 passed**, 0 errors, 0 failures,
-  0 orphans, exit 0 (`handoff/test-output.txt`). That's 439 before plus 6 new.
-- **Export:** `--export-release "Linux"` wrote the pack with 0 script errors. The editor then aborts on its
-  own exit (134), which is known (PF-6, earlier reports). Commands are in `handoff/export_runs.sh`.
-- **Boot the export with `--demo`** (Xvfb + lavapipe, auto low tier): exit 0, **0 script errors**, for both
-  the demo run and `--demo-beat=wide`.
-- **Export, headless `--bench` 60 s** (CPU only): `BENCH avg=143.2 low1=54.9 worst_ms=41.8`
-  (`handoff/bench-export.txt`). Hitch-2 measured 83.7 here, but this box was shared during the run: another
-  lane's lavapipe was at 371% CPU, with load average 6-11 on 6 cores. An interleaved A/B under that load,
-  merge off vs on from the project (`handoff/bench-ab.txt`), gave low1 49.7 vs 52.9, then 10.8 vs 30.7 as
-  the load rose. The merge costs nothing per frame, and these headless numbers say nothing about the 1060.
-- **The frame I looked at:** `handoff/shots/demo_auto/t010.0s.png`, from the export at 10 s of `--demo`.
-  It shows Jeff with the balloon gun and Chuck by the crate stack. The crates' planks, the wheelbarrow, the
-  tyre, the gnome and the cone all have their parts and ink lines, and both HUD rings (green P1, red P2),
-  the hints and the goal card are there. Also `wide_auto/t010.0s.png` (the whole yard, every object in place)
-  and `demo_auto/t004.0s.png`.
-- Commits: `perf: merge each yard object's still parts per material` (code + the S-18 note),
-  `tests: pin S-18 part merge (...)`, `perf: hitch-3 handoff (...)`.
+## IDs moved
+- **S-18**: stays `partial`. Note extended with the hitch-4 change, the numbers and the expected effect; evidence
+  adds object_face.gd `_put_pos`, physics_object.gd `_physics_process`, test_hitch_4.gd.
+- No other IDs moved.
