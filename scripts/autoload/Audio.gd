@@ -14,6 +14,13 @@
 ## pack, then the generic cue). can_bark() is the "one bark per zap, never talk over" gate.
 ## music("music_yard") loops the yard track; brighten() crossfades to music_yard_bright for
 ## BRIGHT_SECS (played automatically with card_done) and back.
+##
+## S-18 hitch fix (jyz-hitch-1): starting an Ogg Vorbis file builds a new Vorbis decoder on the main thread
+## (about 0.7 ms each here, several ms when the mixer holds the audio lock), and a busy yard plays 3-4 cues
+## in one frame: that was the biggest single cause of the bench's frame spikes. At boot a worker thread
+## decodes every SFX file once into a 16-bit PCM AudioStreamWAV at the mixer's rate (pcm_ready() when
+## done; about 20 MB); play() then starts the PCM copy, which costs microseconds. Same samples, same
+## pitch and volume: only the decode moved off the frame. Until the worker is done a cue plays the Ogg.
 extends Node
 
 signal big_impact(position: Vector3, band: String)
@@ -84,6 +91,15 @@ var bright_left := 0.0
 var clock := -1.0
 var peak_voices := 0
 var _soak_log := -1.0             # seconds to the next soak line (--soak only)
+var _pcm := {}                    # res:// path of an SFX .ogg -> its decoded AudioStreamWAV (worker fills it)
+var _pcm_lock := Mutex.new()
+var _pcm_task := -1
+var _pcm_done := false            # the worker finished: _pcm is read without the lock from then on
+var _pcm_stop := false            # set at exit so the worker stops between files
+## How many SFX files were decoded to PCM (tests, the soak log).
+var pcm_count := 0
+## Boot time spent loading the SFX files for the decode (ms, main thread).
+var pcm_load_ms := 0.0
 
 
 func _ready() -> void:
@@ -105,9 +121,22 @@ func _ready() -> void:
 		_soak_log = 30.0
 	set_volume("Music", Save.get_setting("music_volume", 0.8))
 	set_volume("SFX", Save.get_setting("sound_volume", 1.0))
+	# Load on this thread (a load inside the worker deadlocked the engine's shutdown on an early close);
+	# the worker only decodes.
+	var t0 := Time.get_ticks_usec()
+	var files := []
+	for f in ResourceLoader.list_directory(SFX_DIR):
+		if f.ends_with(".ogg"):
+			files.append([SFX_DIR + f, load(SFX_DIR + f)])
+	pcm_load_ms = (Time.get_ticks_usec() - t0) / 1000.0
+	_pcm_task = WorkerThreadPool.add_task(_decode_all.bind(files, AudioServer.get_mix_rate()), false, "Audio PCM prewarm")
 
 
 func _exit_tree() -> void:
+	_pcm_stop = true
+	if _pcm_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(_pcm_task)
+		_pcm_task = -1
 	if _mix_tween:
 		_mix_tween.kill()
 	for p in _pool + _voice_pool + [_music, _bright]:
@@ -239,7 +268,7 @@ func _record(cue: String) -> void:
 
 func _start(p: AudioStreamPlayer, stream: AudioStream, cue: String, pitch: float, vol_db := 0.0) -> void:
 	p.stop()
-	p.stream = stream
+	p.stream = pcm(stream)
 	p.pitch_scale = clampf(pitch, 0.25, 4.0)
 	p.volume_db = vol_db
 	p.set_meta(&"cue", cue)
@@ -523,6 +552,91 @@ func _loop(stream: AudioStream) -> void:
 		(stream as AudioStreamOggVorbis).loop = true
 	elif stream is AudioStreamWAV:
 		(stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
+
+
+# ------------------------------------------------------------------------------- PCM prewarm (S-18)
+
+## True once the boot worker has decoded every SFX file.
+func pcm_ready() -> bool:
+	if not _pcm_done and _pcm_task >= 0 and WorkerThreadPool.is_task_completed(_pcm_task):
+		WorkerThreadPool.wait_for_task_completion(_pcm_task)
+		_pcm_task = -1
+		_pcm_done = true
+	return _pcm_done
+
+
+## Blocks until the boot decode is done (tests).
+func wait_pcm() -> void:
+	if _pcm_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(_pcm_task)
+		_pcm_task = -1
+	_pcm_done = true
+
+
+## The decoded PCM copy of an SFX stream, or the stream itself (not decoded yet, music, a voice pack).
+func pcm(stream: AudioStream) -> AudioStream:
+	if stream == null or stream.resource_path == "":
+		return stream
+	if pcm_ready():
+		return _pcm.get(stream.resource_path, stream)
+	_pcm_lock.lock()
+	var out: AudioStream = _pcm.get(stream.resource_path, stream)
+	_pcm_lock.unlock()
+	return out
+
+
+## Worker thread: every SFX file ([path, stream], loaded at boot), decoded once.
+func _decode_all(files: Array, rate: float) -> void:
+	for pair in files:
+		if _pcm_stop:
+			return
+		var path: String = pair[0]
+		var wav := decode_pcm(pair[1] as AudioStream, rate)
+		if wav:
+			_pcm_lock.lock()
+			_pcm[path] = wav
+			pcm_count += 1
+			_pcm_lock.unlock()
+
+
+## The whole of a (non-looping) stream as 16-bit PCM at `rate` (the mixer's rate, so it plays without
+## resampling): mono when both channels are the same. null for a looping or empty stream.
+static func decode_pcm(stream: AudioStream, rate: float) -> AudioStreamWAV:
+	if stream == null or (stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop):
+		return null
+	var frames := ceili(stream.get_length() * rate)
+	if frames <= 0:
+		return null
+	var pb := stream.instantiate_playback()
+	pb.start(0.0)
+	var mix := PackedVector2Array()
+	while mix.size() < frames:
+		var chunk := pb.mix_audio(1.0, mini(4096, frames - mix.size()))
+		if chunk.is_empty():
+			break
+		mix.append_array(chunk)
+	frames = mix.size()
+	pb.stop()
+	var mono := true
+	for v in mix:
+		if v.x != v.y:
+			mono = false
+			break
+	var data := PackedByteArray()
+	data.resize(frames * (2 if mono else 4))
+	var o := 0
+	for v in mix:
+		data.encode_s16(o, clampi(roundi(v.x * 32767.0), -32768, 32767))
+		o += 2
+		if not mono:
+			data.encode_s16(o, clampi(roundi(v.y * 32767.0), -32768, 32767))
+			o += 2
+	var wav := AudioStreamWAV.new()
+	wav.format = AudioStreamWAV.FORMAT_16_BITS
+	wav.mix_rate = roundi(rate)
+	wav.stereo = not mono
+	wav.data = data
+	return wav
 
 
 # --------------------------------------------------------------------------------------- resolve

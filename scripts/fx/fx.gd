@@ -7,6 +7,13 @@ extends RefCounted
 static var camera: Node
 ## Tests and the stress run: count bursts instead of drawing.
 static var bursts := 0
+## S-18: burst meshes (with their flat colour) and the ring torus, made once and shared, so a burst or a
+## zap ring builds no mesh and no material during play. Same shapes, same colours: only reused.
+static var _burst_meshes := {}
+static var _torus: TorusMesh
+const BURST_CACHE_MAX := 256
+## Meshes built because the cache had none (tests).
+static var meshes_made := 0
 
 
 ## amount 0..1. Respects the Settings "screen shake" switch.
@@ -39,23 +46,65 @@ static func burst(tree: SceneTree, at: Vector3, color: Color, amount := 16, spre
 	p.gravity = Vector3(0, -6, 0)
 	p.scale_amount_min = 0.6
 	p.scale_amount_max = 1.2
-	var m := SphereMesh.new()
-	m.radius = 0.06 * clampf(spread, 0.5, 3.0)
-	m.height = m.radius * 2.0
-	m.radial_segments = 6
-	m.rings = 3
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = color
-	if color.a < 1.0:
-		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.material = mat
-	p.mesh = m
+	p.mesh = burst_mesh(0.06 * clampf(spread, 0.5, 3.0), color)
 	tree.current_scene.add_child(p)
 	p.global_position = at
 	p.emitting = true
 	p.finished.connect(p.queue_free)
 	return p
+
+
+## The burst's dot: a low-poly sphere of radius r in a flat colour, shared by every burst that asks for the
+## same pair.
+static func burst_mesh(r: float, color: Color) -> SphereMesh:
+	var key := "%.4f|%s" % [r, color.to_html(true)]
+	var m: SphereMesh = _burst_meshes.get(key)
+	if m:
+		return m
+	m = SphereMesh.new()
+	m.radius = r
+	m.height = r * 2.0
+	m.radial_segments = 6
+	m.rings = 3
+	m.material = flat_mat(color)
+	_remember(key, m)
+	return m
+
+
+## Unshaded flat colour (alpha blended when see-through), as every burst uses.
+static func flat_mat(color: Color) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = color
+	if color.a < 1.0:
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	return mat
+
+
+## A shared mesh by key (GunHits keeps its particle meshes here too). Bounded: fireworks pick random hues.
+static func cached_mesh(key: String) -> Mesh:
+	return _burst_meshes.get(key)
+
+
+static func _remember(key: String, m: Mesh) -> void:
+	if _burst_meshes.size() >= BURST_CACHE_MAX:
+		_burst_meshes.clear()
+	_burst_meshes[key] = m
+	meshes_made += 1
+
+
+static func remember_mesh(key: String, m: Mesh) -> void:
+	_remember(key, m)
+
+
+## The zap ring's torus (inner 0.85, outer 1), one for every ring.
+static func torus() -> TorusMesh:
+	if _torus == null:
+		_torus = TorusMesh.new()
+		_torus.inner_radius = 0.85
+		_torus.outer_radius = 1.0
+		meshes_made += 1
+	return _torus
 
 
 ## Zap ring in the gun's colour.
@@ -64,11 +113,8 @@ static func ring(tree: SceneTree, at: Vector3, color: Color, radius := 1.0) -> v
 	if tree == null or tree.current_scene == null:
 		return
 	var mi := MeshInstance3D.new()
-	var t := TorusMesh.new()
-	t.inner_radius = 0.85
-	t.outer_radius = 1.0
-	mi.mesh = t
-	var mat := StandardMaterial3D.new()
+	mi.mesh = torus()
+	var mat := StandardMaterial3D.new()   # its own: the ring fades its alpha
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.albedo_color = color

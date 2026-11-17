@@ -95,6 +95,7 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	ArtKit.wait_rbox_prewarm()   # S-18: never leave a prewarm task unclaimed
 	if _restore_on_exit:
 		Yard.reset_world()
 
@@ -115,6 +116,7 @@ func spawn_layout() -> void:
 		return
 	for e in layout.entries:
 		spawn(e)
+	EffectLook.prewarm(get_tree().get_nodes_in_group(PhysicsObject.GROUP) if is_inside_tree() else [])   # S-18
 
 
 func spawn(e: YardLayoutEntry) -> PhysicsObject:
