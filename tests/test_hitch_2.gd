@@ -88,7 +88,7 @@ func test_each_kind_is_drawn_as_a_mesh_and_as_particles_in_view() -> void:
 			assert_bool(mi.material_override != null or mi.material_overlay != null).is_true()
 			assert_float(mi.get_aabb().size.length()).is_less(0.01)   # 1 mm: nothing shows
 	assert_int(parts).is_equal(n)
-	assert_int(meshes).is_equal(n + 1)   # + the tint drawn as an overlay
+	assert_int(meshes).is_equal(2 * n + 2)   # each kind on both vertex formats (jyz-hitch-5), + the tint overlay on both
 
 
 func test_kit_leaves_after_a_few_frames_and_the_materials_stay() -> void:

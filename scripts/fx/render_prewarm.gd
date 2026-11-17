@@ -81,14 +81,35 @@ static func run(parent: Node, camera: Camera3D = null) -> RenderPrewarm:
 		p.initial_velocity_max = 0.0
 		kit.add_child(p)
 		p.emitting = true
+	# jyz-hitch-5: a pipeline is per material kind AND per vertex format. Primitive meshes carry UVs and
+	# tangents; ArtKit's rounded boxes (the effect looks' shells, ice, bands) and ObjectArt's merged art carry
+	# only positions and normals, a second format. Drawn only on the sphere, a grab shell or the tint over
+	# merged art still compiled in the frame it first showed (~24 ms of render CPU on lavapipe). So every
+	# kind, and the overlay, is drawn on both formats.
+	var flat := flat_mesh()
+	for m in kept.duplicate():
+		var fi := MeshInstance3D.new()
+		fi.mesh = flat
+		fi.material_override = m
+		kit.add_child(fi)
 	# The overlay is drawn as an overlay in play (material_overlay), its own pass.
-	var over := MeshInstance3D.new()
-	over.mesh = mesh
-	over.material_overlay = PhysicsObject.overlay_mat()
-	kept.append(over.material_overlay)
-	kit.add_child(over)
+	var over_mat := PhysicsObject.overlay_mat()
+	kept.append(over_mat)
+	for om in [mesh, flat]:
+		var over := MeshInstance3D.new()
+		over.mesh = om
+		over.material_overlay = over_mat
+		kit.add_child(over)
 	keep = kept
 	return kit
+
+
+## A 1 mm rounded box with ArtKit's own arrays: positions and normals only, the vertex format of every
+## ArtKit.rbox and every ObjectArt.merge_static mesh (not cached in ArtKit, so its counters don't move).
+static func flat_mesh() -> ArrayMesh:
+	var m := ArrayMesh.new()
+	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, ArtKit.rbox_arrays(Vector3.ONE * SIZE * 2.0, SIZE * 0.4, 1))
+	return m
 
 
 func _process(_delta: float) -> void:
