@@ -161,22 +161,40 @@ func _pose(_delta: float) -> void:
 	for i in 2:
 		var side := -1.0 if i == 0 else 1.0
 		var e := _eyes[i]
-		e.scale = Vector3(eye, eye * 1.12 * lid, 0.55)
+		_put_scale(e, Vector3(eye, eye * 1.12 * lid, 0.55))
 		var pp := _pupils[i]
 		var lx := look.x if mood != Mood.DIZZY else look.x * side
-		pp.position = Vector3(lx * s * 0.07, look.y * s * 0.07, s * 0.17)
-		pp.scale = Vector3(pupil, pupil, 1.0)
+		_put_pos(pp, Vector3(lx * s * 0.07, look.y * s * 0.07, s * 0.17))
+		_put_scale(pp, Vector3(pupil, pupil, 1.0))
 		pp.visible = lid > 0.3
 		var b := _brows[i]
-		b.position = Vector3(side * s * 0.27, s * (0.37 + brow_y) * (eye * 0.5 + 0.5) - (1.0 - lid) * s * 0.12, s * 0.06)
-		b.rotation_degrees = Vector3(0, 0, -side * brow_rot)
+		_put_pos(b, Vector3(side * s * 0.27, s * (0.37 + brow_y) * (eye * 0.5 + 0.5) - (1.0 - lid) * s * 0.12, s * 0.06))
+		_put_rot(b, Vector3(0, 0, deg_to_rad(-side * brow_rot)))
 	for i in MOUTH_DOTS:
 		var u := float(i) / (MOUTH_DOTS - 1) * 2.0 - 1.0   # -1..1 across the mouth
 		var y := -s * 0.2 - curve * (1.0 - u * u) * s * 0.1 + tilt * u * s * 0.06 + wave * sin(u * 6.0 + _t * 9.0) * s * 0.03
 		var line := Vector3(u * s * 0.2 * width, y, s * 0.04)
 		var ang := (u * 0.5 + 0.5) * TAU
 		var ring := Vector3(cos(ang) * s * 0.075, -s * 0.24 + sin(ang) * s * 0.09, s * 0.04)
-		_mouth[i].position = line.lerp(ring, open)
+		_put_pos(_mouth[i], line.lerp(ring, open))
 	_sweat.visible = mood == Mood.PANIC
 	if _sweat.visible:
-		_sweat.position = Vector3(s * 0.52, s * (0.3 - fmod(_t * 0.6, 0.4)), s * 0.03)
+		_put_pos(_sweat, Vector3(s * 0.52, s * (0.3 - fmod(_t * 0.6, 0.4)), s * 0.03))
+
+
+# S-18 (hitch-4): a Node3D write sends a transform notification down its subtree and re-sends every
+# render instance in it, even when the value is the same. 46 faces x 13 parts did that every frame; now a
+# face that holds its pose writes nothing (same values written when they change, so the look is the same).
+static func _put_pos(n: Node3D, v: Vector3) -> void:
+	if n.position != v:
+		n.position = v
+
+
+static func _put_scale(n: Node3D, v: Vector3) -> void:
+	if n.scale != v:
+		n.scale = v
+
+
+static func _put_rot(n: Node3D, v: Vector3) -> void:
+	if n.rotation != v:
+		n.rotation = v

@@ -1,1 +1,21 @@
-{"packet":"maker/openjar jyz-hitch-3","ended":"partial","did":["Found the steady 1%-low's extra work with a per-frame RenderingServer probe on the bench route (lavapipe, high): the yard-wide third draws 2092 objects / 1055 colour + 601 shadow draw calls (follow 516-773 / 257-403 + 269) and render-thread CPU doubles, while lavapipe GPU time stays flat: instance count, not fill or triangles (handoff/hitch3-findings.md)","ObjectArt.merge_static: each object's still parts are baked into one mesh per material at build time (same triangles, material, outline, shadow, bounds); wide third objects 2092 -> 1677, draws 1055 -> 921, shadow draws 601 -> 537, render CPU 2.8 -> 2.5 ms; look diff 101 of 2.07 M pixels","tests/test_hitch_3.gd (6 cases) pins geometry, kept parts, scaled outlines, look box, mesh reuse, a yard draw ceiling","S-18 note updated (stays partial); full suite 445/445; export boots --demo with 0 script errors; frames looked at"],"next_action":"Gary: ship, then bench on the 1060 (box-jyz-rerun style: cold run, then two warm runs at high) and set S-18 from the numbers","blocked":[],"evidence":[{"kind":"test","command":"godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue --ignoreHeadlessMode","exit":0,"ref":"handoff/test-output.txt"},{"kind":"export","command":"bash handoff/export_runs.sh","exit":0,"ref":"handoff/shots/demo_auto/t010.0s.png"},{"kind":"probe","command":"godot-render --path . --resolution 480x270 --fixed-fps 30 res://.scratch/probe.tscn -- --demo --soak --graphics=high --probe-start=30 --probe-route=60","exit":0,"ref":"handoff/hitch3-findings.md"}]}
+{
+  "packet": "maker/openjar jyz-hitch-4",
+  "ended": "partial",
+  "did": [
+    "Probed the bench route per frame (headless, high): scripts + physics busy time median 1.3 / p99 5.9 / max 12.4 ms; no script or Jolt step makes a 25 ms frame; worst script call a zap (4-6.5 ms, spread over several calls)",
+    "Found the yard re-sending render instances it had not moved: same-value transform writes (PhysicsObject art scale every step, ObjectFace 13 parts every frame), 694 a frame without a step / 1152 with one, of 1719",
+    "perf: PhysicsObject and ObjectFace write transforms only when the value changes (same values, nothing seen changes): re-sent 884 -> 322 a frame mean, 694 -> 37 on no-step frames, sleeping yard 31518 -> 0 in 30 steps; busy p99 5.9 -> 4.3 ms headless",
+    "Measured the renderer cost of a re-sent instance (godot-render micro-bench): ~0.7 us on this CPU",
+    "tests: test_hitch_4.gd (3 tests, all fail on the old code); full suite 448 / 0 failures",
+    "S-18 note updated (stays partial); clean import; export booted with --demo at auto and high tiers, 0 script errors; looked at handoff/shots/demo_high/t010.0s.png"
+  ],
+  "next_action": "Gary: ship, then bench on the 1060 (cold run, then two warm runs at high) and set S-18 from the numbers",
+  "blocked": [],
+  "evidence": [
+    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue", "exit": 0, "ref": "handoff/test-output.txt"},
+    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_hitch_4.gd --continue (on dev cc09753 code: 3 failures, 60 / 1488 / 31518 updates)", "exit": 100, "ref": "handoff/REPORT.md#tests"},
+    {"kind": "measure", "command": "godot --headless --path . res://.scratch/probe.tscn -- --bench --bench-seconds=40 --graphics=high (base vs fix)", "exit": 0, "ref": "handoff/hitch4-findings.md"},
+    {"kind": "export", "command": "handoff/export_runs.sh", "exit": 0, "ref": "handoff/shots/"},
+    {"kind": "bench", "command": "build/junk-yard-zap.x86_64 --headless -- --bench --graphics=high (CPU only)", "exit": 0, "ref": "handoff/bench-export.txt"}
+  ]
+}
