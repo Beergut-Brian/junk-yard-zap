@@ -20,7 +20,8 @@ const COLS := ["t", "seg", "frame_ms", "physics_ms", "steps", "process_ms", "dra
 
 var bench: BenchProbe
 var path := "user://bench_trace.csv"
-## Every counted frame: [t, seg, frame, physics, steps, process, draw, idle, gpu] (ms; tests read it).
+## Every counted frame: [t, seg, frame, physics, steps, process, draw, idle, gpu, process_frame] (ms; tests
+## read it). The last column is Engine.get_process_frames() of that frame (ScriptTrace joins on it).
 var rows: Array = []
 var summary := ""
 
@@ -30,7 +31,10 @@ var _pre := 0
 var _post := 0
 var _proc_end := 0     # this node's own _process (it runs last: process_priority), the fallback when no draw
 var _steps := 0
+var _frame := 0        # Engine.get_process_frames() during this iteration's process
 var _vp := RID()
+## jyz-hitch-7: `--bench-scripts` adds a per-script process split (scripts/tools/script_trace.gd).
+var scripts: ScriptTrace
 
 
 ## The path from `--bench-trace[=<path>]`, "" when the flag is absent.
@@ -69,6 +73,7 @@ func _on_process() -> void:
 	if _start == 0 or _proc > 0:   # an iteration with no physics step
 		_begin(now)
 	_proc = now
+	_frame = Engine.get_process_frames()
 
 
 func _process(_delta: float) -> void:
@@ -104,7 +109,7 @@ func record(frame: float, physics: float, steps: int, process: float, draw: floa
 		return
 	var t := bench.elapsed() if bench else 0.0
 	var gpu := RenderingServer.viewport_get_measured_render_time_gpu(_vp) if _vp.is_valid() else 0.0
-	rows.append([t, bench.segment(t) if bench else "", frame, physics, steps, process, draw, idle, gpu])
+	rows.append([t, bench.segment(t) if bench else "", frame, physics, steps, process, draw, idle, gpu, _frame])
 
 
 static func _median(v: Array) -> float:
@@ -160,12 +165,14 @@ static func line(rows_in: Array, slow_ms := SLOW_MS) -> String:
 func finish() -> void:
 	summary = line(rows)
 	print(summary)
+	if scripts:
+		scripts.finish()
 	var f := FileAccess.open(path, FileAccess.WRITE)
 	if f == null:
 		print("BENCH-TRACE: could not write %s" % path)
 		return
 	f.store_line(",".join(COLS))
 	for r: Array in rows:
-		f.store_line("%.3f,%s,%.3f,%.3f,%d,%.3f,%.3f,%.3f,%.3f" % r)
+		f.store_line("%.3f,%s,%.3f,%.3f,%d,%.3f,%.3f,%.3f,%.3f" % r.slice(0, COLS.size()))
 	f.close()
 	print("BENCH-TRACE: %d frames -> %s" % [rows.size(), ProjectSettings.globalize_path(path)])

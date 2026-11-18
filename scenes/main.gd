@@ -9,7 +9,8 @@
 ## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|bonk|cap|glue-snap|hints|gags-<zone>|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --bench (a 60 s timed demo with the soak's
 ## stress, prints BENCH avg=... low1=... and quits; scripts/tools/bench.gd; with --bench-trace[=<path>] also a
-## per-frame split of each frame and a BENCH-TRACE line, scripts/tools/bench_trace.gd), --proto, --session-flow --flow-out=<dir>
+## per-frame split of each frame and a BENCH-TRACE line, scripts/tools/bench_trace.gd; with --bench-scripts as
+## well, each script's share of the process time, scripts/tools/script_trace.gd), --proto, --session-flow --flow-out=<dir>
 ## (scripts/tools/session_flow.gd on an export), --player-flow=<phase> (scripts/tools/player_flow.gd).
 extends Node3D
 
@@ -219,6 +220,11 @@ func _start_demo() -> void:
 					tr.bench = b
 					tr.path = trace_to
 					add_child(tr)
+					if ScriptTrace.wanted(OS.get_cmdline_user_args()):   # jyz-hitch-7: which scripts
+						var st := ScriptTrace.new()
+						st.trace = tr
+						tr.scripts = st
+						add_child(st)
 			if bench or OS.get_cmdline_user_args().has("--soak"):   # scripts/tools/soak.gd (the bench keeps its stress on)
 				var probe := SoakProbe.new()
 				probe.level = level
