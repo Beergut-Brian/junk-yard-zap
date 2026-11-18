@@ -1,100 +1,106 @@
-# jyz-hitch-5: S-18 steady 1%-low, render side (Gary lane, 2026-11-17)
+# jyz-hitch-6: S-18 steady 60 on the 1060 (Gary lane, 2026-11-18)
 
-Branch `feature/jyz-hitch-5` off `origin/dev` @ `500bcaa` (after PR #56). Not pushed.
-Starting point (Gary, the box, v0.1.7-dev.5, `--bench --graphics=high`, warm): avg 71.7-75.4, 1%-low 42.9-45.9,
-worst 35-41 ms. Headless CPU isn't it (busy p99 4-6 ms); hitch-3 already ruled out draw calls and batching.
+Branch `feature/jyz-hitch-6` off `origin/dev` @ `cb62858` (after PR #59, the 60 fps cap). Not pushed.
+Starting point (Gary, the box, v0.1.7-dev.7, `--bench` at high with the 60 cap): avg 58.5-58.9, 1%-low 37.8-41.4.
 
-## Findings (full table: `handoff/hitch5-findings.md`; probe, micro scene, analysis script and CSVs: `handoff/hitch5-probe/`, run from `.scratch/`)
-I probed the renderer per frame on the bench route: lavapipe through `godot-render`, high tier, warm cache, the
-bench's follow / wide / follow route by frame count, the soak's stress on. Each frame logged render-thread CPU and
-frame setup, objects / draw calls / primitives in the colour and shadow passes, all five pipeline-compilation
-counters, buffer and texture uploads, instances added / removed (by name), material / mesh / visibility changes,
-emitting particles and lights.
+## BENCH-ready
+On the box, warm, twice: `./junk-yard-zap.x86_64 -- --bench --graphics=high --bench-trace` and paste both the `BENCH` and the `BENCH-TRACE` lines (the per-frame CSV is `~/.local/share/godot/app_userdata/Junk Yard Zap/bench_trace.csv`).
+`cause=physics|process` means the game's own work, so it's the next hitch lane's. `cause=idle`, or `cause=draw` with a small `gpu=`, means the limiter or the present held the frame, so it's the cap or the present mode, which is a producer call.
 
-- Steady state is smooth on the render side. Render CPU median is 1.4 ms (follow) and 2.3 ms (wide), p90 is
-  1.9 / 2.6-3.0 ms. Object and draw counts match hitch-3's merged numbers (wide 1683 objects, 914 draws, +702 / 536
-  in the shadow pass). Uploads, per-frame material writes (the Reset sign's 19 bulbs), particles (2-3 emitting,
-  13 at most) and lights (1 lamp, no positional shadows) don't line up with slow frames.
-- **One frame in 180 takes 23.6-25.5 ms of render CPU, the same frame on all three runs.** It's where an object's
-  grab look first shows (a gun swap, a freeze look and a glue recoil are around it too), and it has a surface + a
-  specialization pipeline compile in it. In-play compiles over the route: surface 4, specialization 9, draw 0.
-- Micro scene (`.scratch/micro5.gd`: the yard's light and environment plus RenderPrewarm, then 5 reps of each event):
-  the first grab look costs **23.8 ms** of render CPU, the first freeze look 614 ms, the first gun 582 ms (cold
-  shaders in a bare scene). Reps 2-5 cost 0.2 ms each. Freeing 17 instances, 3 bursts or nothing cost 0.17-0.24 ms.
-- **Cause.** A Godot pipeline is per material kind and per vertex format. hitch-2's RenderPrewarm drew every
-  play-made kind on a SphereMesh: positions, normals, tangents, UVs. ArtKit's rounded boxes (the bouncy bands, ice,
-  the grab shell, magnet parts, the guns' grips) and hitch-3's merged object art (where the effect-tint overlay is
-  drawn) carry positions and normals only. So the first look on a rounded box, or the first tint over merged art,
-  compiled a pipeline in the frame it showed.
-- **Also seen.** project.godot asks for vsync (`vsync_mode=1`), yet the box averages 72 fps. So either the TV runs
-  above 60 Hz or the present mode isn't plain FIFO (gamescope on Bazzite). With FIFO at 120 Hz, a frame rounds up to
-  8.3 ms steps: a 17 ms frame shows as 25 ms, and 33 / 42 ms fit the 35-41 ms worst frames. I can't check this from
-  here.
+## What changed and why
+1. **`perf: render the fence card once per change, not every frame`** (80b9316). `scripts/levels/fence_card.gd`:
+   the card's 512x512 SubViewport was `UPDATE_ALWAYS`. It cleared and redrew the whole Pictos card every frame
+   for a face that only changes on a stamp, during the 0.3 s stamp slam, and on a flip. Now every change goes
+   through `_redraw()`, which queues the face's draw and sets `UPDATE_ONCE` in the same frame, and between
+   changes the card costs no pass. I chose `UPDATE_ONCE` over `UPDATE_WHEN_VISIBLE` because ONCE is exact:
+   WHEN_VISIBLE depends on the renderer marking the texture as used, and a Sprite3D in a 3D pass doesn't
+   reliably do that. The look is unchanged: same texture, same size, same draw code.
+2. **`perf: write a Reset sign bulb only when it turns on or off`** (745a8c9). `scripts/levels/reset_sign_fx.gd`
+   set all 19 bulbs' `material_override` every frame. Each write sends the material to the renderer and marks
+   the instance dirty. The chase steps 6 times a second when idle, so most of those writes were the same value.
+   Now a bulb is written only when its material changes. Over 115 frames that's 158 writes, down from 2185, and
+   at every frame the pattern is the same as before.
+3. **`perf: add --bench-trace, a per-frame split of the bench's frames`** (0270b18). `scripts/tools/bench_trace.gd`,
+   wired in `scenes/main.gd`. Behind a flag, so nothing changes without it. It uses the engine's own signals to
+   split every counted bench frame into four parts:
+   - physics: the iteration's steps, with a step count
+   - process: every `_process`, tweens and the deferred flush
+   - draw: main-thread render CPU, including the waits on the GPU and the swapchain (the thread model is Safe)
+   - idle: the 60 fps limiter's sleep and window events
 
-## What changed
-1. `perf: prewarm play materials on the rounded-box vertex format too` (cedf88b).
-   `scripts/fx/render_prewarm.gd` also draws every kind, and the overlay, on a 1 mm rounded box built from
-   `ArtKit.rbox_arrays`. That's the positions + normals format, shared by every rbox and every merged mesh. It uses
-   the same kept materials and the same 6 frames behind the lobby / the bench warmup. Nothing seen changes, in both
-   tiers. Not touched: the mesh merge, the transform guard, sleep-when-still, the art, particles, lights, shadows,
-   render scale.
-2. `perf: print the present mode and refresh rate in the BENCH line` (56dfb2b). Diagnostic only. The BENCH line
-   now ends `... cap=0 vsync=on hz=60 adapter="..."` (`BenchProbe.display()`).
+   It also logs the GPU ms the viewport measured. It writes a CSV and prints
+   `BENCH-TRACE slow=<n>/<frames> over=25ms slow_med: ... all_med: ... cause=<part>`, where `cause` is the
+   part that grew in the frames over 25 ms.
 
-### Before / after on the bench route (lavapipe, same probe)
-| | before (2-3 runs) | after |
-| --- | --- | --- |
-| in-play pipeline compiles: surface / specialization / draw | 4 / 9 / 0 | **0 / 3 / 0** |
-| wide render CPU median / p90 / max ms | 2.31-2.38 / 2.58-3.02 / **23.6-25.5** | 2.37 / 2.91 / **4.72** |
-| follow render CPU median / p90 / max ms | 1.42 / 1.95 / 2.34 | 1.55 / 2.04 / 11.4 (*) |
-| micro: first grab look / freeze look / gun, ms | 23.8 / 614 / 582 | 0.22 / 0.22 / 0.29 |
-| micro: pipeline compiles after boot | +6 over those 3 events | 0 |
+Nothing seen or heard changes: no art, particle, light, shadow, render-scale or colour change, in both tiers.
 
-(*) One follow frame at 11.4 ms. It had no compile, no added instance and no upload, and the same frame wasn't
-slow on either baseline run. The after run overlapped the gdUnit suite and the micro scene on this 6-core CPU, and
-its medians are up too, so I read it as contention. Not claimed as a regression or as fixed. The 3 specialization
-compiles left run in the background (ubershader) and didn't make a slow frame.
+## Item 3: what drives the frames over 25 ms (numbers from this machine, not the 1060)
+This machine is an i5-8500T (6 cores), and it was **under heavy load the whole time**: four other lanes' sims at
+100 % plus another Godot suite, load average 4.5-7.9. All runs are the bench route, 30 s, at the 60 cap
+(`--max-fps 60`). Files are in `handoff/hitch6-probe/` (`runs.log`, `bench_lines.txt`, CSVs, `an6.py`; `runs.sh` and `empty_limiter.*` run from `.scratch/`).
+
+| run | BENCH avg / low1 / worst | frames > 25 ms | what grew in them |
+| --- | --- | --- | --- |
+| headless 0 | 59.9 / 32.6 / 44.9 ms | 8 / 1796 | physics (1-2 steps of 23-28 ms); 3 were idle-held (limiter woke 20-42 ms late) |
+| headless 1 | 59.9 / 32.4 / 61.4 ms | 6 / 1795 | physics, single steps of 20-31 ms, 4 of them within 1.1 s |
+| headless 2 | 60.0 / 43.0 / 43.7 ms | 1 / 1799 | physics, one 29 ms step |
+| **empty scene**, same cap (`empty_limiter.gd`) | 60.0 / **50.6** / 28.8 ms, then 59.9 / **39.8** / 65.0 ms | 1, then 3 | nothing: an empty `Node` |
+| lavapipe, 480x270, high | 0.7 / 0.1 | 19 / 19 (every frame) | draw 1128 ms median, of which GPU 1099 ms: the software renderer, `cause=draw(all)` |
+
+How I read it:
+- **The local numbers don't point at a game fix, so I made none.** The slow frames come in bursts
+  (4 within 1.1 s in one run). None of them recurs at the same route time across the three runs (`an6.py`: none
+  within ±0.15 s). An empty scene with the same cap on the same machine drops its 1%-low to 39.8 with a 65 ms
+  worst frame. Here, under this load, the 1%-low at the cap is set by the CPU scheduler, not by the yard. The
+  physics spikes fit that: Jolt runs its jobs on worker threads, and on a loaded CPU a step waits for them.
+- Steady cost is small: per frame the median is physics 1.8-2.0 ms, process 1.3-1.4 ms, and p99 is physics
+  5.5-7.0 ms and process 4.4 ms. So the yard's main-thread work is far under 16.7 ms at the cap here.
+- Lavapipe renders at 0.7 fps, so it can't say anything about 25 ms frames. That run only shows the trace works with
+  a renderer (draw and GPU columns filled).
+- **On the box.** Avg 58.5-58.9 under a 60 cap means frames lose time, not only that a few run slow. A 1%-low of
+  38-41 means the slowest 1% average 24-26 ms. That's about three refreshes of a 120 Hz output, which fits a
+  frame that just misses its second refresh. It also fits a real 20-25 ms frame. The trace tells these apart on
+  the box. If it says `cause=idle`, or `draw` with a small `gpu`, the limiter or the present is the cause. That's
+  the cap (D117) or the present mode, and a producer call, so I didn't change either.
 
 ## Tests
-- `tests/test_hitch_5.gd` (new, 4 tests): every material each look kind builds (bouncy, balloon, freeze, magnet,
-  splat, grab) is prewarmed on its own vertex format; rbox and merged art share the flat format, which differs from
-  the sphere's; the tint overlay is prewarmed on both formats; the BENCH line has `vsync=` / `hz=`.
-  **On the old prewarm: 16 failures** (`bouncy: ... on format 7 not prewarmed (kit formats [23])`).
-- `tests/test_hitch_2.gd`: kit count updated (2 x kinds + 2 overlays).
-- Full suite `--continue` on the final tree (56dfb2b): **452 test cases, 49 suites, 0 errors, 0 failures, 0 orphans**,
-  0 script errors (`handoff/test-output.txt`, 11 min 17 s). test_sleep_when_still passes, as do test_hitch / _2 / _3 / _4 / _5.
-- Clean import (no `.godot`): exit 0. The only lines are the usual "resources still in use at exit" and
-  "ObjectDB leaked at exit".
-- Export (`handoff/export_runs.sh`): the pack is written. Godot's own exit is 134 after savepack (known, PF-6, same as
-  hitch-3 and -4). Booting the export with `--demo`: **0 script errors** at the auto tier (low on this software GPU),
-  0 at `--graphics=high`, 0 in the wide beat. Headless `--bench --graphics=high` from the export:
-  `BENCH avg=144.7 low1=72.7 worst_ms=33.4 ... vsync=on hz=-1` (`handoff/bench-export.txt`). That's CPU only, and it
-  ran while the suite was running: the 33 ms worst is in the 5 s window where the suite was busiest, so it isn't a
-  1060 number.
+`tests/test_hitch_6.gd` (new, 12 tests):
+- Fence card: `test_the_card_viewport_does_not_render_every_frame`, `test_a_stamp_draws_and_renders_in_the_same_frame`,
+  `test_a_skip_stamp_draws_and_renders_in_the_same_frame`, `test_a_flip_to_the_next_card_draws_and_renders_in_the_same_frame`
+  (draws are counted through the face's `draw` signal, renders through a per-call counter; a still card asks for
+  no render over 60 frames).
+- `test_with_a_renderer_a_stamp_and_a_flip_show_on_the_next_frame`: with a renderer, the card's texture pixels
+  change in the frame after a stamp and after a flip, and stay put while still. It returns early in headless (no
+  pixels). I ran it under `godot-render`, where all 12 tests pass.
+  **It bites:** with `_redraw()` not arming `UPDATE_ONCE`, it fails with "the stamp did not show" and "the flip did not show".
+- Reset sign: `test_the_reset_sign_writes_a_bulb_only_when_it_changes` (the count equals the bulbs that really
+  changed, the pattern is right on every frame, and a frame inside a chase step writes 0),
+  `test_the_reset_sign_still_races_after_a_reset`, `test_the_yard_sign_still_lights_its_bulbs`.
+  **On the old sign code: 2 failures.**
+- Bench trace: `test_bench_trace_flag_and_path`, `test_bench_trace_names_the_part_that_grew_in_the_slow_frames`,
+  `test_bench_trace_splits_every_counted_frame_and_writes_its_csv` (physics + process + draw + idle = the frame,
+  and the CSV goes to a `user://` scratch path, removed after), `test_bench_trace_flag_runs_with_the_bench_and_prints_its_line`
+  (a child process on a scratch `XDG_DATA_HOME`, the same pattern as the bench test).
+- Clean import (`rm -rf .godot`, `godot --headless --path . --import`): **exit 0**. The only lines are the usual
+  "resources still in use at exit" and "ObjectDB leaked at exit".
+- Full suite `--continue`, run right after that clean import on the code at 0270b18: **466 test cases, 50 suites,
+  0 errors, 0 failures, 0 orphans, 0 script errors**. Exit 0, 11 min 38 s under the load
+  (`handoff/test-output.txt`). test_sleep_when_still and test_hitch / _2 / _3 / _4 / _5 / _6 all pass.
 
-## The frame I looked at
-`handoff/shots/hitch5_demo_high/t010.0s.png`: the export, `--demo --graphics=high`, 10 s in. The yard, both players
-and the HUD are normal. The bouncy ball's yellow bands (a look on a rounded box, the format the fix now warms) render
-as before, and nothing from the prewarm is left on screen. Also in `handoff/shots/`: `hitch5_demo_auto/` (4 s, 10 s)
-and `hitch5_wide_auto/` (the yard-wide beat).
+## The frames I looked at
+- `handoff/shots/hitch6_trophy/` (`--demo --demo-beat=trophy`, real frames, 1080p). At 0.6 s the fence card shows
+  its done stamp. At 3.5 s it shows the next card (truck), the same card as the HUD. The stamp and the flip both reach
+  the screen.
+- `handoff/shots/hitch6_sign/`: the Reset sign's bulbs chase, about 2 of 3 lit.
 
-## Expected on the 1060
-- The first grab / freeze / bouncy / magnet look in a run, and the first tint over merged art, no longer compile a
-  pipeline in play. On lavapipe that frame cost 24 ms of render CPU. On the box with a warm NVIDIA pipeline cache
-  each compile should be cheaper, so I expect the **worst frame to drop from 35-41 ms toward the 20s**. How far is
-  the box's to say.
-- The 1%-low (43 frames out of ~4300) is more than a handful of first-use frames. **I don't claim 1%-low >= 50.**
-  The steady render side is smooth here, so if the box's 1%-low stays in the mid-40s, the next suspect is the
-  present mode. Paste the whole BENCH line: if it says `vsync=on` at `hz=120` (or 144), frames are being rounded to
-  refreshes, and the honest fix is a cap or a present-mode choice, which is a producer call, not a hitch.
-- Cold run: the prewarm adds 16 more 1 mm meshes to its 6 frames behind the lobby, so the cold-run single-frame result
-  (< ~200 ms) should hold. Not measured on the box.
-
-## Next candidates (not done)
-- If the box shows `vsync=on hz>60`: test `--max-fps` / mailbox on the box (a producer call: no look change).
-- FenceCard's 512x512 SubViewport is UPDATE_ALWAYS for a card that only changes on a stamp or flip;
-  UPDATE_WHEN_VISIBLE / ONCE would save a pass a frame. It's small and steady, not a hitch.
-- The Reset sign re-sets 19 bulbs' material_override every frame (same value 2/3 of the time). Small and steady.
+## Not done
+- No 1060 numbers: the producer benches after the ship (see BENCH-ready).
+- I didn't measure the card's and bulbs' savings on a GPU. Lavapipe on this loaded machine runs the yard at 0.7 fps,
+  so a 512x512 2D pass is below its noise. Both are small and steady (hitch-5 said so too). Neither is the 25 ms frame.
+- I didn't change the cap, vsync or the present mode (producer call). If the box trace says `idle` / `draw` with a small `gpu`,
+  the options are: a cap of 0 (uncapped) with vsync at 120 Hz (back to D117's question), mailbox, or `max_fps` 0 with vsync at a 60 Hz output mode.
+- The trace's `idle` also holds the first physics step's sync and `_integrate_forces` callbacks, because the engine
+  gives no signal before them. hitch-4 measured step + flush p99 at 0.7 ms, so idle is mostly the limiter.
 
 ## IDs moved
-None. S-18 stays **partial** (note updated with the change and expected effect; the 1060 bench is the open half).
+None. S-18 and S-29 stay **partial**. I updated both notes: what changed, the trace, and the box run that decides.

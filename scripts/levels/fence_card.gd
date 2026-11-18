@@ -21,6 +21,9 @@ var _face_goal: GoalData
 var _stamp := ""
 var _stamp_t := 0.0
 const STAMP_FOR := 1.2
+## S-18 (jyz-hitch-6): the card's 512x512 viewport renders only when its face changes (UPDATE_ONCE per
+## redraw), not every frame. Counts every render asked for (tests read it).
+var renders_asked := 0
 
 
 func _ready() -> void:
@@ -28,7 +31,7 @@ func _ready() -> void:
 	_vp = SubViewport.new()
 	_vp.size = Vector2i(PX, PX)
 	_vp.transparent_bg = true
-	_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	_vp.render_target_update_mode = SubViewport.UPDATE_ONCE
 	add_child(_vp)
 	_face = Control.new()
 	_face.size = Vector2(PX, PX)
@@ -38,6 +41,7 @@ func _ready() -> void:
 		if _stamp != "":
 			Pictos.card_stamp(_face, r, _stamp == "done", _stamp_t / 0.22))
 	_vp.add_child(_face)
+	_redraw()
 	_sprite = Sprite3D.new()
 	_sprite.texture = _vp.get_texture()
 	_sprite.pixel_size = 2.0 / PX   # PT10-3: the framed card reads as big as the old bare picture
@@ -58,7 +62,15 @@ func _ready() -> void:
 		deck.card_changed.connect(func(g: GoalData) -> void:
 			if _stamp == "":
 				_face_goal = g
-				_face.queue_redraw())
+				_redraw())
+
+
+## Redraw the face and render the viewport once, in this frame (its canvas is drawn before the frame is).
+## Every change of what the face shows goes through here; between changes the card costs no pass.
+func _redraw() -> void:
+	_face.queue_redraw()
+	_vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+	renders_asked += 1
 
 
 ## The finished (or skipped) card keeps its face under the stamp for a beat, then flips to the next.
@@ -66,7 +78,7 @@ func _stamp_on(kind: String, id: StringName) -> void:
 	_face_goal = deck.cards.get(id, _face_goal)
 	_stamp = kind
 	_stamp_t = 0.0
-	_face.queue_redraw()
+	_redraw()
 	if kind == "done":
 		var tw := create_tween()
 		tw.tween_property(_sprite, "scale", _sprite.scale * 1.25, 0.12).set_ease(Tween.EASE_OUT)
@@ -80,7 +92,7 @@ func _flip_to_current() -> void:
 	tw.tween_callback(func() -> void:
 		_stamp = ""
 		_face_goal = deck.current() if deck else null
-		_face.queue_redraw())
+		_redraw())
 	tw.tween_property(_sprite, "rotation:y", 0.0, 0.2).from(-PI * 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
@@ -105,7 +117,7 @@ func _process(delta: float) -> void:
 	if _stamp != "":
 		_stamp_t += delta
 		if _stamp_t < 0.3:
-			_face.queue_redraw()   # the stamp slams on
+			_redraw()   # the stamp slams on
 		if _stamp_t >= (STAMP_FOR if _stamp == "done" else 0.45) and _stamp_t - delta < (STAMP_FOR if _stamp == "done" else 0.45):
 			_flip_to_current()
 	_hint_t -= delta

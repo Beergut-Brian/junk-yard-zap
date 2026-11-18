@@ -1,0 +1,11 @@
+ 08:27:34 up 19 days, 21:56,  1 user,  load average: 4.86, 3.14, 2.48
+EMPTY avg=60.0 low1=50.6 worst_ms=28.8 frames=1804 over25=1
+BENCH avg=59.9 low1=32.4 frame_ms=16.70 worst_ms=61.4 frames=1796 seconds=30.0 tier=high cap=60 vsync=on hz=-1 adapter=""
+BENCH-TRACE slow=6/1795 over=25ms slow_med: frame=41.0 physics=26.3 steps=1 process=1.5 draw=0.0 idle=5.6 gpu=0.0 all_med: frame=16.7 physics=1.8 steps=1 process=1.3 draw=0.0 idle=13.5 gpu=0.0 cause=physics
+BENCH-TRACE: 1795 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-6/.scratch/trace_h1.csv
+BENCH avg=60.0 low1=43.0 frame_ms=16.67 worst_ms=43.7 frames=1800 seconds=30.0 tier=high cap=60 vsync=on hz=-1 adapter=""
+BENCH-TRACE slow=1/1799 over=25ms slow_med: frame=33.3 physics=29.5 steps=1 process=1.4 draw=0.0 idle=2.4 gpu=0.0 all_med: frame=16.7 physics=2.0 steps=1 process=1.4 draw=0.0 idle=13.3 gpu=0.0 cause=physics
+BENCH-TRACE: 1799 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-6/.scratch/trace_h2.csv
+EMPTY avg=59.9 low1=39.8 worst_ms=65.0 frames=1801 over25=3
+ 08:29:55 up 19 days, 21:58,  1 user,  load average: 6.46, 4.08, 2.90
+DONE
