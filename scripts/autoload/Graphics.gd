@@ -1,6 +1,6 @@
 ## Graphics tiers (data/graphics.json). Autoload: Graphics, first in the list so the tier is set before
 ## any scene builds its lights.
-## high = today's look (the GTX 1060): no overrides at all, nothing here touches a node.
+## high = today's look (the GTX 1060): only the frame cap (60 fps, vsync on; D117), nothing here touches a node.
 ## low  = the Intel HD 530 (Skylake GT2, Mesa ANV) on the TV box: no MSAA (FXAA), 0.75 render scale with
 ##        FSR 1, one short shadow cascade, SSAO / SSIL / SSR / SDFGI / glow / volumetrics off, LOD bias up,
 ##        half the particles, 60 fps cap, vsync on. camera_far + depth fog are supported keys but not used:
@@ -15,6 +15,9 @@ extends Node
 const DATA := "res://data/graphics.json"
 const TIERS: Array[String] = ["high", "low"]
 const FLAG := "--graphics="
+
+## Keys that act on the engine, not on a node (tune_engine). A tier with only these needs no node hook.
+const ENGINE_KEYS: Array[String] = ["max_fps", "vsync"]
 
 ## RenderingDevice.DeviceType values, kept here so pick() reads without a RenderingDevice.
 const TYPE_OTHER := 0
@@ -110,10 +113,18 @@ func apply(t: String, why := "") -> void:
 	tier = t if t in TIERS else "high"
 	reason = why
 	settings = tier_settings(tier)
-	if settings.is_empty() and _hooked:   # back to high (tests): stop tuning new nodes; what was tuned stays
+	var engine_only := not settings.is_empty()   # high: the cap only, so no node needs tuning
+	for k in settings:
+		if not k in ENGINE_KEYS:
+			engine_only = false
+	if (settings.is_empty() or engine_only) and _hooked:   # back to high (tests): stop tuning new nodes; what was tuned stays
 		get_tree().node_added.disconnect(_on_node_added)
 		_hooked = false
-	if not settings.is_empty():
+	if engine_only:
+		# Headless runs (tests, tools) have no display to pace, and a cap would only slow the suite.
+		if DisplayServer.get_name() != "headless":
+			tune_engine(settings)
+	elif not settings.is_empty():
 		var root := get_tree().root
 		tune_viewport(root, settings)
 		tune_engine(settings)

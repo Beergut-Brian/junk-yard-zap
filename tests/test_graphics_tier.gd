@@ -158,7 +158,7 @@ func test_low_applied_tunes_the_root_and_every_node_that_enters() -> void:
 # ------------------------------------------------------------------------------------------ high pinned
 
 func test_high_is_todays_look_exactly() -> void:
-	assert_dict(Graphics.tier_settings("high")).is_empty()
+	assert_int(Graphics.tier_settings("high").size()).is_equal(2)   # the cap (max_fps, vsync) is all high sets: test_high_caps_at_60_low_unchanged
 	# Today's look, pinned: project MSAA 2x, Forward+, the Golden Afternoon light.
 	assert_int(int(ProjectSettings.get_setting("rendering/anti_aliasing/quality/msaa_3d"))).is_equal(Viewport.MSAA_2X)
 	assert_str(str(ProjectSettings.get_setting("rendering/renderer/rendering_method"))).is_equal("forward_plus")
@@ -168,7 +168,7 @@ func test_high_is_todays_look_exactly() -> void:
 	assert_int(root.scaling_3d_mode).is_equal(Viewport.SCALING_3D_MODE_BILINEAR)
 	assert_float(root.scaling_3d_scale).is_equal(1.0)
 	assert_int(root.screen_space_aa).is_equal(Viewport.SCREEN_SPACE_AA_DISABLED)
-	assert_int(Engine.max_fps).is_equal(0)
+	assert_int(Engine.max_fps).is_equal(0)   # headless boot leaves the cap off; see test_high_caps_at_60_low_unchanged
 	var env := YardLight.environment()
 	var before := _snapshot(env)
 	Graphics.tune_environment(env, {})
@@ -266,3 +266,29 @@ func test_bench_mode_quits_by_itself_and_prints_the_summary() -> void:
 			summary = l
 	assert_str(summary).override_failure_message(text.right(2000)).contains("low1=").contains("tier=low")
 	assert_str(text).not_contains("SCRIPT ERROR")
+
+
+# ------------------------------------------------------------------------------------------ D117 frame cap
+
+func test_high_caps_at_60_low_unchanged() -> void:
+	var h := Graphics.tier_settings("high")
+	assert_int(int(h.max_fps)).is_equal(60)
+	assert_bool(h.vsync).is_true()
+	assert_int(h.size()).is_equal(2)   # no look keys: render scale, shadows, particles, lights stay as they were
+	var l := Graphics.tier_settings("low")
+	assert_int(int(l.max_fps)).is_equal(60)
+	assert_bool(l.vsync).is_true()
+	assert_float(float(l.scaling_3d_scale)).is_equal(0.75)
+	var was := Engine.max_fps
+	Engine.max_fps = 0
+	Graphics.tune_engine(h)
+	assert_int(Engine.max_fps).is_equal(60)
+	Engine.max_fps = was
+
+
+func test_high_apply_hooks_no_nodes() -> void:
+	var was := Engine.max_fps
+	Graphics.apply("high", "test")
+	assert_bool(Graphics._hooked).is_false()
+	assert_int(Engine.max_fps).is_equal(was)   # headless: the cap is not applied
+	assert_str(Graphics.tier).is_equal("high")
