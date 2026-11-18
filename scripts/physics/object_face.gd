@@ -14,6 +14,11 @@ const WATCH_LOOK := 0.95   # how far the pupils slide toward them (1 = to the ey
 const INK := Color("#24181a")
 ## Own RNG: blinking must never shift a seeded simulation (the stress run).
 static var _rng := RandomNumberGenerator.new()
+## S-18 (jyz-hitch-7): every face part write (position, scale, rotation), counted per call. Tests and
+## `--bench-scripts` read it.
+static var part_writes := 0
+## Every pose computed (S-18, jyz-hitch-7), counted per call.
+static var poses := 0
 
 var mood := Mood.NEUTRAL
 ## The mood the effects on the object ask for; flashes (react) fall back to it.
@@ -29,6 +34,9 @@ var _sweat: MeshInstance3D
 var _size := 0.35
 var _watch := Vector2(0.15, 0.1)   # smoothed look while calm: toward the nearest player, else ahead
 var _watching := false
+var _posed_mood := -1      # the inputs of the last pose (_pose_changed)
+var _posed_look := Vector2.INF
+var _posed_shut := false
 
 
 func setup(face_size: float) -> void:
@@ -91,7 +99,24 @@ func _process(delta: float) -> void:
 	if _blink < -0.12:
 		_blink = _rng.randf_range(2.0, 4.5)
 	_update_watch(delta)
-	_pose(delta)
+	if _pose_changed():
+		_pose(delta)
+
+
+## S-18 (jyz-hitch-7): _pose is a pure function of the mood, the look, the blink and (only while dizzy or
+## panicking) the clock. A face whose inputs are the same as at its last pose would write nothing, so it
+## skips the whole pose (48 faces did it every frame). Same look on every frame as before.
+func _pose_changed() -> bool:
+	if mood == Mood.DIZZY or mood == Mood.PANIC:   # animated by _t
+		_posed_mood = -1
+		return true
+	var shut := _blink < 0.0
+	if mood == _posed_mood and _watch == _posed_look and shut == _posed_shut:
+		return false
+	_posed_mood = mood
+	_posed_look = _watch
+	_posed_shut = shut
+	return true
 
 
 ## True while the eyes are following a player.
@@ -108,7 +133,8 @@ func _update_watch(delta: float) -> void:
 	if is_inside_tree():
 		var best := WATCH_RANGE
 		var me := global_position
-		var inv := global_transform.basis.orthonormalized().inverse()
+		var inv := Basis()
+		var have_inv := false   # S-18 (jyz-hitch-7): built only once a player is in range
 		for z in get_tree().get_nodes_in_group(Zapper.GROUP):
 			var n := z as Node3D
 			if n == null or not n.visible:
@@ -117,6 +143,9 @@ func _update_watch(delta: float) -> void:
 			var dist := d.length()
 			if dist < best and dist > 0.05:
 				best = dist
+				if not have_inv:
+					inv = global_transform.basis.orthonormalized().inverse()
+					have_inv = true
 				var local := inv * d
 				var v := Vector2(local.x, local.y)
 				want = v.normalized() * WATCH_LOOK if v.length() > 0.01 else Vector2.ZERO
@@ -127,6 +156,7 @@ func _update_watch(delta: float) -> void:
 func _pose(_delta: float) -> void:
 	if _eyes.is_empty():
 		return
+	poses += 1
 	var s := _size
 	var eye := 1.0
 	var lid := 1.0         # eye height: 1 open, ~0.1 a closed line
@@ -188,13 +218,16 @@ func _pose(_delta: float) -> void:
 static func _put_pos(n: Node3D, v: Vector3) -> void:
 	if n.position != v:
 		n.position = v
+		part_writes += 1
 
 
 static func _put_scale(n: Node3D, v: Vector3) -> void:
 	if n.scale != v:
 		n.scale = v
+		part_writes += 1
 
 
 static func _put_rot(n: Node3D, v: Vector3) -> void:
 	if n.rotation != v:
 		n.rotation = v
+		part_writes += 1
