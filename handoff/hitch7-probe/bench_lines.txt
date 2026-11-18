@@ -1,0 +1,144 @@
+# jyz-hitch-7 probe runs, in order (this machine: i5-8500T, other lanes loading it; NOT the 1060).
+# headless = no renderer (process here excludes the deferred flush; redraw cost is script-only).
+# lavapipe = godot-render, Forward+ on Mesa llvmpipe at 320x180/640x360, ~1.4 fps: frame times meaningless,
+#   but process CPU per frame is real (8 physics steps per frame there, so per-frame physics is inflated).
+# b1, b_lvp, b_lvp2, b_lvp3: earlier versions of the tracer (own _process per group only; then a "rest" split;
+#   then per-CanvasItem draw slices, which were contaminated and dropped). b_lvp4 = BEFORE (final tracer).
+# b5 (headless) and b_lvp5 (lavapipe) = AFTER the three fixes (final tracer).
+### .scratch/b1.log
+BENCH avg=60.0 low1=52.3 frame_ms=16.67 worst_ms=22.5 frames=1801 seconds=30.0 tier=high cap=60 vsync=on hz=-1 adapter=""
+BENCH-TRACE slow=0/1800 over=25ms slow_med: frame=0.0 physics=0.0 steps=0 process=0.0 draw=0.0 idle=0.0 gpu=0.0 all_med: frame=16.7 physics=1.6 steps=1 process=1.2 draw=0.0 idle=13.8 gpu=0.0 cause=none
+BENCH-SCRIPTS object_face.gd n=53 all_mean=0.865 all_p99=1.009 max=1.71 slow_mean=0.000
+BENCH-SCRIPTS effect_look.gd n=58 all_mean=0.074 all_p99=0.118 max=0.15 slow_mean=0.000
+BENCH-SCRIPTS hint_panel.gd n=2 all_mean=0.063 all_p99=0.105 max=0.13 slow_mean=0.000
+BENCH-SCRIPTS (native AnimationPlayer) n=5 all_mean=0.041 all_p99=0.067 max=0.11 slow_mean=0.000
+BENCH-SCRIPTS reset_sign_fx.gd n=1 all_mean=0.031 all_p99=0.064 max=0.11 slow_mean=0.000
+BENCH-SCRIPTS camera_rig.gd n=1 all_mean=0.022 all_p99=0.040 max=0.06 slow_mean=0.000
+BENCH-SCRIPTS (native CPUParticles3D) n=392 all_mean=0.021 all_p99=0.048 max=0.19 slow_mean=0.000
+BENCH-SCRIPTS soak.gd n=1 all_mean=0.020 all_p99=0.552 max=0.81 slow_mean=0.000
+BENCH-SCRIPTS character_slot.gd n=2 all_mean=0.018 all_p99=0.034 max=0.06 slow_mean=0.000
+BENCH-SCRIPTS Audio.gd n=1 all_mean=0.014 all_p99=0.029 max=0.05 slow_mean=0.000
+BENCH-SCRIPTS (inline Node3D) n=3 all_mean=0.010 all_p99=0.044 max=0.07 slow_mean=0.000
+BENCH-SCRIPTS hud.gd n=1 all_mean=0.009 all_p99=0.024 max=0.04 slow_mean=0.000
+BENCH-TRACE: 1800 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-7/.scratch/t1.csv
+
+### .scratch/b_lvp.log
+BENCH avg=1.3 low1=0.1 frame_ms=776.10 worst_ms=7230.9 frames=78 seconds=60.5 tier=high cap=60 vsync=on hz=-nan adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
+BENCH-TRACE slow=77/77 over=25ms slow_med: frame=682.4 physics=13.2 steps=8 process=7.1 draw=654.9 idle=5.9 gpu=641.3 all_med: frame=682.4 physics=13.2 steps=8 process=7.1 draw=654.9 idle=5.9 gpu=641.3 cause=draw(all)
+BENCH-SCRIPTS (rest: tweens, timers, deferred calls) all_mean=6.212 slow_mean=6.212
+BENCH-SCRIPTS object_face.gd n=48 all_mean=0.900 all_p99=1.628 max=1.63 slow_mean=0.900
+BENCH-SCRIPTS soak.gd n=1 all_mean=0.194 all_p99=1.455 max=1.46 slow_mean=0.194
+BENCH-SCRIPTS hint_panel.gd n=2 all_mean=0.070 all_p99=0.138 max=0.14 slow_mean=0.070
+BENCH-SCRIPTS effect_look.gd n=58 all_mean=0.068 all_p99=0.287 max=0.29 slow_mean=0.068
+BENCH-SCRIPTS reset_sign_fx.gd n=1 all_mean=0.057 all_p99=0.103 max=0.10 slow_mean=0.057
+BENCH-SCRIPTS (native AnimationPlayer) n=5 all_mean=0.049 all_p99=0.098 max=0.10 slow_mean=0.049
+BENCH-SCRIPTS camera_rig.gd n=1 all_mean=0.023 all_p99=0.048 max=0.05 slow_mean=0.023
+BENCH-SCRIPTS character_slot.gd n=2 all_mean=0.021 all_p99=0.054 max=0.05 slow_mean=0.021
+BENCH-SCRIPTS bench.gd n=1 all_mean=0.019 all_p99=0.091 max=0.09 slow_mean=0.019
+BENCH-SCRIPTS (native CPUParticles3D) n=101 all_mean=0.016 all_p99=0.061 max=0.06 slow_mean=0.016
+BENCH-SCRIPTS Audio.gd n=1 all_mean=0.015 all_p99=0.039 max=0.04 slow_mean=0.015
+BENCH-SCRIPTS hud.gd n=1 all_mean=0.011 all_p99=0.039 max=0.04 slow_mean=0.011
+BENCH-TRACE: 77 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-7/.scratch/t_lvp.csv
+
+### .scratch/b_lvp2.log
+BENCH avg=1.5 low1=0.2 frame_ms=682.52 worst_ms=5358.9 frames=88 seconds=60.1 tier=high cap=60 vsync=on hz=-nan adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
+BENCH-TRACE slow=87/87 over=25ms slow_med: frame=620.2 physics=12.4 steps=8 process=7.6 draw=593.4 idle=5.2 gpu=584.9 all_med: frame=620.2 physics=12.4 steps=8 process=7.6 draw=593.4 idle=5.2 gpu=584.9 cause=draw(all)
+BENCH-SCRIPTS counters face_part_writes_per_frame=47.0
+BENCH-SCRIPTS (rest: tweens, timers, deferred calls) all_mean=6.174 slow_mean=6.174
+BENCH-SCRIPTS rest_split all: pre=0.071 flush=5.270 tail=0.835 slow: pre=0.071 flush=5.270 tail=0.835
+BENCH-SCRIPTS object_face.gd n=48 all_mean=0.879 all_p99=1.155 max=1.15 slow_mean=0.879
+BENCH-SCRIPTS soak.gd n=1 all_mean=0.187 all_p99=1.154 max=1.15 slow_mean=0.187
+BENCH-SCRIPTS hint_panel.gd n=2 all_mean=0.074 all_p99=0.554 max=0.55 slow_mean=0.074
+BENCH-SCRIPTS effect_look.gd n=58 all_mean=0.064 all_p99=0.107 max=0.11 slow_mean=0.064
+BENCH-SCRIPTS reset_sign_fx.gd n=1 all_mean=0.056 all_p99=0.099 max=0.10 slow_mean=0.056
+BENCH-SCRIPTS (native AnimationPlayer) n=5 all_mean=0.048 all_p99=0.079 max=0.08 slow_mean=0.048
+BENCH-SCRIPTS camera_rig.gd n=1 all_mean=0.022 all_p99=0.074 max=0.07 slow_mean=0.022
+BENCH-SCRIPTS character_slot.gd n=2 all_mean=0.020 all_p99=0.061 max=0.06 slow_mean=0.020
+BENCH-SCRIPTS bench.gd n=1 all_mean=0.017 all_p99=0.071 max=0.07 slow_mean=0.017
+BENCH-SCRIPTS (native CPUParticles3D) n=113 all_mean=0.015 all_p99=0.041 max=0.04 slow_mean=0.015
+BENCH-SCRIPTS Audio.gd n=1 all_mean=0.014 all_p99=0.046 max=0.05 slow_mean=0.014
+BENCH-SCRIPTS fence_card.gd n=1 all_mean=0.011 all_p99=0.172 max=0.17 slow_mean=0.011
+BENCH-TRACE: 87 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-7/.scratch/t_lvp2.csv
+
+### .scratch/b_lvp3.log
+BENCH avg=1.3 low1=0.2 frame_ms=755.57 worst_ms=5843.0 frames=53 seconds=40.0 tier=high cap=60 vsync=on hz=-nan adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
+BENCH-TRACE slow=52/52 over=25ms slow_med: frame=628.1 physics=14.2 steps=8 process=6.7 draw=595.4 idle=5.5 gpu=585.5 all_med: frame=628.1 physics=14.2 steps=8 process=6.7 draw=595.4 idle=5.5 gpu=585.5 cause=draw(all)
+BENCH-SCRIPTS counters face_part_writes_per_frame=48.3
+BENCH-SCRIPTS (rest: tweens, timers, deferred calls) all_mean=6.033 slow_mean=6.033
+BENCH-SCRIPTS rest_split all: pre=0.084 flush=4.833 tail=1.117 slow: pre=0.084 flush=4.833 tail=1.117
+BENCH-SCRIPTS redraw hud.gd:Control per_frame=1.02 ms_per_frame=14.053
+BENCH-SCRIPTS redraw (native Control):Control per_frame=0.16 ms_per_frame=12.323
+BENCH-SCRIPTS redraw hint_panel.gd:Control per_frame=2.04 ms_per_frame=2.610
+BENCH-SCRIPTS object_face.gd n=48 all_mean=0.883 all_p99=1.076 max=1.08 slow_mean=0.883
+BENCH-SCRIPTS soak.gd n=1 all_mean=0.192 all_p99=1.192 max=1.19 slow_mean=0.192
+BENCH-SCRIPTS hint_panel.gd n=2 all_mean=0.069 all_p99=0.099 max=0.10 slow_mean=0.069
+BENCH-SCRIPTS effect_look.gd n=58 all_mean=0.060 all_p99=0.095 max=0.09 slow_mean=0.060
+BENCH-SCRIPTS reset_sign_fx.gd n=1 all_mean=0.057 all_p99=0.097 max=0.10 slow_mean=0.057
+BENCH-SCRIPTS (native AnimationPlayer) n=5 all_mean=0.046 all_p99=0.080 max=0.08 slow_mean=0.046
+BENCH-SCRIPTS fence_card.gd n=1 all_mean=0.028 all_p99=0.552 max=0.55 slow_mean=0.028
+BENCH-SCRIPTS character_slot.gd n=2 all_mean=0.028 all_p99=0.446 max=0.45 slow_mean=0.028
+BENCH-SCRIPTS camera_rig.gd n=1 all_mean=0.023 all_p99=0.069 max=0.07 slow_mean=0.023
+BENCH-SCRIPTS (native CPUParticles3D) n=135 all_mean=0.022 all_p99=0.222 max=0.22 slow_mean=0.022
+BENCH-SCRIPTS bench.gd n=1 all_mean=0.018 all_p99=0.072 max=0.07 slow_mean=0.018
+BENCH-SCRIPTS (inline Node3D) n=1 all_mean=0.016 all_p99=0.162 max=0.16 slow_mean=0.016
+BENCH-TRACE: 52 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-7/.scratch/t_lvp3.csv
+
+### .scratch/b_lvp4.log
+BENCH avg=1.3 low1=0.2 frame_ms=746.92 worst_ms=5659.9 frames=54 seconds=40.3 tier=high cap=60 vsync=on hz=-nan adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
+BENCH-TRACE slow=53/53 over=25ms slow_med: frame=643.1 physics=12.0 steps=8 process=7.2 draw=615.7 idle=5.8 gpu=600.6 all_med: frame=643.1 physics=12.0 steps=8 process=7.2 draw=615.7 idle=5.8 gpu=600.6 cause=draw(all)
+BENCH-SCRIPTS counters per_frame: face_part_writes=43.8 hud_redraws=1.06 hint_redraws=2.12
+BENCH-SCRIPTS groups=6.817 flush_gap=0.048 after_flush=0.787 (ms per frame, means)
+BENCH-SCRIPTS hud.gd n=1 own=0.010 defer=2.903 sum_p99=11.677 max=11.68 slow=2.912
+BENCH-SCRIPTS hint_panel.gd n=2 own=0.064 defer=2.424 sum_p99=3.539 max=3.54 slow=2.489
+BENCH-SCRIPTS object_face.gd n=48 own=0.895 defer=0.000 sum_p99=1.148 max=1.15 slow=0.895
+BENCH-SCRIPTS soak.gd n=1 own=0.190 defer=0.000 sum_p99=1.144 max=1.14 slow=0.190
+BENCH-SCRIPTS effect_look.gd n=58 own=0.060 defer=0.000 sum_p99=0.105 max=0.10 slow=0.061
+BENCH-SCRIPTS reset_sign_fx.gd n=1 own=0.055 defer=0.000 sum_p99=0.071 max=0.07 slow=0.056
+BENCH-SCRIPTS (native AnimationPlayer) n=5 own=0.042 defer=0.000 sum_p99=0.082 max=0.08 slow=0.042
+BENCH-SCRIPTS (inline Node3D) n=2 own=0.023 defer=0.001 sum_p99=0.086 max=0.09 slow=0.024
+BENCH-SCRIPTS camera_rig.gd n=1 own=0.022 defer=0.000 sum_p99=0.036 max=0.04 slow=0.022
+BENCH-SCRIPTS character_slot.gd n=2 own=0.022 defer=0.000 sum_p99=0.043 max=0.04 slow=0.022
+BENCH-SCRIPTS bench.gd n=1 own=0.019 defer=0.000 sum_p99=0.087 max=0.09 slow=0.020
+BENCH-SCRIPTS Audio.gd n=1 own=0.016 defer=0.000 sum_p99=0.061 max=0.06 slow=0.016
+BENCH-TRACE: 53 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-7/.scratch/t_lvp4.csv
+
+### .scratch/b5.log
+BENCH avg=60.0 low1=48.3 frame_ms=16.67 worst_ms=27.7 frames=1200 seconds=20.0 tier=high cap=60 vsync=on hz=-1 adapter=""
+BENCH-TRACE slow=0/1199 over=25ms slow_med: frame=0.0 physics=0.0 steps=0 process=0.0 draw=0.0 idle=0.0 gpu=0.0 all_med: frame=16.7 physics=1.5 steps=1 process=0.8 draw=0.0 idle=14.3 gpu=0.0 cause=none
+BENCH-SCRIPTS counters per_frame: face_part_writes=30.0 hud_redraws=0.95 hint_redraws=0.20
+BENCH-SCRIPTS groups=1.423 flush_gap=0.040 after_flush=0.000 (ms per frame, means)
+BENCH-SCRIPTS hud.gd n=1 own=0.043 defer=0.515 sum_p99=1.167 max=1.62 slow=0.000
+BENCH-SCRIPTS object_face.gd n=50 own=0.395 defer=0.000 sum_p99=0.512 max=0.57 slow=0.000
+BENCH-SCRIPTS hint_panel.gd n=2 own=0.092 defer=0.069 sum_p99=0.716 max=0.91 slow=0.000
+BENCH-SCRIPTS effect_look.gd n=58 own=0.070 defer=0.000 sum_p99=0.113 max=0.15 slow=0.000
+BENCH-SCRIPTS (native AnimationPlayer) n=5 own=0.042 defer=0.001 sum_p99=0.068 max=0.08 slow=0.000
+BENCH-SCRIPTS reset_sign_fx.gd n=1 own=0.029 defer=0.000 sum_p99=0.061 max=0.10 slow=0.000
+BENCH-SCRIPTS (native CPUParticles3D) n=280 own=0.024 defer=0.000 sum_p99=0.056 max=0.09 slow=0.000
+BENCH-SCRIPTS camera_rig.gd n=1 own=0.022 defer=0.000 sum_p99=0.042 max=0.07 slow=0.000
+BENCH-SCRIPTS soak.gd n=1 own=0.020 defer=0.000 sum_p99=0.553 max=0.76 slow=0.000
+BENCH-SCRIPTS character_slot.gd n=2 own=0.018 defer=0.000 sum_p99=0.033 max=0.05 slow=0.000
+BENCH-SCRIPTS Audio.gd n=1 own=0.014 defer=0.000 sum_p99=0.028 max=0.06 slow=0.000
+BENCH-SCRIPTS (inline Node3D) n=4 own=0.011 defer=0.001 sum_p99=0.051 max=0.06 slow=0.000
+BENCH-TRACE: 1199 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-7/.scratch/t5.csv
+
+### .scratch/b_lvp5.log
+BENCH avg=1.4 low1=0.2 frame_ms=718.37 worst_ms=5296.1 frames=56 seconds=40.2 tier=high cap=60 vsync=on hz=-nan adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
+BENCH-TRACE slow=55/55 over=25ms slow_med: frame=619.0 physics=13.2 steps=8 process=4.8 draw=597.4 idle=5.6 gpu=584.0 all_med: frame=619.0 physics=13.2 steps=8 process=4.8 draw=597.4 idle=5.6 gpu=584.0 cause=draw(all)
+BENCH-SCRIPTS counters per_frame: face_poses=15.1 face_part_writes=46.7 hud_redraws=0.91 card_redraws=0.02 hint_redraws=0.78
+BENCH-SCRIPTS groups=4.612 flush_gap=0.050 after_flush=0.875 (ms per frame, means)
+BENCH-SCRIPTS hud.gd n=1 own=0.043 defer=2.622 sum_p99=7.511 max=7.51 slow=2.665
+BENCH-SCRIPTS hint_panel.gd n=2 own=0.097 defer=0.953 sum_p99=2.679 max=2.68 slow=1.050
+BENCH-SCRIPTS object_face.gd n=48 own=0.408 defer=0.000 sum_p99=1.071 max=1.07 slow=0.409
+BENCH-SCRIPTS soak.gd n=1 own=0.161 defer=0.000 sum_p99=1.096 max=1.10 slow=0.161
+BENCH-SCRIPTS effect_look.gd n=58 own=0.062 defer=0.000 sum_p99=0.095 max=0.09 slow=0.062
+BENCH-SCRIPTS reset_sign_fx.gd n=1 own=0.057 defer=0.000 sum_p99=0.095 max=0.09 slow=0.057
+BENCH-SCRIPTS (native AnimationPlayer) n=5 own=0.047 defer=0.001 sum_p99=0.078 max=0.08 slow=0.048
+BENCH-SCRIPTS camera_rig.gd n=1 own=0.023 defer=0.000 sum_p99=0.049 max=0.05 slow=0.023
+BENCH-SCRIPTS character_slot.gd n=2 own=0.020 defer=0.000 sum_p99=0.039 max=0.04 slow=0.021
+BENCH-SCRIPTS bench.gd n=1 own=0.018 defer=0.000 sum_p99=0.117 max=0.12 slow=0.018
+BENCH-SCRIPTS (native CPUParticles3D) n=109 own=0.018 defer=0.000 sum_p99=0.080 max=0.08 slow=0.018
+BENCH-SCRIPTS Audio.gd n=1 own=0.015 defer=0.000 sum_p99=0.031 max=0.03 slow=0.015
+BENCH-TRACE: 55 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-7/.scratch/t_lvp5.csv
+
+### .scratch/b_lvp6.log (temporary per-section timer inside Hud._draw, removed; per 50 HUD redraws, usec)
+HUDDBG 50 { "all": 112384, "badge": 36922, "wheel": 59121, "beat": 14706 }

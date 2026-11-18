@@ -1,25 +1,28 @@
 {
-  "packet": "maker/openjar jyz-hitch-6",
+  "packet": "maker/openjar jyz-hitch-7",
   "ended": "partial",
   "did": [
-    "perf: FenceCard's 512x512 SubViewport renders once per change (UPDATE_ONCE armed by every redraw: stamp, slam, flip) instead of every frame (80b9316)",
-    "perf: the Reset sign writes a bulb's material_override only when it turns on or off (115 frames: 2185 -> 158 writes, same pattern every frame) (745a8c9)",
-    "perf: --bench-trace splits every counted bench frame into physics (steps) / process / draw / idle plus measured GPU ms, writes a CSV and prints BENCH-TRACE ... cause=<part> (0270b18)",
-    "Read the numbers (this machine, i5-8500T under load 4.5-7.9 from other lanes, 60 cap): headless x3 low1 32.4-43.0, 1-8 frames over 25 ms per ~1800, physics-heavy in bursts, never at the same route time across runs; an empty scene at the same cap: low1 50.6 / 39.8 (worst 65 ms). The local 1%-low is the machine's load, so no game fix; lavapipe 0.7 fps, draw-bound (labelled, not a 1060 number)",
-    "tests: test_hitch_6.gd (12 tests); the renderer test fails without the UPDATE_ONCE arm ('the stamp did not show' / 'the flip did not show'); the bulb tests fail on the old sign code (2 failures)",
-    "Real frames: handoff/shots/hitch6_trophy (stamp at 0.6 s, next card at 3.5 s, matches the HUD), handoff/shots/hitch6_sign (bulb chase)",
+    "Read the 1060 trace (v0.1.7-dev.8, high, 60 cap): cause=process, slow frames ~16 ms process vs ~8 ms on all frames",
+    "perf: --bench-scripts (with --bench --bench-trace) splits process per script: each group's own _process and the deferred work it queued (its redraws), plus per-call counters (d1d8e79)",
+    "Numbers (lavapipe, labelled, not the 1060): process median 7.2 ms = HUD redraw 2.9 (p99 11.7) + 2 hint rows' redraws 2.4 + 48 object faces' poses 0.9 + < 1 rest; all three every frame for unchanged content",
+    "perf: an object face poses only when mood / look / blink changed (dizzy / panic still every frame) (98e7779)",
+    "perf: a hint row redraws only when a value its _draw reads changed (326d06e)",
+    "perf: the HUD redraws only on change; the goal card + done pile on a show_behind_parent layer drawn through the same code, same order on screen (7d643be)",
+    "After (lavapipe): process median 4.8 ms; hint 0.95, faces 0.41, HUD 2.62 (p99 7.5; the bench bots cycle guns all the time, so the wheel really animates)",
+    "tests: test_hitch_7.gd (12 tests); with the three gates forced back to every frame, 5 tests fail (10 failures)",
+    "Real frames: handoff/shots/hitch7_trophy (corner card pixel-identical to hitch-6's at 3.5 s; mid-event card matches at 0.6 s)",
     "PLAN-STATUS: header, S-18 and S-29 notes updated; no status change"
   ],
   "ids_moved": [],
   "next_action": "Gary: ship",
-  "after_ship": "Bench on the 1060, warm, twice: ./junk-yard-zap.x86_64 -- --bench --graphics=high --bench-trace; paste BENCH and BENCH-TRACE lines. cause=physics|process -> next hitch lane; cause=idle or draw with small gpu -> cap / present mode (producer call, D117)",
+  "after_ship": "Bench on the 1060, warm, twice: ./junk-yard-zap.x86_64 -- --bench --graphics=high --bench-trace --bench-scripts; paste BENCH, BENCH-TRACE and BENCH-SCRIPTS lines. Confirmed if slow-frame process= drops from ~16 ms and all-frames process= from ~8 ms; BENCH-SCRIPTS names what is left per script",
   "blocked": [],
   "evidence": [
-    {"kind": "test", "command": "rm -rf .godot && godot --headless --path . --import", "exit": 0, "ref": ".scratch/clean_import.log"},
-    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue", "exit": 0, "ref": "handoff/test-output.txt"},
-    {"kind": "test", "command": "godot-render --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_hitch_6.gd --continue", "exit": 0, "ref": "handoff/REPORT.md#tests"},
-    {"kind": "measure", "command": "handoff/hitch6-probe/runs.sh (empty scene + 2 bench traces, headless, --max-fps 60)", "exit": 0, "ref": "handoff/hitch6-probe/runs.log"},
-    {"kind": "measure", "command": "godot-render --path . --resolution 480x270 -- --bench --bench-seconds=30 --graphics=high --bench-trace=... (lavapipe)", "exit": 0, "ref": "handoff/hitch6-probe/bench_lines.txt"},
-    {"kind": "shots", "command": "scripts/tools/shots.sh \"\" 0.6,1.6,3.5 handoff/shots/hitch6_trophy --demo --demo-beat=trophy", "exit": 0, "ref": "handoff/shots/hitch6_trophy/"}
+    {"kind": "test", "command": "rm -rf .godot && godot --headless --path . --import", "exit": 0, "ref": "handoff/hitch7-probe/clean_import.log"},
+    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode --continue", "exit": 0, "ref": "handoff/test-output.txt"},
+    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_hitch_7.gd --ignoreHeadlessMode --continue (gates forced to every frame)", "exit": 1, "ref": "handoff/REPORT.md#tests"},
+    {"kind": "measure", "command": "godot-render --path . --resolution 320x180 --max-fps 60 -- --bench --graphics=high --bench-seconds=40 --bench-trace=... --bench-scripts (lavapipe, before and after)", "exit": 0, "ref": "handoff/hitch7-probe/bench_lines.txt"},
+    {"kind": "measure", "command": "godot --headless --path . --max-fps 60 -- --bench --graphics=high --bench-seconds=20 --bench-trace=... --bench-scripts", "exit": 0, "ref": "handoff/hitch7-probe/trace_headless_after.csv"},
+    {"kind": "shots", "command": "scripts/tools/shots.sh \"\" 0.6,3.5 .scratch/shots7 --demo --demo-beat=trophy", "exit": 0, "ref": "handoff/shots/hitch7_trophy/"}
   ]
 }

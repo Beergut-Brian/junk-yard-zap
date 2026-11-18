@@ -5,6 +5,9 @@
 class_name Hud
 extends Control
 
+## S-18 (jyz-hitch-7): every redraw, counted per call (tests and `--bench-scripts` read it).
+static var redraws := 0
+
 const WHEEL_TIME := GunWheel.PREVIEW_TIME
 const CARD_SIZE := 220.0
 const BEAT_TIME := 1.1   # PT10-2: the first-fire beat
@@ -28,12 +31,27 @@ var card_mode := ""
 var _card: GoalData        # the card on show
 var _card_next: GoalData
 var _card_t := 0.0
+## S-18 (jyz-hitch-7): the HUD used to redraw every frame, the whole goal card in vector art included (on
+## the renderer about 3 ms a frame, 12 ms at its p99). Now each part redraws only when something it draws
+## changes: a key holds every value its drawing reads, so an unchanged key would draw the same picture.
+## The goal card and the done pile are on their own layer behind the HUD, so a wheel or a beat over the
+## players doesn't redraw the card, and the card's events don't redraw the rest.
+var _card_layer: Control
+var _key: Array = []
+var _card_key: Array = []
 
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_card_layer = _CardLayer.new()
+	_card_layer.hud = self
+	_card_layer.name = "CardLayer"
+	_card_layer.show_behind_parent = true   # drawn first, under the HUD's own drawing, as before
+	_card_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_card_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_card_layer)
 
 
 func attach(p_level: YardLevel, p_camera: CameraRig) -> void:
@@ -123,7 +141,67 @@ func _process(delta: float) -> void:
 		if _card_t >= length:
 			card_mode = ""
 			_card = _card_next
-	queue_redraw()
+	redraw_if_changed()
+
+
+## Queues a redraw of the HUD and of its card layer, each only if its key changed.
+func redraw_if_changed() -> void:
+	var k := draw_key()
+	if k != _key:
+		_key = k
+		queue_redraw()
+	var ck := card_key()
+	if ck != _card_key:
+		_card_key = ck
+		_card_layer.queue_redraw()
+
+
+## Every value _draw reads (see there), in the order it reads them.
+func draw_key() -> Array:
+	if level == null or camera == null or not camera.is_inside_tree():
+		return [null]
+	var vs := get_viewport_rect().size
+	var k: Array = [vs, Players.solo, Players.solo_focus, UiStyle.accent]
+	for zn in zappers():
+		var z := zn as Zapper
+		k.append(z)
+		if z.asleep or z.gun() == null:
+			k.append(false)
+			continue
+		var age: float = _badge_age.get(z.player, 9.0)
+		k.append_array([z.player, z.gun(), 1.0 + 0.3 * exp(-age * 8.0)])   # the badge's punch
+		var foot := z.global_position + Vector3(0, 0.8, 0)
+		if not camera.sees(foot):   # the arrow at the edge
+			k.append_array(["arrow", camera.unproject_position(foot), camera.is_position_behind(foot)])
+			continue
+		var marks: Array = []
+		if Players.solo and Players.solo_focus == z.player:
+			marks.append("solo")
+		if _wheel.has(z.player):
+			marks.append_array(["wheel", z.guns.duplicate(), z.gun_index, _wheel_from.get(z.player, z.gun_index),
+					_wheel[z.player]])
+		elif z.reset_progress() > 0.0:
+			marks.append_array(["ring", z.reset_progress()])
+		for b in _beats:
+			if b["player"] == z.player:
+				marks.append_array(["beat", b["gun"], b["age"]])
+		if not marks.is_empty():   # these are drawn at the player's head on screen
+			marks.append(camera.unproject_position(z.global_position + Vector3(0, Zapper.HEIGHT + 0.6, 0)))
+		k.append(marks)
+	var prog := level.reset_progress()
+	k.append(prog)
+	if prog > 0.0:
+		k.append(camera.unproject_position(level.reset_sign.global_position + Vector3(0, YardLevel.SIGN_Y, 0)))
+	return k
+
+
+## Every value the card layer's drawing reads (_draw_card_layer).
+func card_key() -> Array:
+	if level == null or camera == null or not camera.is_inside_tree():
+		return [null]
+	var moving := card_mode != ""
+	return [get_viewport_rect().size, card_mode, _card_t if moving else 0.0, _card, _card_next if moving else null,
+			level.deck.done.size(), level.guns_by_effect.hash()]
 
 
 func zappers() -> Array:
@@ -131,17 +209,11 @@ func zappers() -> Array:
 
 
 func _draw() -> void:
+	redraws += 1
 	if level == null or camera == null or not camera.is_inside_tree():
 		return
 	var vs := get_viewport_rect().size
-	# Goal card, top right.
-	var s := CARD_SIZE
-	var r := Rect2(Vector2(vs.x - UiStyle.SAFE.x - s, UiStyle.SAFE.y), Vector2(s, s))
-	_draw_card_event(r)
-	for i in level.deck.done.size():   # the done pile: a gold star per card
-		var at := Vector2(r.position.x - 34 - (i % 5) * 38, r.position.y + 26 + (i / 5) * 38)
-		Pictos._star(self, at, 18.0, GunIcons.INK)
-		Pictos._star(self, at, 14.0, Pictos.GOLD)
+	# The goal card and the done pile are the card layer's (drawn first, behind all of this).
 	for zn in zappers():
 		var z := zn as Zapper
 		if z.asleep or z.gun() == null:
@@ -184,8 +256,24 @@ func draw_reset_ring(c: Vector2, prog: float, col: Color, size := 1.0) -> void:
 	UiGlyphs.reset_swirl(self, c, r * 0.72, UiStyle.CREAM.lerp(col, prog * 0.5), prog * TAU * 0.5)
 
 
+## S-18 (jyz-hitch-7): the card layer's drawing, top right: the goal card (and its events) and the done
+## pile, a gold star per card. It used to open the HUD's _draw; the layer draws behind the HUD, so the order
+## on screen is the same.
+func _draw_card_layer(ci: CanvasItem) -> void:
+	if level == null or camera == null or not camera.is_inside_tree():
+		return
+	var vs := get_viewport_rect().size
+	var s := CARD_SIZE
+	var r := Rect2(Vector2(vs.x - UiStyle.SAFE.x - s, UiStyle.SAFE.y), Vector2(s, s))
+	_draw_card_event(ci, r)
+	for i in level.deck.done.size():   # the done pile: a gold star per card
+		var at := Vector2(r.position.x - 34 - (i % 5) * 38, r.position.y + 26 + (i / 5) * 38)
+		Pictos._star(ci, at, 18.0, GunIcons.INK)
+		Pictos._star(ci, at, 14.0, Pictos.GOLD)
+
+
 ## The corner card and its events (see CARD_DONE / CARD_SKIP / CARD_FLIP).
-func _draw_card_event(r: Rect2) -> void:
+func _draw_card_event(ci: CanvasItem, r: Rect2) -> void:
 	var guns := level.guns_by_effect
 	var c := r.get_center()
 	var t := _card_t
@@ -193,54 +281,54 @@ func _draw_card_event(r: Rect2) -> void:
 		"done":
 			if t < CARD_DONE - CARD_FLIP:
 				var glow := 0.5 + 0.5 * sin(t * 14.0)
-				Pictos._rrect(self, r.grow(10.0 + glow * 8.0), Color(Pictos.GOLD, 0.75), r.size.x * 0.12)
+				Pictos._rrect(ci, r.grow(10.0 + glow * 8.0), Color(Pictos.GOLD, 0.75), r.size.x * 0.12)
 				var pop := 1.0 + 0.12 * exp(-t * 6.0) * sin(t * 30.0)
-				_card_at(_card, c, pop, 0.0, 1.0, guns)
-				Pictos.card_stamp(self, r, true, t / 0.22)
-				_confetti(r, t)
+				_card_at(ci, _card, c, pop, 0.0, 1.0, guns)
+				Pictos.card_stamp(ci, r, true, t / 0.22)
+				_confetti(ci, r, t)
 			else:
-				_flip(r, (t - (CARD_DONE - CARD_FLIP)) / CARD_FLIP, _card, _card_next, true)
+				_flip(ci, r, (t - (CARD_DONE - CARD_FLIP)) / CARD_FLIP, _card, _card_next, true)
 		"skip":
 			if t < 0.35:
 				var k := t / 0.35
 				var at := c + Vector2(k * k * 260.0, -sin(k * PI) * 60.0)
-				_card_at(_card, at, 1.0 - k * 0.3, k * k * 2.5, 1.0 - k * 0.6, guns)
-				draw_set_transform(at, k * k * 2.5, Vector2.ONE * (1.0 - k * 0.3))
-				Pictos.card_stamp(self, Rect2(-r.size * 0.5, r.size), false, k / 0.4)
-				draw_set_transform(Vector2.ZERO)
+				_card_at(ci, _card, at, 1.0 - k * 0.3, k * k * 2.5, 1.0 - k * 0.6, guns)
+				ci.draw_set_transform(at, k * k * 2.5, Vector2.ONE * (1.0 - k * 0.3))
+				Pictos.card_stamp(ci, Rect2(-r.size * 0.5, r.size), false, k / 0.4)
+				ci.draw_set_transform(Vector2.ZERO)
 				for i in 5:   # the raspberry: little puffs blown out of the card
 					var d := Vector2.from_angle(PI * (0.7 + i * 0.15))
-					draw_circle(c + d * (r.size.x * 0.5 + k * 90.0), 10.0 * (1.0 - k) + 3.0, Color(1, 1, 1, 1.0 - k))
+					ci.draw_circle(c + d * (r.size.x * 0.5 + k * 90.0), 10.0 * (1.0 - k) + 3.0, Color(1, 1, 1, 1.0 - k))
 			else:
 				var k := (t - 0.35) / (CARD_SKIP - 0.35)
 				var drop := 1.0 - GunIcons._back(k)
-				_card_at(_card_next, c + Vector2(0, -drop * 180.0), 1.0, 0.0, minf(1.0, k * 3.0), guns)
+				_card_at(ci, _card_next, c + Vector2(0, -drop * 180.0), 1.0, 0.0, minf(1.0, k * 3.0), guns)
 		"flip":
-			_flip(r, t / CARD_FLIP, _card, _card_next, false)
+			_flip(ci, r, t / CARD_FLIP, _card, _card_next, false)
 		_:
-			Pictos.card(self, _card, r, guns)
+			Pictos.card(ci, _card, r, guns)
 
 
-func _card_at(g: GoalData, c: Vector2, scale: float, rot: float, alpha: float, guns: Dictionary, sx := 1.0) -> void:
-	draw_set_transform(c, rot, Vector2(scale * sx, scale))
-	Pictos.card(self, g, Rect2(Vector2(-CARD_SIZE, -CARD_SIZE) * 0.5, Vector2(CARD_SIZE, CARD_SIZE)), guns, alpha)
-	draw_set_transform(Vector2.ZERO)
+func _card_at(ci: CanvasItem, g: GoalData, c: Vector2, scale: float, rot: float, alpha: float, guns: Dictionary, sx := 1.0) -> void:
+	ci.draw_set_transform(c, rot, Vector2(scale * sx, scale))
+	Pictos.card(ci, g, Rect2(Vector2(-CARD_SIZE, -CARD_SIZE) * 0.5, Vector2(CARD_SIZE, CARD_SIZE)), guns, alpha)
+	ci.draw_set_transform(Vector2.ZERO)
 
 
 ## Turn the card over from a to b (k 0..1), squashing it on its vertical axis.
-func _flip(r: Rect2, k: float, a: GoalData, b: GoalData, stamped: bool) -> void:
+func _flip(ci: CanvasItem, r: Rect2, k: float, a: GoalData, b: GoalData, stamped: bool) -> void:
 	k = clampf(k, 0.0, 1.0)
 	var sx := absf(cos(k * PI))
 	var g := a if k < 0.5 else b
-	_card_at(g, r.get_center(), 1.0 + 0.08 * sin(k * PI), 0.0, 1.0, level.guns_by_effect, maxf(sx, 0.02))
+	_card_at(ci, g, r.get_center(), 1.0 + 0.08 * sin(k * PI), 0.0, 1.0, level.guns_by_effect, maxf(sx, 0.02))
 	if stamped and k < 0.5:
-		draw_set_transform(r.get_center(), 0.0, Vector2(maxf(sx, 0.02), 1.0))
-		Pictos.card_stamp(self, Rect2(-r.size * 0.5, r.size), true, 1.0)
-		draw_set_transform(Vector2.ZERO)
+		ci.draw_set_transform(r.get_center(), 0.0, Vector2(maxf(sx, 0.02), 1.0))
+		Pictos.card_stamp(ci, Rect2(-r.size * 0.5, r.size), true, 1.0)
+		ci.draw_set_transform(Vector2.ZERO)
 
 
 ## Paper confetti falling from the card (never green or red: those are the players').
-func _confetti(r: Rect2, t: float) -> void:
+func _confetti(ci: CanvasItem, r: Rect2, t: float) -> void:
 	var cols := [Pictos.GOLD, Color("#4fd8ff"), Color("#ec3cf0"), Color("#ff9a14"), Color("#7e52ff"), Color.WHITE]
 	for i in 26:
 		var seed_x := fposmod(sin(i * 12.9898) * 43758.5453, 1.0)
@@ -248,9 +336,9 @@ func _confetti(r: Rect2, t: float) -> void:
 		var p := Vector2(r.position.x + seed_x * r.size.x, r.get_center().y)
 		p += Vector2((seed_x - 0.5) * 300.0 * t, -260.0 * (0.6 + seed_v) * t + 520.0 * t * t)
 		var rot := t * (6.0 + seed_v * 8.0) + i
-		draw_set_transform(p, rot, Vector2(1.0, absf(cos(t * 8.0 + i))))
-		draw_rect(Rect2(-7, -4, 14, 8), cols[i % cols.size()])
-	draw_set_transform(Vector2.ZERO)
+		ci.draw_set_transform(p, rot, Vector2(1.0, absf(cos(t * 8.0 + i))))
+		ci.draw_rect(Rect2(-7, -4, 14, 8), cols[i % cols.size()])
+	ci.draw_set_transform(Vector2.ZERO)
 
 
 ## The first-fire beat: the gun's token stamps down big over the player with rays in its colour,
@@ -292,3 +380,13 @@ func _arrow_to(p: Vector3, col: Color) -> void:
 	var n := Vector2(-d.y, d.x)
 	draw_colored_polygon(PackedVector2Array([tip + d * 30, tip - d * 26 + n * 30, tip - d * 26 - n * 30]), col)
 	draw_circle(tip - d * 40, 22, col)
+
+
+## S-18 (jyz-hitch-7): the goal card's own layer (see _card_layer). It draws through the HUD's code.
+class _CardLayer extends Control:
+	var hud: Hud
+	static var redraws := 0
+
+	func _draw() -> void:
+		redraws += 1
+		hud._draw_card_layer(self)

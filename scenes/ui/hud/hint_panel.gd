@@ -13,6 +13,9 @@
 class_name HintPanel
 extends Control
 
+## S-18 (jyz-hitch-7): every redraw, counted per call (tests and `--bench-scripts` read it).
+static var redraws := 0
+
 enum Context { HIDDEN, ASLEEP, ON_FOOT, AIMING, GRAB_READY, CARRYING, SIZING, COOLDOWN, SIGN, FROZEN }
 ## The picture beside a glyph.
 enum Pic { WAKE, JUMP, BELT, FIRE, HAND, DROP, THROW, SIZE, SWIRL }
@@ -33,6 +36,7 @@ var since_zap := 9.0
 var since_nope := 9.0
 var hint: Dictionary = {}
 var _clock := 0.0
+var _key: Array = []
 
 
 ## The rules. `s` keys (all optional): live, asleep, statue, held, sizing, near_sign, target
@@ -156,10 +160,47 @@ func _process(delta: float) -> void:
 	since_zap += delta
 	since_nope += delta
 	hint = hint_for_state(state_of(zapper, since_zap, since_nope))
-	queue_redraw()
+	var k := draw_key()
+	if k != _key:   # S-18 (jyz-hitch-7): redraw only when the picture would change
+		_key = k
+		queue_redraw()
+
+
+## S-18 (jyz-hitch-7): every value _draw reads, so the panel redraws only when the row would look different.
+## It used to redraw every frame (two panels, about 2.4 ms a frame on the renderer) for a row that changes
+## with the player's context, a refused press's shake, the sleeper's breathing glyph and the ready blink.
+func draw_key() -> Array:
+	if hint.is_empty() or hint["context"] == Context.HIDDEN or camera == null or not camera.is_inside_tree():
+		return [null]
+	var k: Array = [hint, get_viewport_rect().size, zapper.player, Players.solo, Players.solo_focus, UiStyle.accent]
+	if hint["nope"]:   # the shake
+		k.append(since_nope)
+	var clocked := false
+	for e: Dictionary in hint["glyphs"]:
+		if e["pic"] == Pic.WAKE or (e["tok"] == "a" and hint["context"] == Context.ASLEEP):
+			clocked = true   # the sun's turning rays, the breathing wake glyph
+		if e["pic"] == Pic.FIRE:
+			k.append(zapper.gun())
+		elif e["pic"] == Pic.BELT:
+			k.append_array([zapper.guns.duplicate(), zapper.gun_index])
+	if clocked:
+		k.append(_clock)
+	var alpha := 0.5 if Players.solo and Players.solo_focus != zapper.player else 1.0
+	if hint["blink"] != "" and alpha == 1.0:   # _draw_blink
+		var off: bool = hud != null and (hud.wheel_showing(zapper.player) or zapper.reset_progress() > 0.0)
+		k.append(off)
+		if not off:
+			var head := zapper.global_position + Vector3(0, Zapper.HEIGHT + 0.35, 0)
+			var seen := camera.sees(head)
+			k.append(seen)
+			if seen:
+				k.append_array([camera.unproject_position(head), zapper.facing,
+						fmod(_clock, BLINK_PERIOD) < BLINK_PERIOD * 0.6])
+	return k
 
 
 func _draw() -> void:
+	redraws += 1
 	if hint.is_empty() or hint["context"] == Context.HIDDEN or camera == null or not camera.is_inside_tree():
 		return
 	var col: Color = Players.COLOR[zapper.player]
