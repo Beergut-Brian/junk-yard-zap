@@ -1,0 +1,2683 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Scanning file structure...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started Registering global classes... (685 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | CallBackValueProvider[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | DefaultValueProvider[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | GdAssertMessages[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | GdAssertReports[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | GdUnitArrayAssertImpl[39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | GdUnitAssertImpl[39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | GdUnitAssertions[39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | ValueProvider[39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | CmdArgumentParser[39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | CmdCommand[39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | CmdCommandHandler[39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | CmdOption[39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | CmdOptions[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | TestCaseAttribute[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | GdUnitBaseCommand[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandFileSystem[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandFileSystemDebugTests[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandFileSystemRunTests[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandHandler[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandInspectorDebugTests[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandInspectorRerunTestsUntilFailure[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandInspectorRunTests[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandInspectorTreeCollapse[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandInspectorTreeExpand[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandRunTestsOverall[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandScriptEditor[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandScriptEditorCreateTest[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandScriptEditorDebugTests[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandScriptEditorRunTests[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandStopTestSession[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandTestSession[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | GdUnitShortcut[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | GdUnitGUID[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCase[39m[0m
+[   7% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestDiscoverer[39m[0m
+[   7% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestDiscoverGuard[39m[0m
+[   7% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestDiscoverSink[39m[0m
+[   7% ] [90m[1mupdate_scripts_classes[22m | GdUnitEvent[39m[0m
+[   7% ] [90m[1mupdate_scripts_classes[22m | GdUnitInit[39m[0m
+[   7% ] [90m[1mupdate_scripts_classes[22m | GdUnitStop[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | GdUnitEventTestDiscoverEnd[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | GdUnitEventTestDiscoverStart[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | GdUnitSessionClose[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | GdUnitSessionStart[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseFuzzedExecutionStage[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseFuzzedTestStage[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseSingleExecutionStage[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseSingleTestStage[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseAfterStage[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseBeforeStage[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseExecutionStage[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteAfterStage[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteBeforeStage[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteExecutionStage[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | IGdUnitExecutionStage[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | GdUnitExecutionContext[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | GdUnitMemoryObserver[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | GdUnitProjectSettingsSnapshot[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestReportCollector[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteExecutor[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | GdUnitBaseReporterTestSessionHook[39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlReporterTestSessionHook[39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSessionHook[39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSessionHookService[39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | GdUnitXMLReporterTestSessionHook[39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | GdBuiltinConstants[39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | GdCallableParameterSetResolver[39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | GdInlineParameterSetResolver[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | GdParameterSetResolver[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | GdParameterSetResolverFactory[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | GdPropertyParameterSetResolver[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | GdClassDescriptor[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | GdDefaultValueDecoder[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | GdFunctionArgument[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | GdFunctionDescriptor[39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | GdScriptParser[39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | GdUnitExpressionRunner[39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | GdUnitError[39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | GdUnitReport[39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | GdUnitScriptErrorCollector[39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCIRunner[39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSession[39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteDefaultTemplate[39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteTemplate[39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | GdUnitThreadContext[39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | GdUnitThreadManager[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | GdUnitCSIMessageWriter[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | GdUnitMessageWriter[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | GdUnitRichTextMessageWriter[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | GdArrayTools[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | GdDiffTool[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | GdObjects[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | GdUnit4Version[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | GdUnitFileAccess[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | GdUnitProperty[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | GdUnitResult[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | GdUnitRunnerConfig[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunnerImpl[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunnerView[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | GdUnitSettings[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | GdUnitSignalAwaiter[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | GdUnitSignalCollector[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | GdUnitSignals[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | GdUnitSingleton[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | GdUnitStackTrace[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | GdUnitStackTraceElement[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseImpl[39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestResourceLoader[39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteBuilder[39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteScanner[39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | LocalTime[39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | GdUnit4CSharpApiLoader[39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | CallableDoubler[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | GdFunctionDoubler[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | GdUnitClassDoubler[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | GdUnitFunctionDoublerBuilder[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | GdUnitMockFunctionDoubler[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | GdUnitObjectInteractions[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | GdUnitObjectInteractionsVerifier[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | GdUnitSpyFunctionDoubler[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | GdUnitFuncValueExtractor[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | BoolFuzzer[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | FloatFuzzer[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | Fuzzer[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | IntFuzzer[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | StringFuzzer[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | Vector2Fuzzer[39m[0m
+[  21% ] [90m[1mupdate_scripts_classes[22m | Vector3Fuzzer[39m[0m
+[  21% ] [90m[1mupdate_scripts_classes[22m | AnyArgumentMatcher[39m[0m
+[  21% ] [90m[1mupdate_scripts_classes[22m | AnyBuildInTypeArgumentMatcher[39m[0m
+[  21% ] [90m[1mupdate_scripts_classes[22m | AnyClazzArgumentMatcher[39m[0m
+[  21% ] [90m[1mupdate_scripts_classes[22m | ChainedArgumentMatcher[39m[0m
+[  21% ] [90m[1mupdate_scripts_classes[22m | EqualsArgumentMatcher[39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | GdUnitArgumentMatcher[39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | GdUnitArgumentMatchers[39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | GdUnitMock[39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | GdUnitMockBuilder[39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | DoubledMockClassSourceClassName[39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | ErrorLogEntry[39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | GdUnitMonitor[39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | GdUnitOrphanNodeInfo[39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | GdUnitOrphanNodesMonitor[39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | GodotGdErrorMonitor[39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | RPC[39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | RPCClientConnect[39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | RPCClientDisconnect[39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | RPCGdUnitEvent[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | RPCMessage[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | GdUnitServerConstants[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | GdUnitTask[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | GdUnitTcpClient[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | GdUnitTcpNode[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | GdUnitTcpServer[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | GdUnitConsoleTestReporter[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | GdUnitByPathReport[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlEncoder[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlPatterns[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlReportWriter[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | JUnitXmlReportWriter[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | XmlElement[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | GdUnitReportSummary[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | GdUnitReportWriter[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestCaseReport[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestReporter[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteReport[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | GdUnitSpyBuilder[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | DoubledSpyClassSourceClassName[39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | GdUnitContextMenuItem[39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | GdUnitInspectorContextMenu[39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | GdUnitReportPanel[39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | GdUnitInputCapture[39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | GdUnitEditorColorTheme[39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | GdUnitFonts[39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | GdUnitInspecor[39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | GdUnitInspectorTreeConstants[39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | GdUnitScriptEditorControls[39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | GdUnitUiTools[39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | GdUnitPatch[39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | GdUnitPatcher[39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | Comparator[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | Fuzzers[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | GdUnitArrayAssert[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | GdUnitAssert[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | GdUnitAwaiter[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | GdUnitBoolAssert[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | GdUnitConstants[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | GdUnitDictionaryAssert[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | GdUnitFailureAssert[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | GdUnitFileAssert[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | GdUnitFloatAssert[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | GdUnitFuncAssert[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | GdUnitGodotErrorAssert[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | GdUnitIntAssert[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | GdUnitObjectAssert[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | GdUnitResultAssert[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunner[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | GdUnitSignalAssert[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | GdUnitStringAssert[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuite[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | GdUnitTuple[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | GdUnitValueExtractor[39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | GdUnitVectorAssert[39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | CallBackValueProviderTest[39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | GdAssertMessagesTest[39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | GdUnitAssertImplTest[39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | GdUnitBoolAssertImplTest[39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  35% ] [90m[1mupdate_scripts_classes[22m | GdUnitFailureAssertImplTest[39m[0m
+[  35% ] [90m[1mupdate_scripts_classes[22m | GdUnitFloatAssertImplTest[39m[0m
+[  35% ] [90m[1mupdate_scripts_classes[22m | GdUnitFuncAssertImplTest[39m[0m
+[  35% ] [90m[1mupdate_scripts_classes[22m | GdUnitGodotErrorAssertImplTest[39m[0m
+[  35% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  35% ] [90m[1mupdate_scripts_classes[22m | GdUnitIntAssertImplTest[39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | GdUnitObjectAssertImplTest[39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | GdUnitResultAssertImplTest[39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | GdUnitSignalAssertImplTest[39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | GdUnitStringAssertImplTest[39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | GdUnitVectorAssertImplTest[39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | CmdArgumentParserTest[39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | CmdCommandHandlerTest[39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | CmdCommandTest[39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | CmdOptionsTest[39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | CmdOptionTest[39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | GdUnitCommandTestSessionTest[39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | GdUnitShortcutTest[39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | GdUnitGuidTest[39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestDiscoverGuardTest[39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | GdUnitEventTest[39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | T2[39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | T3[39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | GdUnitExecutionContextTest[39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | GdUnitProjectSettingsAutoSaveTest[39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | GdUnitProjectSettingsSnapshotTest[39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteExecutorTest[39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | ExampleTestSessionHookA[39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | ExampleTestSessionHookB[39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | ExampleTestSessionHookC[39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | ClassWithParameterSetConstants[39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | GdDefaultValueDecoderTest[39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | GdFunctionDescriptorTest[39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | GdScriptTestHelper[39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | GdUnitExpressionsTest[39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | GdUnitReportTest[39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | ClassNameExtendsInSameLine[39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | PascalCaseWithClassName[39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | SnakeCaseWithClassName[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeBoolDefaultArguments[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeFloatDefaultArguments[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeIntDefaultArguments[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeNodePathDefaultArguments[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeRect2DefaultArguments[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeStringDefaultArguments[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeStringNameDefaultArguments[39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeTransform2DDefaultArguments[39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeVector2DefaultArguments[39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeVector2iDefaultArguments[39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeVector3DefaultArguments[39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeVector3iDefaultArguments[39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeVector4DefaultArguments[39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | ClassWithBasicTypeVector4iDefaultArguments[39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | ClassWithArrayDefaultArguments[39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | ClassWithCallableDefaultArguments[39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | ClassWithDictionaryDefaultArguments[39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | BaseTest[39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | ExtendedTest[39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  49% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  49% ] [90m[1mupdate_scripts_classes[22m | ScriptWithClassName[39m[0m
+[  49% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  49% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  49% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSessionTest[39m[0m
+[  49% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteTemplateTest[39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | GdArrayToolsTest[39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | GdDiffToolTest[39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | GdUnit4VersionTest[39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | GdUnitResultTest[39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | GdUnitRunnerConfigTest[39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunner3DTest[39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunnerRenderingTest[39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunnerTest[39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunnerViewTest[39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | GdUnitSettingsTest[39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | GdUnitSignalAwaiterTest[39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | GdUnitSingletonTest[39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | GdUnitStackTraceTest[39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteBuilderTest[39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | TestSuiteScannerTest[39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | GdUnitToolsTest[39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | LocalTimeTest[39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | ParameterizedTestCaseTest[39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | GdUnit4CSharpApiLoaderTest[39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | TestClassWithConstructorArgs[39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | TestClassWithConstructorArgsAndVarargs[39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | TestClassWithConstructorVarargs[39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | TestClassWithFunctions[39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | GdFunctionDoublerTest[39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | GdUnitSceneRunnerRenderingE2ETest[39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | GdUnitFuncValueExtractorTest[39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | StringFuzzerTest[39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | TestExternalFuzzer[39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | CustomArgumentMatcherTestClass[39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | AnyArgumentMatcherTest[39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | AnyBuildInTypeArgumentMatcherTest[39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | AnyClazzArgumentMatcherTest[39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | ChainedArgumentMatcherTest[39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | GdUnitArgumentMatchersTest[39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | Munderwood_Pathing_World[39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | Spell[39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | AdvancedTestClass[39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | ClassWithAwaitFunc[39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | GdUnit_Test_CustomClassName[39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | ClassWithDefaultBuildIntTypes[39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | ClassWithEnumReturnTypes[39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | ClassWithNameA[39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | ClassWithNameB[39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | ClassWithOverridenVirtuals[39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | ClassWithParameterGetterSetter[39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | ClassWithPoolStringArrayFunc[39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | ClassWithVariables[39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | ClassWithVariantDefaultArguments[39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | CustomClassExtendsCustomClass[39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | CustomNodeTestClass[39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | CustomResourceTestClass[39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | DeepStubTestClass[39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | FieldInitCallTestClass[39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | OverridenGetClassTestClass[39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | snake_case_class_name[39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | TestPerson[39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | CustomEnums[39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | GdUnitMockBuilderTest[39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | GdUnitMockerTest[39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | GodotClassNameFuzzer[39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | GdUnitOrphanNodesMonitorTest[39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | GodotGdErrorMonitorTest[39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlEncoderTest[39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlPatternsTest[39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlReportWriterIntegrationTest[39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | GdUnitHtmlReportWriterTest[39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | JUnitXmlReportWriterIntegrationTest[39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | JUnitXmlReportWriterTest[39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | XmlElementTest[39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | GdUnitConsoleTestReporterTest[39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | GdUnitReportWriterIntegrationTest[39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | City[39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | CustomClass[39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | GeneratedPersonTest[39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | Person[39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | Udo[39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | TestSceneWithProperties[39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | ClassWithEnumConstructor[39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | GdUnitSpyBuilderTest[39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | GdUnitSpyTest[39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | GdUnitInspectorTreeMainPanelPerformanceTest[39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | GdUnitInspectorTreeMainPanelTest[39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | GdUnitReportPanelTest[39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteTemplatePanelTest[39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | GdUnitFontsTest[39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | GdUnitUiToolsTest[39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | GdMarkDownReaderTest[39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | GdUnitPatcherTest[39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | GdUnitUpdateTest[39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | GdUnitAwaiterTest[39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestResourceLoaderTest[39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | GdUnitTestSuiteTest[39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | GunIcons[39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | GunWheel[39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | HintPanel[39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | Hud[39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | Pictos[39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | CharacterSlot[39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | HintLine[39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | MenuInput[39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | MenuItem[39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | MenuSkin[39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | Poof[39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | RosterCharacter[39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | SettingRow[39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | ShowtimeWipe[39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | UiPreview[39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | UiSound[39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | UiStyle[39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | ConfirmDialog[39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | FreshCard[39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | UiGlyphs[39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | SettingsPanel[39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  78% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  78% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  78% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  78% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  78% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  78% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | ArtKit[39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | GunArt[39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | ObjectArt[39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | YardDressing[39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | YardLight[39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | Synth[39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | Fx[39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | GunHits[39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | Refusal[39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | RenderPrewarm[39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | Contraptions[39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | Cursor[39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | CardArt[39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | Goals[39m[0m
+[  85% ] [90m[1mupdate_scripts_classes[22m | GoalData[39m[0m
+[  85% ] [90m[1mupdate_scripts_classes[22m | GoalDeck[39m[0m
+[  85% ] [90m[1mupdate_scripts_classes[22m | GoalMemory[39m[0m
+[  85% ] [90m[1mupdate_scripts_classes[22m | GunData[39m[0m
+[  85% ] [90m[1mupdate_scripts_classes[22m | JarlingEquipment[39m[0m
+[  85% ] [90m[1mupdate_scripts_classes[22m | JarlingGear[39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | FenceCard[39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | FreshStart[39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | ResetSignFx[39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | TrophyShelf[39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | YardLayout[39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | YardLayoutEntry[39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | YardLevel[39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | Aim[39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | BalloonData[39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | BodyProps[39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | Effect[39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | Effects[39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | EffectLook[39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | EffectStack[39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | LooseBalloon[39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | ObjectData[39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | ObjectFace[39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | PhysicsObject[39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | Yard[39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | CameraRig[39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | DemoBot[39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | JarlingRig[39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | JumpTuning[39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | Reactions[39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | Zapper[39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | ProtoPlayer[39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | YardStrip[39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | BenchProbe[39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | BenchTrace[39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | FreshPreview[39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | PlayerFlowRun[39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | ScriptTrace[39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | SessionFlow[39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | SoakProbe[39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | TestArt[39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | TestAudio[39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | TestBalloons[39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | TestChooser[39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | TestChooserVoice[39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | TestComedy[39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | TestExitWatchdog[39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | TestFacelessAudit[39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | TestGapClose[39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | TestGapClose2[39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | TestGapClose3[39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | TestGapClose4[39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | TestGeneratedTextures[39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | TestGoalDeck[39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | TestGraphicsTier[39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | TestGreybox[39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | TestHitch[39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | TestHitch2[39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | TestHitch3[39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | TestHitch4[39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | TestHitch5[39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | TestHitch6[39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | TestHitch7[39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | TestJyzChooser[39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | TestJyzMenus[39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | TestLaunchReady[39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | TestLaunchReady2[39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | TestLobby[39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | TestMoreObjects[39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | TestMusic[39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | TestPatience[39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | TestPhysicsProto[39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | TestPlayerFlow[39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | TestPlaytest1[39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | TestPolish[39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | TestPressAnswers[39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | TestRoster[39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | TestShowtime[39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | TestSleepWhenStill[39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | TestSmoke[39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | TestStoreHero[39m[0m
+[  99% ] [90m[1mupdate_scripts_classes[22m | TestStoreJar[39m[0m
+[  99% ] [90m[1mupdate_scripts_classes[22m | TestSyncCharacters[39m[0m
+[  99% ] [90m[1mupdate_scripts_classes[22m | TestUiClarity[39m[0m
+[  99% ] [90m[1mupdate_scripts_classes[22m | TestUiSound[39m[0m
+[  99% ] [90m[1mupdate_scripts_classes[22m | TestVehicleFaces[39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1m_update_scan_actions[22m | Started Scanning actions... (603 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | touch-button.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | logo.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | border_bottom.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | border_top.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | dot1.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | dot2.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | embedded.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | horizontal-line2.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | cursor.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | icon.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | icon48.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | music_yard.ogg[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | music_yard_bright.ogg[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | action.ogg[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | bark_1.ogg[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | bark_2.ogg[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | bark_3.ogg[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | bark_4.ogg[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | bark_cheer_1.ogg[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | bark_cheer_2.ogg[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | bark_cheer_3.ogg[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | bark_delight_1.ogg[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | bark_delight_2.ogg[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | bark_delight_3.ogg[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | bark_zap_1.ogg[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | bark_zap_2.ogg[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | bark_zap_3.ogg[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | boing_1.ogg[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | boing_2.ogg[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | card_done_1.ogg[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | card_done_2.ogg[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | card_skip_1.ogg[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | card_skip_2.ogg[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | card_view_1.ogg[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | card_view_2.ogg[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | char_swap.ogg[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | count_tick.ogg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | crack_1.ogg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | crack_2.ogg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | drop_1.ogg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | drop_2.ogg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | glue.ogg[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | glue_pick.ogg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | grab_1.ogg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | grab_2.ogg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | grow_1.ogg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | grow_2.ogg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | grow_3.ogg[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | gun_cycle.ogg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | impact_heavy_1.ogg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | impact_heavy_2.ogg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | impact_heavy_3.ogg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | impact_huge_1.ogg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | impact_huge_2.ogg[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | impact_light_1.ogg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | impact_light_2.ogg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | impact_light_3.ogg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | impact_medium_1.ogg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | impact_medium_2.ogg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | impact_medium_3.ogg[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | jump_1.ogg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | jump_2.ogg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | land_1.ogg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | land_2.ogg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | nope_1.ogg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | nope_2.ogg[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | pause.ogg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | player_join.ogg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | player_ready.ogg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | player_unready.ogg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | recall.ogg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | reset_hold.ogg[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | reset_yard.ogg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | round_end.ogg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | round_start.ogg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | shrink_1.ogg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | shrink_2.ogg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | shrink_3.ogg[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | snore_1.ogg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | snore_2.ogg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | snort.ogg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | solo_off.ogg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | solo_on.ogg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | solo_swap.ogg[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | sparkle_1.ogg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | sparkle_2.ogg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | sparkle_3.ogg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | splash_1.ogg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | splash_2.ogg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | splash_3.ogg[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | squelch_1.ogg[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | squelch_2.ogg[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | throw_1.ogg[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | throw_2.ogg[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | throw_3.ogg[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | ui_back.ogg[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | ui_card.ogg[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | ui_confirm.ogg[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | ui_go.ogg[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | ui_move.ogg[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | ui_pause.ogg[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | ui_tick.ogg[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | ui_toggle.ogg[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | ui_wipe.ogg[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | unglue.ogg[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | voice_anvil_grabbed.ogg[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | voice_anvil_landed.ogg[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | voice_anvil_react.ogg[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | voice_anvil_thrown.ogg[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | voice_armchair_grabbed.ogg[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | voice_armchair_landed.ogg[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | voice_armchair_react.ogg[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | voice_armchair_thrown.ogg[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | voice_ball_grabbed.ogg[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | voice_ball_landed.ogg[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | voice_ball_react.ogg[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | voice_ball_thrown.ogg[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | voice_bathtub_grabbed.ogg[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | voice_bathtub_landed.ogg[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | voice_bathtub_react.ogg[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | voice_bathtub_thrown.ogg[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | voice_beach_ball_grabbed.ogg[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | voice_beach_ball_landed.ogg[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | voice_beach_ball_react.ogg[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | voice_beach_ball_thrown.ogg[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | voice_boat_grabbed.ogg[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | voice_boat_landed.ogg[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | voice_boat_react.ogg[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | voice_boat_thrown.ogg[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | voice_bowling_pin_grabbed.ogg[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | voice_bowling_pin_landed.ogg[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | voice_bowling_pin_react.ogg[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | voice_bowling_pin_thrown.ogg[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | voice_bucket_grabbed.ogg[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | voice_bucket_landed.ogg[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | voice_bucket_react.ogg[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | voice_bucket_thrown.ogg[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | voice_cannonball_grabbed.ogg[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | voice_cannonball_landed.ogg[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | voice_cannonball_react.ogg[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | voice_cannonball_thrown.ogg[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | voice_cannon_grabbed.ogg[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | voice_cannon_landed.ogg[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | voice_cannon_react.ogg[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | voice_cannon_thrown.ogg[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | voice_car_grabbed.ogg[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | voice_car_landed.ogg[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | voice_car_react.ogg[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | voice_car_thrown.ogg[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | voice_chicken_grabbed.ogg[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | voice_chicken_landed.ogg[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | voice_chicken_react.ogg[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | voice_chicken_thrown.ogg[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | voice_cow_grabbed.ogg[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | voice_cow_landed.ogg[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | voice_cow_react.ogg[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | voice_cow_thrown.ogg[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | voice_crate_grabbed.ogg[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | voice_crate_landed.ogg[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | voice_crate_react.ogg[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | voice_crate_thrown.ogg[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | voice_duck_grabbed.ogg[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | voice_duck_landed.ogg[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | voice_duck_react.ogg[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | voice_duck_thrown.ogg[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | voice_egg_grabbed.ogg[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | voice_egg_landed.ogg[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | voice_egg_react.ogg[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | voice_egg_thrown.ogg[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | voice_fish_grabbed.ogg[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | voice_fish_landed.ogg[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | voice_fish_react.ogg[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | voice_fish_thrown.ogg[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | voice_fridge_grabbed.ogg[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | voice_fridge_landed.ogg[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | voice_fridge_react.ogg[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | voice_fridge_thrown.ogg[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | voice_garden_gnome_grabbed.ogg[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | voice_garden_gnome_landed.ogg[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | voice_garden_gnome_react.ogg[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | voice_garden_gnome_thrown.ogg[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | voice_hay_grabbed.ogg[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | voice_hay_landed.ogg[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | voice_hay_react.ogg[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | voice_hay_thrown.ogg[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | voice_kettle_grabbed.ogg[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | voice_kettle_landed.ogg[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | voice_kettle_react.ogg[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | voice_kettle_thrown.ogg[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | voice_kiddie_pool_grabbed.ogg[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | voice_kiddie_pool_landed.ogg[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | voice_kiddie_pool_react.ogg[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | voice_kiddie_pool_thrown.ogg[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | voice_kite_grabbed.ogg[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | voice_kite_landed.ogg[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | voice_kite_react.ogg[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | voice_kite_thrown.ogg[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | voice_lawn_flamingo_grabbed.ogg[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | voice_lawn_flamingo_landed.ogg[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | voice_lawn_flamingo_react.ogg[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | voice_lawn_flamingo_thrown.ogg[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | voice_log_grabbed.ogg[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | voice_log_landed.ogg[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | voice_log_react.ogg[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | voice_log_thrown.ogg[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | voice_mattress_grabbed.ogg[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | voice_mattress_landed.ogg[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | voice_mattress_react.ogg[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | voice_mattress_thrown.ogg[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | voice_milk_can_grabbed.ogg[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | voice_milk_can_landed.ogg[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | voice_milk_can_react.ogg[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | voice_milk_can_thrown.ogg[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | voice_oil_drum_grabbed.ogg[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | voice_oil_drum_landed.ogg[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | voice_oil_drum_react.ogg[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | voice_oil_drum_thrown.ogg[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | voice_piano_grabbed.ogg[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | voice_piano_landed.ogg[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | voice_piano_react.ogg[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | voice_piano_thrown.ogg[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | voice_pig_grabbed.ogg[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | voice_pig_landed.ogg[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | voice_pig_react.ogg[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | voice_pig_thrown.ogg[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | voice_pipe_grabbed.ogg[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | voice_pipe_landed.ogg[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | voice_pipe_react.ogg[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | voice_pipe_thrown.ogg[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | voice_plank_grabbed.ogg[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | voice_plank_landed.ogg[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | voice_plank_react.ogg[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | voice_plank_thrown.ogg[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | voice_pumpkin_grabbed.ogg[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | voice_pumpkin_landed.ogg[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | voice_pumpkin_react.ogg[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | voice_pumpkin_thrown.ogg[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | voice_rubber_chicken_grabbed.ogg[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | voice_rubber_chicken_landed.ogg[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | voice_rubber_chicken_react.ogg[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | voice_rubber_chicken_thrown.ogg[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | voice_sheep_grabbed.ogg[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | voice_sheep_landed.ogg[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | voice_sheep_react.ogg[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | voice_sheep_thrown.ogg[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | voice_surfboard_grabbed.ogg[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | voice_surfboard_landed.ogg[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | voice_surfboard_react.ogg[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | voice_surfboard_thrown.ogg[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | voice_swim_ring_grabbed.ogg[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | voice_swim_ring_landed.ogg[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | voice_swim_ring_react.ogg[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | voice_swim_ring_thrown.ogg[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | voice_tire_grabbed.ogg[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | voice_tire_landed.ogg[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | voice_tire_react.ogg[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | voice_tire_swing_grabbed.ogg[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | voice_tire_swing_landed.ogg[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | voice_tire_swing_react.ogg[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | voice_tire_swing_thrown.ogg[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | voice_tire_thrown.ogg[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | voice_toaster_grabbed.ogg[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | voice_toaster_landed.ogg[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | voice_toaster_react.ogg[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | voice_toaster_thrown.ogg[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | voice_toolbox_grabbed.ogg[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | voice_toolbox_landed.ogg[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | voice_toolbox_react.ogg[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | voice_toolbox_thrown.ogg[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | voice_tractor_grabbed.ogg[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | voice_tractor_landed.ogg[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | voice_tractor_react.ogg[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | voice_tractor_thrown.ogg[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | voice_traffic_cone_grabbed.ogg[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | voice_traffic_cone_landed.ogg[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | voice_traffic_cone_react.ogg[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | voice_traffic_cone_thrown.ogg[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | voice_trampoline_grabbed.ogg[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | voice_trampoline_landed.ogg[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | voice_trampoline_react.ogg[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | voice_trampoline_thrown.ogg[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | voice_tv_grabbed.ogg[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | voice_tv_landed.ogg[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | voice_tv_react.ogg[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | voice_tv_thrown.ogg[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | voice_washing_machine_grabbed.ogg[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | voice_washing_machine_landed.ogg[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | voice_washing_machine_react.ogg[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | voice_washing_machine_thrown.ogg[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | voice_watering_can_grabbed.ogg[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | voice_watering_can_landed.ogg[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | voice_watering_can_react.ogg[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | voice_watering_can_thrown.ogg[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | voice_wheelbarrow_grabbed.ogg[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | voice_wheelbarrow_landed.ogg[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | voice_wheelbarrow_react.ogg[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | voice_wheelbarrow_thrown.ogg[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | wheel_move_1.ogg[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | wheel_move_2.ogg[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | zap_balloon_1.ogg[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | zap_balloon_2.ogg[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | zap_balloon_3.ogg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | zap_bouncy_1.ogg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | zap_bouncy_2.ogg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | zap_bouncy_3.ogg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | zap_freeze_1.ogg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | zap_freeze_2.ogg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | zap_freeze_3.ogg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | zap_glue_1.ogg[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | zap_glue_2.ogg[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | zap_glue_3.ogg[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | zap_grab_1.ogg[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | zap_grab_2.ogg[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | zap_grab_3.ogg[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | zap_magnet_1.ogg[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | zap_magnet_2.ogg[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | zap_magnet_3.ogg[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | zap_size_1.ogg[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | zap_size_2.ogg[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | zap_size_3.ogg[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | astro_ana.glb[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | big_tiny.glb[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | bloom.glb[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | boxbot.glb[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | captain_crumbs.glb[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | chuck.glb[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | coach_whistle.glb[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | el_burrito.glb[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | foreman_dot.glb[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | granny_gravel.glb[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | jeff.glb[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | lampy.glb[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | mayor_pip.glb[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | old_reel.glb[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | professor_fizz.glb[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | rexy.glb[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | ribbit.glb[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | scrap.glb[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | sir_clank.glb[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | snooze.glb[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | yoji.glb[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | lose.ogg[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | ready.ogg[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | win.ogg[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | pixel.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | zorp.glb[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | Baloo2-Variable.ttf[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | Fredoka-Variable.ttf[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | Nunito-Variable.ttf[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | belt.glb[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | cow.glb[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | b1_magnet_fridge.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | b1_pig_in_pond.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | b1_sheep_to_gate.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | b1_tiny_car.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | b1_tiny_tractor.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | b2_car_over_fence.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | b2_chicken_stairs.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | b2_duck_on_tower.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | b2_egg_off_loft.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | b2_stack_three.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | b2_three_in_tub.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | b2_tub_from_loft.png[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | b3_cannonball_pond.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | b3_chain_ball.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | b3_cow_over_tower.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | b3_fast_duck.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | b3_piano_pipe_pond.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | b3_raft.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | b3_stack_five.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | b3_tractor_loft.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | logo.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | logo.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | logo.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | logo.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | grid.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | hero.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | jar.glb[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | standin.glb[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | standin_generic7_face.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | catchphrase.ogg[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | cheer.ogg[39m[0m
+[  99% ] [90m[1m_update_scan_actions[22m | join.ogg[39m[0m
+[  99% ] [90m[1m_update_scan_actions[22m | oops.ogg[39m[0m
+[  99% ] [90m[1m_update_scan_actions[22m | swap_in.ogg[39m[0m
+[  99% ] [90m[1m_update_scan_actions[22m | wait.ogg[39m[0m
+[  99% ] [90m[1m_update_scan_actions[22m | icon.svg[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (602 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   6% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   6% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   6% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   6% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   6% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   6% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  15% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  15% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  15% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  15% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  15% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  15% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  22% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  22% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  22% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  22% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  22% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  22% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  24% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  24% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  24% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  24% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  24% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  24% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  31% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  31% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  31% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  31% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  31% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  31% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  37% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  37% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  37% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  37% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  37% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  37% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  44% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  44% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  44% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  44% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  44% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  44% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  48% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  48% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  48% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  48% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  48% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  48% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  51% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  51% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  51% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  51% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  51% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  51% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  55% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  55% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  55% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  55% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  55% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  55% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  62% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  62% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  62% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  62% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  62% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  62% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  68% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  68% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  68% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  68% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  68% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  68% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  77% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  77% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  77% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  77% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  77% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  77% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  79% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  79% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  79% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  79% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  79% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  79% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  84% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  84% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  84% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  84% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  84% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  84% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  93% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  93% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  93% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  93% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  93% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  93% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  97% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  97% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  97% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  97% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  97% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  97% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  99% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  99% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  99% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  99% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  99% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing pre-reimport operations...[39m[0m
+[   0% ] [90m[1mpreload_reimporting_scene[22m | Started Preparing scenes for reload (1 steps)[39m[0m
+[   0% ] [90m[1mpreload_reimporting_scene[22m | Analyzing scene [empty][39m[0m
+[  50% ] [90m[1mpreload_reimporting_scene[22m | Preparation done.[39m[0m
+[92m[ DONE ][39m [1mpreload_reimporting_scene[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Fredoka-Variable.ttf[39m[0m
+[   0% ] [90m[1mreimport[22m | Baloo2-Variable.ttf[39m[0m
+[   0% ] [90m[1mreimport[22m | Nunito-Variable.ttf[39m[0m
+[   0% ] [90m[1mreimport[22m | Fredoka-Variable.ttf[39m[0m
+[   0% ] [90m[1mreimport[22m | Baloo2-Variable.ttf[39m[0m
+[   0% ] [90m[1mreimport[22m | Nunito-Variable.ttf[39m[0m
+[   0% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[   1% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[   1% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[   1% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[   1% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[   1% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[   1% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[   2% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[   2% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[   2% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[   2% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[   2% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[   2% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[   3% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[   3% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[   3% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[   3% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[   3% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[   3% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[   4% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[   4% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[   4% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[   4% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[   4% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[   4% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[   5% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[   5% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[   5% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[   5% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[   5% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[   5% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[   6% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[   6% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[   6% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[   6% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[   6% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[   6% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[   7% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[   7% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[   7% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[   7% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[   7% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[   7% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[   8% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[   8% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[   8% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[   8% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[   8% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[   8% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[   9% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[   9% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[   9% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[   9% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[   9% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[   9% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  10% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  10% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  10% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  10% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  10% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  10% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  11% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  11% ] [90m[1mreimport[22m | voice_wheelbarrow_grabbed.ogg[39m[0m
+[  11% ] [90m[1mreimport[22m | voice_watering_can_thrown.ogg[39m[0m
+[  11% ] [90m[1mreimport[22m | voice_watering_can_react.ogg[39m[0m
+[  11% ] [90m[1mreimport[22m | voice_watering_can_landed.ogg[39m[0m
+[  11% ] [90m[1mreimport[22m | voice_watering_can_grabbed.ogg[39m[0m
+[  12% ] [90m[1mreimport[22m | voice_washing_machine_thrown.ogg[39m[0m
+[  12% ] [90m[1mreimport[22m | voice_washing_machine_react.ogg[39m[0m
+[  12% ] [90m[1mreimport[22m | voice_washing_machine_landed.ogg[39m[0m
+[  12% ] [90m[1mreimport[22m | voice_washing_machine_grabbed.ogg[39m[0m
+[  12% ] [90m[1mreimport[22m | voice_tv_thrown.ogg[39m[0m
+[  12% ] [90m[1mreimport[22m | voice_tv_react.ogg[39m[0m
+[  13% ] [90m[1mreimport[22m | voice_tv_landed.ogg[39m[0m
+[  13% ] [90m[1mreimport[22m | voice_tv_grabbed.ogg[39m[0m
+[  13% ] [90m[1mreimport[22m | voice_trampoline_thrown.ogg[39m[0m
+[  13% ] [90m[1mreimport[22m | voice_trampoline_react.ogg[39m[0m
+[  13% ] [90m[1mreimport[22m | voice_trampoline_landed.ogg[39m[0m
+[  13% ] [90m[1mreimport[22m | voice_toaster_grabbed.ogg[39m[0m
+[  14% ] [90m[1mreimport[22m | voice_toaster_landed.ogg[39m[0m
+[  14% ] [90m[1mreimport[22m | voice_toaster_react.ogg[39m[0m
+[  14% ] [90m[1mreimport[22m | voice_toaster_thrown.ogg[39m[0m
+[  14% ] [90m[1mreimport[22m | voice_toolbox_grabbed.ogg[39m[0m
+[  14% ] [90m[1mreimport[22m | voice_toolbox_landed.ogg[39m[0m
+[  14% ] [90m[1mreimport[22m | voice_toolbox_react.ogg[39m[0m
+[  15% ] [90m[1mreimport[22m | voice_toolbox_thrown.ogg[39m[0m
+[  15% ] [90m[1mreimport[22m | voice_tractor_grabbed.ogg[39m[0m
+[  15% ] [90m[1mreimport[22m | voice_tractor_landed.ogg[39m[0m
+[  15% ] [90m[1mreimport[22m | voice_tractor_react.ogg[39m[0m
+[  15% ] [90m[1mreimport[22m | voice_tractor_thrown.ogg[39m[0m
+[  15% ] [90m[1mreimport[22m | voice_traffic_cone_grabbed.ogg[39m[0m
+[  16% ] [90m[1mreimport[22m | voice_traffic_cone_landed.ogg[39m[0m
+[  16% ] [90m[1mreimport[22m | voice_traffic_cone_react.ogg[39m[0m
+[  16% ] [90m[1mreimport[22m | voice_traffic_cone_thrown.ogg[39m[0m
+[  16% ] [90m[1mreimport[22m | voice_trampoline_grabbed.ogg[39m[0m
+[  16% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  16% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  17% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  17% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  17% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  17% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  17% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  17% ] [90m[1mreimport[22m | zap_size_3.ogg[39m[0m
+[  18% ] [90m[1mreimport[22m | zap_size_2.ogg[39m[0m
+[  18% ] [90m[1mreimport[22m | zap_size_1.ogg[39m[0m
+[  18% ] [90m[1mreimport[22m | zap_magnet_3.ogg[39m[0m
+[  18% ] [90m[1mreimport[22m | zap_magnet_2.ogg[39m[0m
+[  18% ] [90m[1mreimport[22m | zap_magnet_1.ogg[39m[0m
+[  18% ] [90m[1mreimport[22m | zap_grab_3.ogg[39m[0m
+[  19% ] [90m[1mreimport[22m | zap_grab_2.ogg[39m[0m
+[  19% ] [90m[1mreimport[22m | zap_grab_1.ogg[39m[0m
+[  19% ] [90m[1mreimport[22m | voice_wheelbarrow_landed.ogg[39m[0m
+[  19% ] [90m[1mreimport[22m | voice_wheelbarrow_react.ogg[39m[0m
+[  19% ] [90m[1mreimport[22m | voice_wheelbarrow_thrown.ogg[39m[0m
+[  19% ] [90m[1mreimport[22m | wheel_move_1.ogg[39m[0m
+[  20% ] [90m[1mreimport[22m | wheel_move_2.ogg[39m[0m
+[  20% ] [90m[1mreimport[22m | zap_balloon_1.ogg[39m[0m
+[  20% ] [90m[1mreimport[22m | zap_balloon_2.ogg[39m[0m
+[  20% ] [90m[1mreimport[22m | zap_balloon_3.ogg[39m[0m
+[  20% ] [90m[1mreimport[22m | zap_bouncy_1.ogg[39m[0m
+[  20% ] [90m[1mreimport[22m | zap_bouncy_2.ogg[39m[0m
+[  21% ] [90m[1mreimport[22m | zap_bouncy_3.ogg[39m[0m
+[  21% ] [90m[1mreimport[22m | zap_freeze_1.ogg[39m[0m
+[  21% ] [90m[1mreimport[22m | zap_freeze_2.ogg[39m[0m
+[  21% ] [90m[1mreimport[22m | zap_freeze_3.ogg[39m[0m
+[  21% ] [90m[1mreimport[22m | zap_glue_1.ogg[39m[0m
+[  21% ] [90m[1mreimport[22m | zap_glue_2.ogg[39m[0m
+[  22% ] [90m[1mreimport[22m | zap_glue_3.ogg[39m[0m
+[  22% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  22% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  22% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  22% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  22% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  23% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  23% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  23% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  23% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  23% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  23% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  24% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  24% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  24% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  24% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  24% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  24% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  25% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  25% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  25% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  25% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  25% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  25% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  26% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  26% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  26% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  26% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  26% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  26% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  27% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  27% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  27% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  27% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  27% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  27% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  28% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  28% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  28% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  28% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  28% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  28% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  29% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  29% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  29% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  29% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  29% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  29% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  30% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  30% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  30% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  30% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  30% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  30% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  31% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  31% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  31% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  31% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  31% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  31% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  32% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  32% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  32% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  32% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  32% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  32% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  33% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  33% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  33% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  33% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  33% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  33% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  33% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  34% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  34% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  34% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  34% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  34% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  34% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  35% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  35% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  35% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  35% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  35% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  35% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  36% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  36% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  36% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  36% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  36% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  36% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  37% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  37% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  37% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  37% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  37% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  37% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  38% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  38% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  38% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  38% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  38% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  38% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  39% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  39% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  39% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  39% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  39% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  39% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  40% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  40% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  40% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  40% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  40% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  40% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  41% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  41% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  41% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  41% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  41% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  41% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  42% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  42% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  42% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  42% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  42% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  42% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  43% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  43% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  43% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  43% ] [90m[1mreimport[22m | unglue.ogg[39m[0m
+[  43% ] [90m[1mreimport[22m | ui_wipe.ogg[39m[0m
+[  43% ] [90m[1mreimport[22m | ui_toggle.ogg[39m[0m
+[  44% ] [90m[1mreimport[22m | ui_tick.ogg[39m[0m
+[  44% ] [90m[1mreimport[22m | ui_pause.ogg[39m[0m
+[  44% ] [90m[1mreimport[22m | ui_move.ogg[39m[0m
+[  44% ] [90m[1mreimport[22m | ui_go.ogg[39m[0m
+[  44% ] [90m[1mreimport[22m | ui_confirm.ogg[39m[0m
+[  44% ] [90m[1mreimport[22m | ui_card.ogg[39m[0m
+[  45% ] [90m[1mreimport[22m | ui_back.ogg[39m[0m
+[  45% ] [90m[1mreimport[22m | throw_3.ogg[39m[0m
+[  45% ] [90m[1mreimport[22m | throw_2.ogg[39m[0m
+[  45% ] [90m[1mreimport[22m | throw_1.ogg[39m[0m
+[  45% ] [90m[1mreimport[22m | squelch_2.ogg[39m[0m
+[  45% ] [90m[1mreimport[22m | squelch_1.ogg[39m[0m
+[  46% ] [90m[1mreimport[22m | splash_3.ogg[39m[0m
+[  46% ] [90m[1mreimport[22m | reset_yard.ogg[39m[0m
+[  46% ] [90m[1mreimport[22m | round_end.ogg[39m[0m
+[  46% ] [90m[1mreimport[22m | round_start.ogg[39m[0m
+[  46% ] [90m[1mreimport[22m | shrink_1.ogg[39m[0m
+[  46% ] [90m[1mreimport[22m | shrink_2.ogg[39m[0m
+[  47% ] [90m[1mreimport[22m | shrink_3.ogg[39m[0m
+[  47% ] [90m[1mreimport[22m | snore_1.ogg[39m[0m
+[  47% ] [90m[1mreimport[22m | snore_2.ogg[39m[0m
+[  47% ] [90m[1mreimport[22m | snort.ogg[39m[0m
+[  47% ] [90m[1mreimport[22m | solo_off.ogg[39m[0m
+[  47% ] [90m[1mreimport[22m | solo_on.ogg[39m[0m
+[  48% ] [90m[1mreimport[22m | solo_swap.ogg[39m[0m
+[  48% ] [90m[1mreimport[22m | sparkle_1.ogg[39m[0m
+[  48% ] [90m[1mreimport[22m | sparkle_2.ogg[39m[0m
+[  48% ] [90m[1mreimport[22m | sparkle_3.ogg[39m[0m
+[  48% ] [90m[1mreimport[22m | splash_1.ogg[39m[0m
+[  48% ] [90m[1mreimport[22m | splash_2.ogg[39m[0m
+[  49% ] [90m[1mreimport[22m | voice_beach_ball_landed.ogg[39m[0m
+[  49% ] [90m[1mreimport[22m | voice_beach_ball_react.ogg[39m[0m
+[  49% ] [90m[1mreimport[22m | voice_beach_ball_thrown.ogg[39m[0m
+[  49% ] [90m[1mreimport[22m | voice_boat_grabbed.ogg[39m[0m
+[  49% ] [90m[1mreimport[22m | voice_boat_landed.ogg[39m[0m
+[  49% ] [90m[1mreimport[22m | voice_boat_react.ogg[39m[0m
+[  50% ] [90m[1mreimport[22m | voice_boat_thrown.ogg[39m[0m
+[  50% ] [90m[1mreimport[22m | voice_bowling_pin_grabbed.ogg[39m[0m
+[  50% ] [90m[1mreimport[22m | voice_bowling_pin_landed.ogg[39m[0m
+[  50% ] [90m[1mreimport[22m | voice_bowling_pin_react.ogg[39m[0m
+[  50% ] [90m[1mreimport[22m | voice_bowling_pin_thrown.ogg[39m[0m
+[  50% ] [90m[1mreimport[22m | voice_bucket_grabbed.ogg[39m[0m
+[  51% ] [90m[1mreimport[22m | voice_bucket_landed.ogg[39m[0m
+[  51% ] [90m[1mreimport[22m | voice_bucket_react.ogg[39m[0m
+[  51% ] [90m[1mreimport[22m | voice_bucket_thrown.ogg[39m[0m
+[  51% ] [90m[1mreimport[22m | voice_cannonball_grabbed.ogg[39m[0m
+[  51% ] [90m[1mreimport[22m | voice_cannonball_landed.ogg[39m[0m
+[  51% ] [90m[1mreimport[22m | voice_anvil_grabbed.ogg[39m[0m
+[  52% ] [90m[1mreimport[22m | voice_anvil_landed.ogg[39m[0m
+[  52% ] [90m[1mreimport[22m | voice_anvil_react.ogg[39m[0m
+[  52% ] [90m[1mreimport[22m | voice_anvil_thrown.ogg[39m[0m
+[  52% ] [90m[1mreimport[22m | voice_armchair_grabbed.ogg[39m[0m
+[  52% ] [90m[1mreimport[22m | voice_armchair_landed.ogg[39m[0m
+[  52% ] [90m[1mreimport[22m | voice_armchair_react.ogg[39m[0m
+[  53% ] [90m[1mreimport[22m | voice_armchair_thrown.ogg[39m[0m
+[  53% ] [90m[1mreimport[22m | voice_ball_grabbed.ogg[39m[0m
+[  53% ] [90m[1mreimport[22m | voice_ball_landed.ogg[39m[0m
+[  53% ] [90m[1mreimport[22m | voice_ball_react.ogg[39m[0m
+[  53% ] [90m[1mreimport[22m | voice_ball_thrown.ogg[39m[0m
+[  53% ] [90m[1mreimport[22m | voice_bathtub_grabbed.ogg[39m[0m
+[  54% ] [90m[1mreimport[22m | voice_bathtub_landed.ogg[39m[0m
+[  54% ] [90m[1mreimport[22m | voice_bathtub_react.ogg[39m[0m
+[  54% ] [90m[1mreimport[22m | voice_bathtub_thrown.ogg[39m[0m
+[  54% ] [90m[1mreimport[22m | voice_beach_ball_grabbed.ogg[39m[0m
+[  54% ] [90m[1mreimport[22m | crack_1.ogg[39m[0m
+[  54% ] [90m[1mreimport[22m | count_tick.ogg[39m[0m
+[  55% ] [90m[1mreimport[22m | char_swap.ogg[39m[0m
+[  55% ] [90m[1mreimport[22m | card_view_2.ogg[39m[0m
+[  55% ] [90m[1mreimport[22m | card_view_1.ogg[39m[0m
+[  55% ] [90m[1mreimport[22m | card_skip_2.ogg[39m[0m
+[  55% ] [90m[1mreimport[22m | card_skip_1.ogg[39m[0m
+[  55% ] [90m[1mreimport[22m | card_done_2.ogg[39m[0m
+[  56% ] [90m[1mreimport[22m | card_done_1.ogg[39m[0m
+[  56% ] [90m[1mreimport[22m | boing_2.ogg[39m[0m
+[  56% ] [90m[1mreimport[22m | boing_1.ogg[39m[0m
+[  56% ] [90m[1mreimport[22m | bark_zap_3.ogg[39m[0m
+[  56% ] [90m[1mreimport[22m | bark_zap_2.ogg[39m[0m
+[  56% ] [90m[1mreimport[22m | bark_zap_1.ogg[39m[0m
+[  57% ] [90m[1mreimport[22m | bark_delight_3.ogg[39m[0m
+[  57% ] [90m[1mreimport[22m | bark_delight_2.ogg[39m[0m
+[  57% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  57% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  57% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  57% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  58% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  58% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  58% ] [90m[1mreimport[22m | music_yard.ogg[39m[0m
+[  58% ] [90m[1mreimport[22m | music_yard_bright.ogg[39m[0m
+[  58% ] [90m[1mreimport[22m | action.ogg[39m[0m
+[  58% ] [90m[1mreimport[22m | bark_1.ogg[39m[0m
+[  59% ] [90m[1mreimport[22m | bark_2.ogg[39m[0m
+[  59% ] [90m[1mreimport[22m | bark_3.ogg[39m[0m
+[  59% ] [90m[1mreimport[22m | bark_4.ogg[39m[0m
+[  59% ] [90m[1mreimport[22m | bark_cheer_1.ogg[39m[0m
+[  59% ] [90m[1mreimport[22m | bark_cheer_2.ogg[39m[0m
+[  59% ] [90m[1mreimport[22m | bark_cheer_3.ogg[39m[0m
+[  60% ] [90m[1mreimport[22m | bark_delight_1.ogg[39m[0m
+[  60% ] [90m[1mreimport[22m | impact_light_2.ogg[39m[0m
+[  60% ] [90m[1mreimport[22m | impact_light_3.ogg[39m[0m
+[  60% ] [90m[1mreimport[22m | impact_medium_1.ogg[39m[0m
+[  60% ] [90m[1mreimport[22m | impact_medium_2.ogg[39m[0m
+[  60% ] [90m[1mreimport[22m | impact_medium_3.ogg[39m[0m
+[  61% ] [90m[1mreimport[22m | jump_1.ogg[39m[0m
+[  61% ] [90m[1mreimport[22m | jump_2.ogg[39m[0m
+[  61% ] [90m[1mreimport[22m | land_1.ogg[39m[0m
+[  61% ] [90m[1mreimport[22m | land_2.ogg[39m[0m
+[  61% ] [90m[1mreimport[22m | nope_1.ogg[39m[0m
+[  61% ] [90m[1mreimport[22m | nope_2.ogg[39m[0m
+[  62% ] [90m[1mreimport[22m | pause.ogg[39m[0m
+[  62% ] [90m[1mreimport[22m | player_join.ogg[39m[0m
+[  62% ] [90m[1mreimport[22m | player_ready.ogg[39m[0m
+[  62% ] [90m[1mreimport[22m | player_unready.ogg[39m[0m
+[  62% ] [90m[1mreimport[22m | recall.ogg[39m[0m
+[  62% ] [90m[1mreimport[22m | reset_hold.ogg[39m[0m
+[  63% ] [90m[1mreimport[22m | crack_2.ogg[39m[0m
+[  63% ] [90m[1mreimport[22m | drop_1.ogg[39m[0m
+[  63% ] [90m[1mreimport[22m | drop_2.ogg[39m[0m
+[  63% ] [90m[1mreimport[22m | glue.ogg[39m[0m
+[  63% ] [90m[1mreimport[22m | glue_pick.ogg[39m[0m
+[  63% ] [90m[1mreimport[22m | grab_1.ogg[39m[0m
+[  64% ] [90m[1mreimport[22m | grab_2.ogg[39m[0m
+[  64% ] [90m[1mreimport[22m | grow_1.ogg[39m[0m
+[  64% ] [90m[1mreimport[22m | grow_2.ogg[39m[0m
+[  64% ] [90m[1mreimport[22m | grow_3.ogg[39m[0m
+[  64% ] [90m[1mreimport[22m | gun_cycle.ogg[39m[0m
+[  64% ] [90m[1mreimport[22m | impact_heavy_1.ogg[39m[0m
+[  65% ] [90m[1mreimport[22m | impact_heavy_2.ogg[39m[0m
+[  65% ] [90m[1mreimport[22m | impact_heavy_3.ogg[39m[0m
+[  65% ] [90m[1mreimport[22m | impact_huge_1.ogg[39m[0m
+[  65% ] [90m[1mreimport[22m | impact_huge_2.ogg[39m[0m
+[  65% ] [90m[1mreimport[22m | impact_light_1.ogg[39m[0m
+[  65% ] [90m[1mreimport[22m | voice_mattress_thrown.ogg[39m[0m
+[  66% ] [90m[1mreimport[22m | voice_milk_can_grabbed.ogg[39m[0m
+[  66% ] [90m[1mreimport[22m | voice_milk_can_landed.ogg[39m[0m
+[  66% ] [90m[1mreimport[22m | voice_milk_can_react.ogg[39m[0m
+[  66% ] [90m[1mreimport[22m | voice_milk_can_thrown.ogg[39m[0m
+[  66% ] [90m[1mreimport[22m | voice_oil_drum_grabbed.ogg[39m[0m
+[  66% ] [90m[1mreimport[22m | voice_oil_drum_landed.ogg[39m[0m
+[  66% ] [90m[1mreimport[22m | voice_oil_drum_react.ogg[39m[0m
+[  67% ] [90m[1mreimport[22m | voice_oil_drum_thrown.ogg[39m[0m
+[  67% ] [90m[1mreimport[22m | voice_piano_grabbed.ogg[39m[0m
+[  67% ] [90m[1mreimport[22m | voice_piano_landed.ogg[39m[0m
+[  67% ] [90m[1mreimport[22m | voice_piano_react.ogg[39m[0m
+[  67% ] [90m[1mreimport[22m | voice_piano_thrown.ogg[39m[0m
+[  67% ] [90m[1mreimport[22m | voice_pig_grabbed.ogg[39m[0m
+[  68% ] [90m[1mreimport[22m | voice_pig_landed.ogg[39m[0m
+[  68% ] [90m[1mreimport[22m | voice_pig_react.ogg[39m[0m
+[  68% ] [90m[1mreimport[22m | voice_pig_thrown.ogg[39m[0m
+[  68% ] [90m[1mreimport[22m | voice_kiddie_pool_landed.ogg[39m[0m
+[  68% ] [90m[1mreimport[22m | voice_kiddie_pool_react.ogg[39m[0m
+[  68% ] [90m[1mreimport[22m | voice_kiddie_pool_thrown.ogg[39m[0m
+[  69% ] [90m[1mreimport[22m | voice_kite_grabbed.ogg[39m[0m
+[  69% ] [90m[1mreimport[22m | voice_kite_landed.ogg[39m[0m
+[  69% ] [90m[1mreimport[22m | voice_kite_react.ogg[39m[0m
+[  69% ] [90m[1mreimport[22m | voice_kite_thrown.ogg[39m[0m
+[  69% ] [90m[1mreimport[22m | voice_lawn_flamingo_grabbed.ogg[39m[0m
+[  69% ] [90m[1mreimport[22m | voice_lawn_flamingo_landed.ogg[39m[0m
+[  70% ] [90m[1mreimport[22m | voice_lawn_flamingo_react.ogg[39m[0m
+[  70% ] [90m[1mreimport[22m | voice_lawn_flamingo_thrown.ogg[39m[0m
+[  70% ] [90m[1mreimport[22m | voice_log_grabbed.ogg[39m[0m
+[  70% ] [90m[1mreimport[22m | voice_log_landed.ogg[39m[0m
+[  70% ] [90m[1mreimport[22m | voice_log_react.ogg[39m[0m
+[  70% ] [90m[1mreimport[22m | voice_log_thrown.ogg[39m[0m
+[  71% ] [90m[1mreimport[22m | voice_mattress_grabbed.ogg[39m[0m
+[  71% ] [90m[1mreimport[22m | voice_mattress_landed.ogg[39m[0m
+[  71% ] [90m[1mreimport[22m | voice_mattress_react.ogg[39m[0m
+[  71% ] [90m[1mreimport[22m | voice_sheep_react.ogg[39m[0m
+[  71% ] [90m[1mreimport[22m | voice_sheep_thrown.ogg[39m[0m
+[  71% ] [90m[1mreimport[22m | voice_surfboard_grabbed.ogg[39m[0m
+[  72% ] [90m[1mreimport[22m | voice_surfboard_landed.ogg[39m[0m
+[  72% ] [90m[1mreimport[22m | voice_surfboard_react.ogg[39m[0m
+[  72% ] [90m[1mreimport[22m | voice_surfboard_thrown.ogg[39m[0m
+[  72% ] [90m[1mreimport[22m | voice_swim_ring_grabbed.ogg[39m[0m
+[  72% ] [90m[1mreimport[22m | voice_swim_ring_landed.ogg[39m[0m
+[  72% ] [90m[1mreimport[22m | voice_swim_ring_react.ogg[39m[0m
+[  73% ] [90m[1mreimport[22m | voice_swim_ring_thrown.ogg[39m[0m
+[  73% ] [90m[1mreimport[22m | voice_tire_grabbed.ogg[39m[0m
+[  73% ] [90m[1mreimport[22m | voice_tire_landed.ogg[39m[0m
+[  73% ] [90m[1mreimport[22m | voice_tire_react.ogg[39m[0m
+[  73% ] [90m[1mreimport[22m | voice_tire_swing_grabbed.ogg[39m[0m
+[  73% ] [90m[1mreimport[22m | voice_tire_swing_landed.ogg[39m[0m
+[  74% ] [90m[1mreimport[22m | voice_tire_swing_react.ogg[39m[0m
+[  74% ] [90m[1mreimport[22m | voice_tire_swing_thrown.ogg[39m[0m
+[  74% ] [90m[1mreimport[22m | voice_tire_thrown.ogg[39m[0m
+[  74% ] [90m[1mreimport[22m | voice_pipe_grabbed.ogg[39m[0m
+[  74% ] [90m[1mreimport[22m | voice_pipe_landed.ogg[39m[0m
+[  74% ] [90m[1mreimport[22m | voice_pipe_react.ogg[39m[0m
+[  75% ] [90m[1mreimport[22m | voice_pipe_thrown.ogg[39m[0m
+[  75% ] [90m[1mreimport[22m | voice_plank_grabbed.ogg[39m[0m
+[  75% ] [90m[1mreimport[22m | voice_plank_landed.ogg[39m[0m
+[  75% ] [90m[1mreimport[22m | voice_plank_react.ogg[39m[0m
+[  75% ] [90m[1mreimport[22m | voice_plank_thrown.ogg[39m[0m
+[  75% ] [90m[1mreimport[22m | voice_pumpkin_grabbed.ogg[39m[0m
+[  76% ] [90m[1mreimport[22m | voice_pumpkin_landed.ogg[39m[0m
+[  76% ] [90m[1mreimport[22m | voice_pumpkin_react.ogg[39m[0m
+[  76% ] [90m[1mreimport[22m | voice_pumpkin_thrown.ogg[39m[0m
+[  76% ] [90m[1mreimport[22m | voice_rubber_chicken_grabbed.ogg[39m[0m
+[  76% ] [90m[1mreimport[22m | voice_rubber_chicken_landed.ogg[39m[0m
+[  76% ] [90m[1mreimport[22m | voice_rubber_chicken_react.ogg[39m[0m
+[  77% ] [90m[1mreimport[22m | voice_rubber_chicken_thrown.ogg[39m[0m
+[  77% ] [90m[1mreimport[22m | voice_sheep_grabbed.ogg[39m[0m
+[  77% ] [90m[1mreimport[22m | voice_sheep_landed.ogg[39m[0m
+[  77% ] [90m[1mreimport[22m | voice_fish_grabbed.ogg[39m[0m
+[  77% ] [90m[1mreimport[22m | voice_egg_thrown.ogg[39m[0m
+[  77% ] [90m[1mreimport[22m | voice_egg_react.ogg[39m[0m
+[  78% ] [90m[1mreimport[22m | voice_egg_landed.ogg[39m[0m
+[  78% ] [90m[1mreimport[22m | voice_egg_grabbed.ogg[39m[0m
+[  78% ] [90m[1mreimport[22m | voice_cannon_react.ogg[39m[0m
+[  78% ] [90m[1mreimport[22m | voice_duck_thrown.ogg[39m[0m
+[  78% ] [90m[1mreimport[22m | voice_duck_react.ogg[39m[0m
+[  78% ] [90m[1mreimport[22m | voice_cannon_thrown.ogg[39m[0m
+[  79% ] [90m[1mreimport[22m | voice_car_grabbed.ogg[39m[0m
+[  79% ] [90m[1mreimport[22m | voice_duck_landed.ogg[39m[0m
+[  79% ] [90m[1mreimport[22m | voice_duck_grabbed.ogg[39m[0m
+[  79% ] [90m[1mreimport[22m | voice_crate_thrown.ogg[39m[0m
+[  79% ] [90m[1mreimport[22m | voice_crate_react.ogg[39m[0m
+[  79% ] [90m[1mreimport[22m | voice_crate_landed.ogg[39m[0m
+[  80% ] [90m[1mreimport[22m | voice_crate_grabbed.ogg[39m[0m
+[  80% ] [90m[1mreimport[22m | voice_cow_thrown.ogg[39m[0m
+[  80% ] [90m[1mreimport[22m | voice_car_landed.ogg[39m[0m
+[  80% ] [90m[1mreimport[22m | voice_cow_react.ogg[39m[0m
+[  80% ] [90m[1mreimport[22m | voice_cow_landed.ogg[39m[0m
+[  80% ] [90m[1mreimport[22m | voice_cow_grabbed.ogg[39m[0m
+[  81% ] [90m[1mreimport[22m | voice_chicken_thrown.ogg[39m[0m
+[  81% ] [90m[1mreimport[22m | voice_chicken_react.ogg[39m[0m
+[  81% ] [90m[1mreimport[22m | voice_chicken_landed.ogg[39m[0m
+[  81% ] [90m[1mreimport[22m | voice_chicken_grabbed.ogg[39m[0m
+[  81% ] [90m[1mreimport[22m | voice_car_thrown.ogg[39m[0m
+[  81% ] [90m[1mreimport[22m | voice_car_react.ogg[39m[0m
+[  82% ] [90m[1mreimport[22m | voice_kiddie_pool_grabbed.ogg[39m[0m
+[  82% ] [90m[1mreimport[22m | voice_kettle_thrown.ogg[39m[0m
+[  82% ] [90m[1mreimport[22m | voice_kettle_react.ogg[39m[0m
+[  82% ] [90m[1mreimport[22m | voice_cannonball_react.ogg[39m[0m
+[  82% ] [90m[1mreimport[22m | voice_kettle_landed.ogg[39m[0m
+[  82% ] [90m[1mreimport[22m | voice_kettle_grabbed.ogg[39m[0m
+[  83% ] [90m[1mreimport[22m | voice_hay_thrown.ogg[39m[0m
+[  83% ] [90m[1mreimport[22m | voice_hay_react.ogg[39m[0m
+[  83% ] [90m[1mreimport[22m | voice_cannonball_thrown.ogg[39m[0m
+[  83% ] [90m[1mreimport[22m | voice_hay_landed.ogg[39m[0m
+[  83% ] [90m[1mreimport[22m | voice_hay_grabbed.ogg[39m[0m
+[  83% ] [90m[1mreimport[22m | voice_garden_gnome_thrown.ogg[39m[0m
+[  84% ] [90m[1mreimport[22m | voice_garden_gnome_react.ogg[39m[0m
+[  84% ] [90m[1mreimport[22m | voice_garden_gnome_landed.ogg[39m[0m
+[  84% ] [90m[1mreimport[22m | voice_garden_gnome_grabbed.ogg[39m[0m
+[  84% ] [90m[1mreimport[22m | voice_cannon_grabbed.ogg[39m[0m
+[  84% ] [90m[1mreimport[22m | voice_fridge_thrown.ogg[39m[0m
+[  84% ] [90m[1mreimport[22m | voice_fridge_react.ogg[39m[0m
+[  85% ] [90m[1mreimport[22m | voice_fridge_landed.ogg[39m[0m
+[  85% ] [90m[1mreimport[22m | voice_fish_landed.ogg[39m[0m
+[  85% ] [90m[1mreimport[22m | voice_cannon_landed.ogg[39m[0m
+[  85% ] [90m[1mreimport[22m | Fredoka-Variable.ttf[39m[0m
+[  85% ] [90m[1mreimport[22m | Baloo2-Variable.ttf[39m[0m
+[  85% ] [90m[1mreimport[22m | Nunito-Variable.ttf[39m[0m
+[  86% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  86% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  87% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  88% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  88% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  88% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  88% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  88% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  88% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  89% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  89% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  89% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  89% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  89% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  89% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  90% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  90% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  90% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  90% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  90% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  90% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  91% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  91% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  91% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  91% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  91% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  91% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  92% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  92% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  92% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  92% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  92% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  92% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  93% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  93% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  93% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  93% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  93% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  93% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  94% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  94% ] [90m[1mreimport[22m | oops.ogg[39m[0m
+[  94% ] [90m[1mreimport[22m | ready.ogg[39m[0m
+[  94% ] [90m[1mreimport[22m | swap_in.ogg[39m[0m
+[  94% ] [90m[1mreimport[22m | wait.ogg[39m[0m
+[  94% ] [90m[1mreimport[22m | win.ogg[39m[0m
+[  95% ] [90m[1mreimport[22m | catchphrase.ogg[39m[0m
+[  95% ] [90m[1mreimport[22m | cheer.ogg[39m[0m
+[  95% ] [90m[1mreimport[22m | join.ogg[39m[0m
+[  95% ] [90m[1mreimport[22m | lose.ogg[39m[0m
+[  95% ] [90m[1mreimport[22m | big_tiny.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  95% ] [90m[1mreimport[22m | professor_fizz.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | astro_ana.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | rexy.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | standin.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | ribbit.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | scrap.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | yoji.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | sir_clank.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | snooze.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | bloom.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | boxbot.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | old_reel.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  97% ] [90m[1mreimport[22m | captain_crumbs.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | zorp.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | chuck.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | coach_whistle.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | mayor_pip.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | el_burrito.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | foreman_dot.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | belt.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | granny_gravel.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | cow.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | jeff.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | lampy.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started Import Scene (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | Importing Scene...[39m[0m
+[   1% ] [90m[1mimport[22m | Running Custom Script...[39m[0m
+[  99% ] [90m[1mimport[22m | Saving...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  99% ] [90m[1mreimport[22m | Finalizing Asset Import...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (602 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing post-reimport operations...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Loading editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Loading editor layout...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Loading docks...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+IMPORT_EXIT=0
