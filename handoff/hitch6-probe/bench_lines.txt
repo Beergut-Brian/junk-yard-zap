@@ -1,0 +1,6 @@
+.scratch/bench_headless.log:BENCH avg=59.9 low1=32.6 frame_ms=16.70 worst_ms=44.9 frames=1797 seconds=30.0 tier=high cap=60 vsync=on hz=-1 adapter=""
+.scratch/bench_headless.log:BENCH-TRACE slow=8/1796 over=25ms slow_med: frame=31.9 physics=10.0 steps=1 process=1.5 draw=0.0 idle=18.5 gpu=0.0 all_med: frame=16.7 physics=1.9 steps=1 process=1.4 draw=0.0 idle=13.3 gpu=0.0 cause=physics
+.scratch/bench_headless.log:BENCH-TRACE: 1796 frames -> /tmp/hitch6_trace_headless.csv
+.scratch/bench_lvp.log:BENCH avg=0.7 low1=0.1 frame_ms=1522.26 worst_ms=7772.5 frames=20 seconds=30.4 tier=high cap=60 vsync=on hz=-nan adapter="llvmpipe (LLVM 21.1.8, 256 bits)"
+.scratch/bench_lvp.log:BENCH-TRACE slow=19/19 over=25ms slow_med: frame=1158.0 physics=21.5 steps=8 process=9.8 draw=1127.7 idle=8.9 gpu=1098.8 all_med: frame=1158.0 physics=21.5 steps=8 process=9.8 draw=1127.7 idle=8.9 gpu=1098.8 cause=none
+.scratch/bench_lvp.log:BENCH-TRACE: 19 frames -> /home/maker/openjar/work/junk-yard-zap--feature_jyz-hitch-6/.scratch/trace_lvp.csv

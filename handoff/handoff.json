@@ -1,22 +1,25 @@
 {
-  "packet": "maker/openjar jyz-hitch-5",
+  "packet": "maker/openjar jyz-hitch-6",
   "ended": "partial",
   "did": [
-    "Probed the renderer per frame on the bench route (godot-render / lavapipe, high, warm cache; render CPU, setup, per-pass objects / draws / primitives, all pipeline-compile counters, uploads, instances added / removed by name, material / visibility changes, particles, lights): steady render CPU median 1.4 / 2.3 ms (follow / wide), p90 1.9 / 2.6-3.0; one frame at 23.6-25.5 ms, the same on 3 runs, where an object's grab look first shows, with a surface + a specialization pipeline compile",
-    "Found the cause: pipelines are per material kind and per vertex format; RenderPrewarm warmed play-made kinds on a sphere (pos, normal, tangent, UV) only, while ArtKit rounded boxes (looks, guns' grips) and merged object art (tint overlay) are pos + normal; micro scene first grab look 23.8 ms, freeze 614 ms, gun 582 ms (cold), repeats 0.2 ms",
-    "perf: RenderPrewarm also draws every kind and the overlay on the rounded-box format (cedf88b): in-play compiles surface 4 -> 0, specialization 9 -> 3 (background); wide render CPU max 23.6-25.5 -> 4.7 ms; micro first grab / freeze / gun 0.22 / 0.22 / 0.29 ms, 0 compiles after boot",
-    "perf: BENCH line prints vsync mode and refresh rate (56dfb2b), since project.godot asks for vsync yet the box averaged 72 fps",
-    "tests: test_hitch_5.gd (4 tests; 16 failures on the old prewarm), test_hitch_2.gd kit count; full suite 452 / 0 failures / 0 orphans",
-    "S-18 note and file header updated (stays partial); clean import; export booted with --demo at auto and high tiers and the wide beat, 0 script errors; looked at handoff/shots/hitch5_demo_high/t010.0s.png"
+    "perf: FenceCard's 512x512 SubViewport renders once per change (UPDATE_ONCE armed by every redraw: stamp, slam, flip) instead of every frame (80b9316)",
+    "perf: the Reset sign writes a bulb's material_override only when it turns on or off (115 frames: 2185 -> 158 writes, same pattern every frame) (745a8c9)",
+    "perf: --bench-trace splits every counted bench frame into physics (steps) / process / draw / idle plus measured GPU ms, writes a CSV and prints BENCH-TRACE ... cause=<part> (0270b18)",
+    "Read the numbers (this machine, i5-8500T under load 4.5-7.9 from other lanes, 60 cap): headless x3 low1 32.4-43.0, 1-8 frames over 25 ms per ~1800, physics-heavy in bursts, never at the same route time across runs; an empty scene at the same cap: low1 50.6 / 39.8 (worst 65 ms). The local 1%-low is the machine's load, so no game fix; lavapipe 0.7 fps, draw-bound (labelled, not a 1060 number)",
+    "tests: test_hitch_6.gd (12 tests); the renderer test fails without the UPDATE_ONCE arm ('the stamp did not show' / 'the flip did not show'); the bulb tests fail on the old sign code (2 failures)",
+    "Real frames: handoff/shots/hitch6_trophy (stamp at 0.6 s, next card at 3.5 s, matches the HUD), handoff/shots/hitch6_sign (bulb chase)",
+    "PLAN-STATUS: header, S-18 and S-29 notes updated; no status change"
   ],
-  "next_action": "Gary: ship, then bench on the 1060 (cold run, then two warm runs at high) and set S-18 from the numbers",
+  "ids_moved": [],
+  "next_action": "Gary: ship",
+  "after_ship": "Bench on the 1060, warm, twice: ./junk-yard-zap.x86_64 -- --bench --graphics=high --bench-trace; paste BENCH and BENCH-TRACE lines. cause=physics|process -> next hitch lane; cause=idle or draw with small gpu -> cap / present mode (producer call, D117)",
   "blocked": [],
   "evidence": [
+    {"kind": "test", "command": "rm -rf .godot && godot --headless --path . --import", "exit": 0, "ref": ".scratch/clean_import.log"},
     {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --continue", "exit": 0, "ref": "handoff/test-output.txt"},
-    {"kind": "test", "command": "godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_hitch_5.gd (on the dev 500bcaa prewarm: 16 failures, format 7 not prewarmed)", "exit": 100, "ref": "handoff/REPORT.md#tests"},
-    {"kind": "measure", "command": "godot-render --path . --resolution 480x270 --fixed-fps 30 res://.scratch/probe5.tscn -- --demo --soak --graphics=high --probe-start=30 --probe-leg=60 (base x2 vs fix)", "exit": 0, "ref": "handoff/hitch5-findings.md"},
-    {"kind": "measure", "command": "godot-render --path . --resolution 320x180 res://.scratch/micro5.tscn (base vs fix)", "exit": 0, "ref": "handoff/hitch5-findings.md"},
-    {"kind": "export", "command": "handoff/export_runs.sh", "exit": 0, "ref": "handoff/shots/"},
-    {"kind": "bench", "command": "build/junk-yard-zap.x86_64 --headless -- --bench --graphics=high (CPU only, ran during the suite)", "exit": 0, "ref": "handoff/bench-export.txt"}
+    {"kind": "test", "command": "godot-render --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_hitch_6.gd --continue", "exit": 0, "ref": "handoff/REPORT.md#tests"},
+    {"kind": "measure", "command": "handoff/hitch6-probe/runs.sh (empty scene + 2 bench traces, headless, --max-fps 60)", "exit": 0, "ref": "handoff/hitch6-probe/runs.log"},
+    {"kind": "measure", "command": "godot-render --path . --resolution 480x270 -- --bench --bench-seconds=30 --graphics=high --bench-trace=... (lavapipe)", "exit": 0, "ref": "handoff/hitch6-probe/bench_lines.txt"},
+    {"kind": "shots", "command": "scripts/tools/shots.sh \"\" 0.6,1.6,3.5 handoff/shots/hitch6_trophy --demo --demo-beat=trophy", "exit": 0, "ref": "handoff/shots/hitch6_trophy/"}
   ]
 }
