@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Export runs for jyz-hitch-4 (same as jyz-hitch-2 and -3): export, boot the export in --demo (script errors, one real frame), and a
+# Export runs for jyz-hitch-5 (same as jyz-hitch-2, -3 and -4): export, boot the export in --demo (script errors, one real frame), and a
 # headless --bench from the export (CPU only). Scratch XDG (picks file + saves).
 cd "$(dirname "$0")/.."
 B="$PWD/build/junk-yard-zap.x86_64"
@@ -11,12 +11,12 @@ B="$PWD/build/junk-yard-zap.x86_64"
 O="$PWD/handoff/shots"
 mkdir -p "$O" build
 export RUN_SECS=120
-run-export "$B" -- --demo --shots=4,10 --shot-dir="$O/demo_auto" > .scratch/demo_run.log 2>&1
+run-export "$B" -- --demo --shots=4,10 --shot-dir="$O/hitch5_demo_auto" > .scratch/demo_run.log 2>&1
 grep -E "^Graphics|^screenshot|^exit" .scratch/demo_run.log
 grep -c "SCRIPT ERROR" .scratch/demo_run.log | sed 's/^/demo script errors: /'
-run-export "$B" -- --demo --graphics=high --shots=10 --shot-dir="$O/demo_high" > .scratch/high_run.log 2>&1
+run-export "$B" -- --demo --graphics=high --shots=10 --shot-dir="$O/hitch5_demo_high" > .scratch/high_run.log 2>&1
 grep -c "SCRIPT ERROR" .scratch/high_run.log | sed "s/^/high script errors: /"
-run-export "$B" -- --demo --demo-beat=wide --shots=10 --shot-dir="$O/wide_auto" > .scratch/wide_run.log 2>&1
+run-export "$B" -- --demo --demo-beat=wide --shots=10 --shot-dir="$O/hitch5_wide_auto" > .scratch/wide_run.log 2>&1
 grep -E "^screenshot|^exit" .scratch/wide_run.log
 grep -c "SCRIPT ERROR" .scratch/wide_run.log | sed 's/^/wide script errors: /'
 echo "--- export, headless --bench 60 s (CPU only, no renderer)"

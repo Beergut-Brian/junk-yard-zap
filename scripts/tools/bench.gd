@@ -7,7 +7,7 @@
 ##   2/3-end following again.
 ## Every REPORT_EVERY seconds it prints one "bench:" line (avg fps, 1%-low fps, mean and worst frame ms) and at
 ## the end one summary line, then quits (code 0):
-##   BENCH avg=58.9 low1=44.1 frame_ms=16.98 worst_ms=31.2 frames=3534 seconds=60.0 tier=low cap=60 adapter="..."
+##   BENCH avg=58.9 low1=44.1 frame_ms=16.98 worst_ms=31.2 frames=3534 seconds=60.0 tier=low cap=60 vsync=on hz=60 adapter="..."
 ## avg = frames / seconds; low1 = 1000 / the mean of the slowest 1% of frame times. Real wall clock: on a
 ## software renderer the numbers are meaningless, on the TV box they are the answer.
 class_name BenchProbe
@@ -118,9 +118,19 @@ static func stats(frames: PackedInt64Array) -> Dictionary:
 
 func summary() -> String:
 	var st := stats(_all)
-	return "BENCH avg=%.1f low1=%.1f frame_ms=%.2f worst_ms=%.1f frames=%d seconds=%.1f tier=%s cap=%d adapter=\"%s\"" % [
+	return "BENCH avg=%.1f low1=%.1f frame_ms=%.2f worst_ms=%.1f frames=%d seconds=%.1f tier=%s cap=%d %s adapter=\"%s\"" % [
 			st.avg, st.low1, st.frame_ms, st.worst_ms, st.frames, st.seconds, Graphics.tier, Engine.max_fps,
-			RenderingServer.get_video_adapter_name()]
+			display(), RenderingServer.get_video_adapter_name()]
+
+
+## jyz-hitch-5: the present mode and the screen's refresh rate, so a BENCH line says whether its frame times
+## can be rounded up to whole refreshes (project.godot asks for vsync, yet the 1060 box averaged 72 fps).
+## "vsync=off|on|adaptive|mailbox hz=<refresh, -1 unknown>".
+static func display() -> String:
+	var modes := {DisplayServer.VSYNC_DISABLED: "off", DisplayServer.VSYNC_ENABLED: "on",
+			DisplayServer.VSYNC_ADAPTIVE: "adaptive", DisplayServer.VSYNC_MAILBOX: "mailbox"}
+	var hz := DisplayServer.screen_get_refresh_rate() if DisplayServer.get_name() != "headless" else -1.0
+	return "vsync=%s hz=%.0f" % [modes.get(DisplayServer.window_get_vsync_mode(), "?"), hz]
 
 
 func finish() -> void:
