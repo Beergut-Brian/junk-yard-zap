@@ -8,7 +8,8 @@
 ## Solo (playtest): one pad drives the active player; LB + RB + Select (or Tab) swaps who that is.
 ## CLI (after --): --demo (bots play), --demo-beat=combo|goal|wide|rings|apart|chute|piano|fan|belt|hook|trampoline|delight|blame|idles|rattle|trophy|jump|jump-crate|reset-hold|sign-hold|bonk|cap|glue-snap|hints|gags-<zone>|zone-<name> (staged
 ## shots), --soak (with --demo: stress + a log line every 30 s), --bench (a 60 s timed demo with the soak's
-## stress, prints BENCH avg=... low1=... and quits; scripts/tools/bench.gd), --proto, --session-flow --flow-out=<dir>
+## stress, prints BENCH avg=... low1=... and quits; scripts/tools/bench.gd; with --bench-trace[=<path>] also a
+## per-frame split of each frame and a BENCH-TRACE line, scripts/tools/bench_trace.gd), --proto, --session-flow --flow-out=<dir>
 ## (scripts/tools/session_flow.gd on an export), --player-flow=<phase> (scripts/tools/player_flow.gd).
 extends Node3D
 
@@ -212,6 +213,12 @@ func _start_demo() -> void:
 				b.camera = camera
 				b.duration = BenchProbe.seconds_from_args(OS.get_cmdline_user_args())
 				add_child(b)
+				var trace_to := BenchTrace.path_from_args(OS.get_cmdline_user_args())
+				if trace_to != "":   # scripts/tools/bench_trace.gd: where each slow frame's time goes
+					var tr := BenchTrace.new()
+					tr.bench = b
+					tr.path = trace_to
+					add_child(tr)
 			if bench or OS.get_cmdline_user_args().has("--soak"):   # scripts/tools/soak.gd (the bench keeps its stress on)
 				var probe := SoakProbe.new()
 				probe.level = level

@@ -235,3 +235,82 @@ func test_the_yard_sign_still_lights_its_bulbs() -> void:
 	assert_int(on).is_between(fx.bulbs.size() / 2, fx.bulbs.size() - 1)   # two of three lit
 	world.free()
 	Yard.reset_world()
+
+
+# ------------------------------------------------------------------------------------ bench trace
+
+func test_bench_trace_flag_and_path() -> void:
+	assert_str(BenchTrace.path_from_args(PackedStringArray(["--bench"]))).is_equal("")
+	assert_str(BenchTrace.path_from_args(PackedStringArray(["--bench", "--bench-trace"]))).is_equal("user://bench_trace.csv")
+	assert_str(BenchTrace.path_from_args(PackedStringArray(["--bench-trace=/tmp/x.csv"]))).is_equal("/tmp/x.csv")
+
+
+## rows: [t, seg, frame, physics, steps, process, draw, idle, gpu]
+func _rows(n: int, slow_every: int, slow: Array) -> Array:
+	var out := []
+	for i in n:
+		if i % slow_every == 0:
+			out.append([i / 60.0, "follow"] + slow)
+		else:
+			out.append([i / 60.0, "follow", 16.7, 2.0, 1, 1.5, 3.0, 10.2, 4.0])
+	return out
+
+
+func test_bench_trace_names_the_part_that_grew_in_the_slow_frames() -> void:
+	# Slow frames that slept: the work is the same, the limiter / present held them.
+	var idle := BenchTrace.line(_rows(200, 50, [33.3, 2.0, 1, 1.5, 3.0, 26.8, 4.0]))
+	assert_str(idle).starts_with("BENCH-TRACE slow=4/200").contains("cause=idle")
+	# Slow frames with a heavy physics step.
+	assert_str(BenchTrace.line(_rows(200, 50, [30.0, 18.0, 2, 1.5, 3.0, 7.5, 4.0]))).contains("cause=physics")
+	# Slow frames that waited on the draw (render CPU or the GPU).
+	assert_str(BenchTrace.line(_rows(200, 50, [28.0, 2.0, 1, 1.5, 21.0, 3.5, 14.0]))).contains("cause=draw")
+	# Every frame slow (a software renderer): the biggest part, marked.
+	assert_str(BenchTrace.line(_rows(10, 1, [1158.0, 21.5, 8, 9.8, 1127.7, 8.9, 1098.8]))).contains("slow=10/10").contains("cause=draw(all)")
+	# No slow frame.
+	assert_str(BenchTrace.line(_rows(200, 1000, [16.7, 2.0, 1, 1.5, 3.0, 10.2, 4.0]))).contains("slow=0/200").contains("cause=none")
+
+
+func test_bench_trace_splits_every_counted_frame_and_writes_its_csv() -> void:
+	var b := BenchProbe.new()
+	b.quit_when_done = false
+	b.duration = 0.5
+	b.report_every = 0.5
+	b.warmup = 0.1
+	var tr := BenchTrace.new()
+	tr.bench = b
+	tr.path = "user://test_hitch_6_trace.csv"   # scratch: never the real settings or players file
+	world.add_child(b)
+	world.add_child(tr)
+	await b.finished
+	assert_int(tr.rows.size()).is_greater(5)
+	for r: Array in tr.rows:
+		var parts := float(r[3]) + float(r[5]) + float(r[6]) + float(r[7])
+		assert_float(parts).is_equal_approx(float(r[2]), 0.01)   # physics + process + draw + idle = the frame
+		assert_float(float(r[2])).is_greater(0.0)
+	assert_str(tr.summary).starts_with("BENCH-TRACE slow=")
+	var f := FileAccess.open(tr.path, FileAccess.READ)
+	assert_object(f).is_not_null()
+	assert_str(f.get_line()).is_equal(",".join(BenchTrace.COLS))
+	var n := 0
+	while not f.eof_reached():
+		if f.get_line() != "":
+			n += 1
+	f.close()
+	assert_int(n).is_equal(tr.rows.size())
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(tr.path))
+
+
+func test_bench_trace_flag_runs_with_the_bench_and_prints_its_line() -> void:
+	var scratch := ProjectSettings.globalize_path("user://bench_trace_child")
+	DirAccess.make_dir_recursive_absolute(scratch)
+	var csv := scratch.path_join("trace.csv")
+	var out := []
+	var cmd := "XDG_DATA_HOME='%s' timeout 150 '%s' --headless --path '%s' -- --bench --bench-seconds=2 --bench-trace='%s' 2>&1" % [
+			scratch, OS.get_executable_path(), ProjectSettings.globalize_path("res://"), csv]
+	var code := OS.execute("bash", ["-c", cmd], out)
+	var text: String = "\n".join(out)
+	var wrote := FileAccess.file_exists(csv)
+	OS.execute("rm", ["-rf", "--", scratch])
+	assert_int(code).override_failure_message("exit %d\n%s" % [code, text.right(2000)]).is_equal(0)
+	assert_str(text).contains("BENCH avg=").contains("BENCH-TRACE slow=")
+	assert_bool(wrote).is_true()
