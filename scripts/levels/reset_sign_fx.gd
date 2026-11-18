@@ -13,6 +13,9 @@ var on_mat: Material
 var off_mat: Material
 var _t := 0.0
 var _kick := 0.0   # seconds of "just reset" excitement left
+## S-18 (jyz-hitch-6): bulb material writes, counted per call (tests read it). A bulb is written only
+## when it turns on or off, not every frame.
+var bulb_writes := 0
 
 
 func _ready() -> void:
@@ -27,7 +30,10 @@ func _process(delta: float) -> void:
 	var speed := 6.0 + 22.0 * hold + 30.0 * minf(_kick, 1.0)
 	var lit := int(_t * speed)
 	for i in bulbs.size():
-		bulbs[i].material_override = on_mat if (i + lit) % 3 != 0 else off_mat
+		var m := on_mat if (i + lit) % 3 != 0 else off_mat
+		if bulbs[i].material_override != m:
+			bulbs[i].material_override = m
+			bulb_writes += 1
 	if swirl:
 		swirl.rotation.z -= delta * (0.8 + 9.0 * hold + 14.0 * minf(_kick, 1.0))
 	if lamp:
